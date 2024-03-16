@@ -1,0 +1,15 @@
+# Project
+/lib_arcade_sfml.so
+/lib_arcade_mygame.so
+/lib_arcade_ncurses.so
+/example
+
+# IntelliJ IDEA
+/.idea
+
+# Visual Studio Code
+/.vscode
+
+# Clangd
+/.cache
+/compile_commands.json
