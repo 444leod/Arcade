@@ -20,7 +20,8 @@ namespace arc {
     struct MusicSpecification {
         std::string path;
         bool loop;
-        float startOffset = -1;
+        float startOffset = 0;
+        bool isPlaying = false;
     };
 
     /**
@@ -68,6 +69,6 @@ namespace arc {
          *
          * @return std::vector<MusicSpecification> the specifications of all the musics
          */
-        virtual std::vector<std::pair<std::string, MusicSpecification>> dump() const = 0;
+        virtual std::vector<std::pair<std::string, MusicSpecification>> dump() = 0;
     };
 }

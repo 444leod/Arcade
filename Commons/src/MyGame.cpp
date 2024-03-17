@@ -53,15 +53,17 @@ public:
         };
         lib.fonts().load("font", text);
 
+        // Sounds
         arc::SoundSpecification sound;
-        sound.path = "test.ogg";
+        sound.path = "woosh.wav";
         lib.sounds().load("woosh", sound);
 
-        // arc::MusicSpecification music;
-        // music.path = "pacman-theme.wav";
-        // music.loop = true;
-        // lib.musics().load("pacman-theme", music);
-        // lib.display().playMusic(lib.musics().get("pacman-theme"), 50.0f);
+        // Musics
+        arc::MusicSpecification music;
+        music.path = "pacman-theme.wav";
+        music.loop = true;
+        music.isPlaying = false;
+        lib.musics().load("pacman-theme", music);
     }
 
     virtual void onKeyPressed([[maybe_unused]] arc::ILibrary& lib, arc::Key key)
@@ -69,8 +71,14 @@ public:
         switch (key) {
             case arc::Key::Z: _playerDir = {0, -1}; lib.display().playSound(lib.sounds().get("woosh"), 50.0f); break;
             case arc::Key::Q: _playerDir = {-1, 0}; lib.display().playSound(lib.sounds().get("woosh"), 50.0f); break;
-            case arc::Key::S: _playerDir = {0, 1}; lib.display().playSound(lib.sounds().get("woosh"), 50.0f); break;
-            case arc::Key::D: _playerDir = {1, 0}; lib.display().playSound(lib.sounds().get("woosh"), 50.0f); break;
+            case arc::Key::S: _playerDir = {0, 1};  lib.display().playSound(lib.sounds().get("woosh"), 50.0f); break;
+            case arc::Key::D: _playerDir = {1, 0};  lib.display().playSound(lib.sounds().get("woosh"), 50.0f); break;
+            case arc::Key::A:
+                if (lib.display().isMusicPlaying(lib.musics().get("pacman-theme")))
+                    lib.display().stopMusic(lib.musics().get("pacman-theme"));
+                else
+                    lib.display().playMusic(lib.musics().get("pacman-theme"), 50.0f);
+                break;
             default: break;
         }
     }

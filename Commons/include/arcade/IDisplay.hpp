@@ -197,29 +197,38 @@ namespace arc {
          * @param sound the sound to play
          * @param volume the volume of the sound
          */
-        virtual void playSound(const arc::ISound& sound, const float volume) = 0;
+        virtual void playSound(arc::ISound& sound, const float volume) = 0;
 
         /**
          * @brief Stops a sound
          *
          * @param sound the sound to stop
          */
-        virtual void stopSound(const arc::ISound& sound) = 0;
+        virtual void stopSound(arc::ISound& sound) = 0;
 
-        // /**
-        //  * @brief Plays a music
-        //  *
-        //  * @param music the music to play
-        //  * @param volume the volume of the music
-        //  */
-        // virtual void playMusic(const arc::IMusic& music, const float volume) = 0;
+        /**
+         * @brief Plays a music
+         *
+         * @param music the music to play
+         * @param volume the volume of the music
+         */
+        virtual void playMusic(arc::IMusic& music, const float volume) = 0;
 
-        // /**
-        //  * @brief Stops a music
-        //  *
-        //  * @param music the music to stop
-        //  */
-        // virtual void stopMusic(const arc::IMusic& music) = 0;
+        /**
+         * @brief Stops a music
+         *
+         * @param music the music to stop
+         */
+        virtual void stopMusic(arc::IMusic& music) = 0;
+
+        /**
+         * @brief Returns whether a music is playing
+         *
+         * @param music the music to check
+         * @return true if the music is playing
+         * @return false if the music is not playing
+         */
+        virtual bool isMusicPlaying(arc::IMusic& music) = 0;
 
         /**
          * @brief Flushes what has been drawn to the display.
