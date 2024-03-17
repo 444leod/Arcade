@@ -93,6 +93,7 @@ public:
 
         auto textures = _lib->textures().dump();
         auto fonts = _lib->fonts().dump();
+        auto sounds = _lib->sounds().dump();
 
         // Unload the current library
         _lib.reset(nullptr);
@@ -117,6 +118,9 @@ public:
 
         for (const auto& font : fonts)
             _lib->fonts().load(font.first, font.second);
+
+        for (const auto& sound : sounds)
+            _lib->sounds().load(sound.first, sound.second);
     }
 
     void run()

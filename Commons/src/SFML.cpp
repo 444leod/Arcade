@@ -8,6 +8,7 @@
 #include "arcade/ILibrary.hpp"
 
 #include <SFML/Graphics.hpp>
+#include <SFML/Audio.hpp>
 #include <deque>
 #include <memory>
 
@@ -174,6 +175,8 @@ private:
     std::map<std::string, SFMLFont> _fonts;
 };
 
+#include <iostream>
+
 class SFMLSound : public arc::ISound {
 public:
     SFMLSound() = default;
@@ -182,16 +185,22 @@ public:
     bool init(const arc::SoundSpecification& spec)
     {
         this->_spec = spec;
+        std::cout << "Loading sound: " << spec.path << std::endl;
         if (!this->_buffer.loadFromFile(spec.path))
             return false;
+        std::cout << "Sound loaded" << std::endl;
         this->_sound.setBuffer(this->_buffer);
+        this->_sound.setVolume(100);
+        this->_sound.play();
         return true;
     }
 
     virtual void play() { this->_sound.play(); }
     virtual void stop() { this->_sound.stop(); }
+    virtual sf::Sound::Status getStatus() const { return this->_sound.getStatus(); }
+    virtual void setVolume(float volume) { this->_sound.setVolume(volume); }
 
-    virtual const arc::SoundSpecification& specificiation() const { return this->_spec; }
+    virtual const arc::SoundSpecification& specification() const { return this->_spec; }
     const sf::SoundBuffer& buffer() const { return this->_buffer; }
     const sf::Sound& sound() const { return this->_sound; }
 
@@ -226,10 +235,10 @@ public:
         auto specs = std::vector<std::pair<std::string, arc::SoundSpecification>>{};
         specs.reserve(_sounds.size());
 
-        for (const auto& [name, sound] : this->_sounds) {
-            if (sound.sound().getStatus() == sf::Sound::Playing)
-                sound.sound().stop();
-            specs.push_back({name, sound.specificiation()});
+        for (auto& [name, sound] : this->_sounds) {
+            // if (sound.getStatus() == sf::Sound::Playing)
+            //     sound.stop();
+            specs.push_back({name, sound.specification()});
         }
 
         return specs;
@@ -239,71 +248,74 @@ private:
     std::map<std::string, SFMLSound> _sounds;
 };
 
-class SFMLMusic : public arc::IMusic {
-public:
-    SFMLMusic() = default;
-    virtual ~SFMLMusic() = default;
+// class SFMLMusic : public arc::IMusic {
+// public:
+//     SFMLMusic() = default;
+//     virtual ~SFMLMusic() = default;
 
-    bool init(const arc::MusicSpecification& spec)
-    {
-        this->_spec = spec;
-        if (!this->_music.openFromFile(spec.path))
-            return false;
-        this->_music.setLoop(spec.loop);
-        if (spec.startOffset != -1)
-            this->_music.setPlayingOffset(sf::seconds(spec.startOffset));
-        return true;
-    }
+//     bool init(const arc::MusicSpecification& spec)
+//     {
+//         this->_spec = spec;
+//         if (!this->_music.openFromFile(spec.path))
+//             return false;
+//         this->_music.setLoop(spec.loop);
+//         if (spec.startOffset != -1)
+//             this->_music.setPlayingOffset(sf::seconds(spec.startOffset));
+//         return true;
+//     }
 
-    virtual void play() { this->_music.play(); }
-    virtual void stop() { this->_music.stop(); }
+//     virtual void play() { this->_music.play(); }
+//     virtual void stop() { this->_music.stop(); }
+//     virtual sf::Music::Status getStatus() const { return this->_music.getStatus(); }
+//     virtual void setVolume(float volume) { this->_music.setVolume(volume); }
 
-    virtual const arc::MusicSpecification& specificiation() const { return this->_spec; }
-    const sf::Music& music() const { return this->_music; }
+//     virtual const arc::MusicSpecification& specification() const { return this->_spec; }
+//     const sf::Music& music() const { return this->_music; }
 
-private:
-    sf::Music _music = {};
-    arc::MusicSpecification _spec = {};
-};
+// private:
+//     sf::Music _music = {};
+//     arc::MusicSpecification _spec = {};
+// };
 
-class SFMLMusicManager : public arc::IMusicManager {
-public:
-    SFMLMusicManager() = default;
-    virtual ~SFMLMusicManager() = default;
+// class SFMLMusicManager : public arc::IMusicManager {
+// public:
+//     SFMLMusicManager() = default;
+//     virtual ~SFMLMusicManager() = default;
 
-    virtual bool load(const std::string& name, const arc::MusicSpecification& spec)
-    {
-        auto music = SFMLMusic();
+//     virtual bool load(const std::string& name, const arc::MusicSpecification& spec)
+//     {
+//         auto music = SFMLMusic();
 
-        if (!music.init(spec))
-            return false;
-        this->_musics[name] = music;
-        return true;
-    }
+//         if (!music.init(spec))
+//             return false;
+//         this->_musics[name] = std::make_shared<SFMLMusic>(music);
+//         return true;
+//     }
 
-    virtual arc::IMusic& get(const std::string &name)
-    {
-        return this->_musics.at(name);
-    }
+//     virtual arc::IMusic& get(const std::string &name)
+//     {
+//         return *this->_musics.at(name);
+//     }
 
-    virtual std::vector<std::pair<std::string, arc::MusicSpecification>> dump() const
-    {
-        auto specs = std::vector<std::pair<std::string, arc::MusicSpecification>>{};
-        specs.reserve(_musics.size());
+//     virtual std::vector<std::pair<std::string, arc::MusicSpecification>> dump()
+//     {
+//         auto specs = std::vector<std::pair<std::string, arc::MusicSpecification>>{};
+//         specs.reserve(_musics.size());
 
-        for (const auto& [name, music] : this->_musics) {
-            if (music.music().getStatus() == sf::Music::Playing)
-                music.specification().startOffset = music.music().getPlayingOffset();
-            music.specification().music().stop();
-            specs.push_back({name, music.specificiation()});
-        }
+//         for (auto& [name, music] : this->_musics) {
+//             arc::MusicSpecification spec = (*music).specification();
+//             if ((*music).music().getStatus() == sf::Music::Playing)
+//                 spec.startOffset = (*music).music().getPlayingOffset().asSeconds();
+//             (*music).stop();
+//             specs.push_back({name, spec});
+//         }
 
-        return specs;
-    }
+//         return specs;
+//     }
 
-private:
-    std::map<std::string, SFMLMusic> _musics;
-};
+// private:
+//     std::map<std::string, std::shared_ptr<SFMLMusic>> _musics;
+// };
 
 class SFMLDisplay : public arc::IDisplay {
 public:
@@ -503,25 +515,31 @@ public:
         return {bounds.left, bounds.top, bounds.width / this->_tileSize, bounds.height / this->_tileSize};
     }
 
-    virtual void playSound(const arc::ISound& sound)
+    virtual void playSound(const arc::ISound& sound, const float volume)
     {
-        dynamic_cast<const SFMLSound&>(sound).sound().play();
+        SFMLSound& s = const_cast<SFMLSound&>(dynamic_cast<const SFMLSound&>(sound));
+        s.setVolume(volume);
+        s.play();
     }
 
     virtual void stopSound(const arc::ISound& sound)
     {
-        dynamic_cast<const SFMLSound&>(sound).sound().stop();
+        SFMLSound& s = const_cast<SFMLSound&>(dynamic_cast<const SFMLSound&>(sound));
+        s.stop();
     }
 
-    virtual void playMusic(const arc::IMusic& music)
-    {
-        dynamic_cast<const SFMLMusic&>(music).music().play();
-    }
+    // virtual void playMusic(const arc::IMusic& music, const float volume)
+    // {
+    //     SFMLMusic& m = const_cast<SFMLMusic&>(dynamic_cast<const SFMLMusic&>(music));
+    //     m.setVolume(volume);
+    //     m.play();
+    // }
 
-    virtual void stopMusic(const arc::IMusic& music)
-    {
-        dynamic_cast<const SFMLMusic&>(music).music().stop();
-    }
+    // virtual void stopMusic(const arc::IMusic& music)
+    // {
+    //     SFMLMusic& m = const_cast<SFMLMusic&>(dynamic_cast<const SFMLMusic&>(music));
+    //     m.stop();
+    // }
 
     virtual void flush()
     {
@@ -561,11 +579,15 @@ public:
     virtual arc::IDisplay& display() { return this->_display; }
     virtual arc::ITextureManager& textures() { return this->_textures; }
     virtual arc::IFontManager& fonts() { return this->_fonts; }
+    virtual arc::ISoundManager& sounds() { return this->_sounds; }
+    // virtual arc::IMusicManager& musics() { return this->_musics; }
 
 private:
     SFMLDisplay _display;
     SFMLTextureManager _textures;
     SFMLFontManager _fonts;
+    SFMLSoundManager _sounds;
+    // SFMLMusicManager _musics;
 };
 
 extern "C" arc::ILibrary *entrypoint()

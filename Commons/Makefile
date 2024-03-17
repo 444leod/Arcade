@@ -10,20 +10,27 @@ all: lib_arcade_sfml.so lib_arcade_ncurses.so lib_arcade_mygame.so example
 clean:
 
 fclean: clean
-	@rm -f lib_arcade_sfml.so lib_arcade_ncurses.so lib_arcade_mygame.so example
+	@rm -f \
+	lib_arcade_sfml.so lib_arcade_ncurses.so lib_arcade_mygame.so example
 
 re:
 	@$(MAKE) -s fclean
 	@$(MAKE) -s all
 
 lib_arcade_sfml.so:
-	@g++ -shared src/SFML.cpp -o lib_arcade_sfml.so -fPIC -iquote ./include -std=c++20 -Wall -Wextra -Werror -lsfml-graphics -lsfml-window -lsfml-system
+	@g++ -shared src/SFML.cpp -o lib_arcade_sfml.so \
+	-fPIC -iquote ./include -std=c++20 -Wall -Wextra -Werror \
+	-lsfml-graphics -lsfml-window -lsfml-system -lsfml-audio
 
 lib_arcade_ncurses.so:
-	@g++ -shared src/NCurses.cpp -o lib_arcade_ncurses.so -fPIC -iquote ./include -std=c++20 -Wall -Wextra -Werror -lncurses
+	@g++ -shared src/NCurses.cpp -o lib_arcade_ncurses.so \
+	-fPIC -iquote ./include -std=c++20 -Wall -Wextra -Werror \
+	-lncurses
 
 lib_arcade_mygame.so:
-	@g++ -shared src/MyGame.cpp -o lib_arcade_mygame.so -fPIC -iquote ./include -std=c++20 -Wall -Wextra -Werror
+	@g++ -shared src/MyGame.cpp -o lib_arcade_mygame.so \
+	-fPIC -iquote ./include -std=c++20 -Wall -Wextra -Werror
 
 example:
-	@g++ src/Core.cpp -o example -iquote ./include -std=c++20 -Wall -Wextra -Werror
+	@g++ src/Core.cpp -o example \
+	-iquote ./include -std=c++20 -Wall -Wextra -Werror

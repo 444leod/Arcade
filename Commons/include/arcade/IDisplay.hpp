@@ -206,6 +206,21 @@ namespace arc {
          */
         virtual void stopSound(const arc::ISound& sound) = 0;
 
+        // /**
+        //  * @brief Plays a music
+        //  *
+        //  * @param music the music to play
+        //  * @param volume the volume of the music
+        //  */
+        // virtual void playMusic(const arc::IMusic& music, const float volume) = 0;
+
+        // /**
+        //  * @brief Stops a music
+        //  *
+        //  * @param music the music to stop
+        //  */
+        // virtual void stopMusic(const arc::IMusic& music) = 0;
+
         /**
          * @brief Flushes what has been drawn to the display.
          */

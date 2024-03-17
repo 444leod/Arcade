@@ -122,10 +122,10 @@ private:
     std::map<std::string, NCursesFont> _fonts;
 };
 
-class NcursesSound : public arc::ISound {
+class NCursesSound : public arc::ISound {
 public:
-    NcursesSound() = default;
-    virtual ~NcursesSound() = default;
+    NCursesSound() = default;
+    virtual ~NCursesSound() = default;
 
     virtual bool init(const arc::SoundSpecification& spec)
     {
@@ -133,7 +133,10 @@ public:
         return true;
     }
 
-    virtual const arc::SoundSpecification& specificiation() const { return this->_spec; }
+    virtual const arc::SoundSpecification& specification() const { return this->_spec; }
+
+private:
+    arc::SoundSpecification _spec;
 };
 
 class NCursesSoundManager : public arc::ISoundManager {
@@ -143,7 +146,7 @@ public:
 
     virtual bool load(const std::string& name, const arc::SoundSpecification& spec)
     {
-        auto attribute = NCursesSound();
+        auto attribute = NCursesSound{};
 
         if (!attribute.init(spec))
             return false;
@@ -151,7 +154,7 @@ public:
         return true;
     }
 
-    virtual arc::IFont& get(const std::string &name)
+    virtual arc::ISound& get(const std::string &name)
     {
         return this->_sounds.at(name);
     }
@@ -162,7 +165,7 @@ public:
         specs.reserve(_sounds.size());
 
         for (const auto& [name, sound] : this->_sounds)
-            specs.push_back({name, sound.specificiation()});
+            specs.push_back({name, sound.specification()});
 
         return specs;
     }
@@ -171,54 +174,57 @@ private:
     std::map<std::string, NCursesSound> _sounds;
 };
 
-class NCursesMusic : public arc::IMusic {
-public:
-    NCursesMusic() = default;
-    virtual ~NCursesMusic() = default;
+// class NCursesMusic : public arc::IMusic {
+// public:
+//     NCursesMusic() = default;
+//     virtual ~NCursesMusic() = default;
 
-    virtual bool init(const arc::MusicSpecification& spec)
-    {
-        this->_spec = spec;
-        return true;
-    }
+//     virtual bool init(const arc::MusicSpecification& spec)
+//     {
+//         this->_spec = spec;
+//         return true;
+//     }
 
-    virtual const arc::MusicSpecification& specificiation() const { return this->_spec; }
-};
+//     virtual const arc::MusicSpecification& specification() const { return this->_spec; }
 
-class NCursesMusicManager : public arc::IMusicManager {
-public:
-    NCursesMusicManager() = default;
-    virtual ~NCursesMusicManager() = default;
+// private:
+//     arc::MusicSpecification _spec;
+// };
 
-    virtual bool load(const std::string& name, const arc::MusicSpecification& spec)
-    {
-        auto attribute = NCursesMusic();
+// class NCursesMusicManager : public arc::IMusicManager {
+// public:
+//     NCursesMusicManager() = default;
+//     virtual ~NCursesMusicManager() = default;
 
-        if (!attribute.init(spec))
-            return false;
-        this->_musics[name] = attribute;
-        return true;
-    }
+//     virtual bool load(const std::string& name, const arc::MusicSpecification& spec)
+//     {
+//         auto attribute = NCursesMusic();
 
-    virtual arc::IFont& get(const std::string &name)
-    {
-        return this->_musics.at(name);
-    }
+//         if (!attribute.init(spec))
+//             return false;
+//         this->_musics[name] = attribute;
+//         return true;
+//     }
 
-    virtual std::vector<std::pair<std::string, arc::MusicSpecification>> dump() const
-    {
-        auto specs = std::vector<std::pair<std::string, arc::MusicSpecification>>{};
-        specs.reserve(_musics.size());
+//     virtual arc::IMusic& get(const std::string &name)
+//     {
+//         return this->_musics.at(name);
+//     }
 
-        for (const auto& [name, music] : this->_musics)
-            specs.push_back({name, music.specificiation()});
+//     virtual std::vector<std::pair<std::string, arc::MusicSpecification>> dump()
+//     {
+//         auto specs = std::vector<std::pair<std::string, arc::MusicSpecification>>{};
+//         specs.reserve(_musics.size());
 
-        return specs;
-    }
+//         for (const auto& [name, music] : this->_musics)
+//             specs.push_back({name, music.specification()});
 
-private:
-    std::map<std::string, NCursesMusic> _musics;
-};
+//         return specs;
+//     }
+
+// private:
+//     std::map<std::string, NCursesMusic> _musics;
+// };
 
 class NCursesDisplay : public arc::IDisplay {
 public:
@@ -366,6 +372,22 @@ public:
         refresh();
     }
 
+    virtual void playSound([[maybe_unused]] const arc::ISound& sound, [[maybe_unused]] const float volume)
+    {
+    }
+
+    // virtual void playMusic([[maybe_unused]] const arc::IMusic& music, [[maybe_unused]] const float volume)
+    // {
+    // }
+
+    // virtual void stopMusic([[maybe_unused]] const arc::IMusic& music)
+    // {
+    // }
+
+    virtual void stopSound([[maybe_unused]] const arc::ISound& sound)
+    {
+    }
+
 private:
     bool _opened = true;
     std::string _title;
@@ -387,11 +409,15 @@ public:
     virtual arc::IDisplay& display() { return this->_display; }
     virtual arc::ITextureManager& textures() { return this->_textures; }
     virtual arc::IFontManager& fonts() { return this->_fonts; }
+    virtual arc::ISoundManager& sounds() { return this->_sounds; }
+    // virtual arc::IMusicManager& musics() { return this->_musics; }
 
 private:
     NCursesDisplay _display;
     NCursesTextureManager _textures;
     NCursesFontManager _fonts;
+    NCursesSoundManager _sounds;
+    // NCursesMusicManager _musics;
 };
 
 extern "C" arc::ILibrary *entrypoint()

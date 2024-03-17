@@ -53,11 +53,11 @@ namespace arc {
          */
         virtual ISoundManager& sounds() = 0;
 
-        /**
-         * @brief Returns the music manager of the library
-         *
-         * @return IMusicManager& The music manager
-         */
-        virtual IMusicManager& musics() = 0;
+        // /**
+        //  * @brief Returns the music manager of the library
+        //  *
+        //  * @return IMusicManager& The music manager
+        //  */
+        // virtual IMusicManager& musics() = 0;
     };
 };
