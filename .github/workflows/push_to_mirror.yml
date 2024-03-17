@@ -1,9 +1,9 @@
-name: PROJECT_NAME
+name: Arcade
 
 on: [push, pull_request]
 
 env:
-  MIRROR_URL: ""
+  MIRROR_URL: "git@github.com:EpitechPromo2027/B-OOP-400-LIL-4-1-arcade-leo.dumont.git"
 
 jobs:
   build:

@@ -7,7 +7,7 @@ commit_msg_filepath = sys.argv[1]
 
 with open(commit_msg_filepath, 'r') as f:
     content = f.read()
-    pattern = r"^(build|chore|ci|docs|feat|fix|perf|refactor|revert|style|test|del|merge|update|hotfix)(\(.+\))?: .+$"
+    pattern = r"^(build|chore|ci|docs|feat|fix|perf|refactor|revert|style|test|del|merge|update|hotfix|init)(\(.+\))?: .+$"
     if re.match(pattern, content):
         report = subprocess.run(["mango"], capture_output=True, text=True)
         if (report.returncode != 0):
