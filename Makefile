@@ -1,36 +1,77 @@
 ##
 ## EPITECH PROJECT, 2024
-## PROJECT_NAME
+## Arcade
 ## File description:
 ## Makefile
 ##
 
-NAME = EXECUTABLE_NAME
+NAME = arcade
 
-SRC = ./src/main.c
+SRC			=	${SRC_MAIN}
 
-OBJ = $(SRC:.asm=.o)
+SRC_MAIN 	= ./src/main.cpp
 
-CC = gcc
+OBJ			=	$(SRC:.cpp=.o)
 
-CFLAGS = -Wall -Wextra -Werror -Wpedantic
+BONUS_SRC = \
+
+BONUS_OBJ  =	$(BONUS_SRC:.cpp=.o)
+
+PYTHON_TESTER = ./tests/tester.py
+
+TESTS_NAME	=	unit_tests
+
+TESTS_SRC	=	$(filter-out ./src/main.cpp, $(SRC)) ./tests/tests.cpp \
+
+TESTS_OBJ	=	$(TESTS_SRC:.cpp=.o)
+
+CC			=	g++
+
+CPPFLAGS	=	-std=c++20 -W -Wall -Wextra -Wpedantic -I./include/
+
+DEBUGFLAGS = 	-g
+
+TESTS_FLAGS	=	-lcriterion --coverage -fprofile-arcs -ftest-coverage
 
 all: $(NAME)
 
-$(NAME): $(OBJ)
-	$(CC) -o $(NAME) $(OBJ) $(CFLAGS)
+$(NAME):	$(OBJ)
+	$(CC) $(OBJ) $(CPPFLAGS) -o $(NAME)
+
+debug:
+	$(CC) $(SRC) $(CPPFLAGS) $(DEBUGFLAGS) -o $(NAME)
+
+run:	all
+	./$(NAME) -d $(D)
+
+tests_run:	fclean $(TESTS_OBJ)
+	$(CC) $(TESTS_OBJ) $(CPPFLAGS) -o $(TESTS_NAME)
+	@./$(TESTS_NAME)
+	@$(PYTHON_TESTER)
+
+
+$(TESTS_NAME):
+	@$(CC) -o $(TESTS_NAME) $(TESTS_SRC) $(CPPFLAGS) $(TESTS_FLAGS)
+
+cov:
+	gcovr --exclude tests -u
+
+covb:
+	gcovr --exclude tests -ub
 
 clean:
 	rm -f $(OBJ)
+	rm -f *.gcda
+	rm -f *.gcno
 
-fclean: clean
+fclean:	clean
 	rm -f $(NAME)
+	rm -f $(TESTS_NAME)
 
-re: fclean all
+re:	fclean all
 
-tests_run: all
-
-run: all
+bonus: fclean $(BONUS_OBJ)
+	$(CC) $(BONUS_OBJ) $(CPPFLAGS) -o $(NAME)
 
 init: install-hooks install-mango
 
