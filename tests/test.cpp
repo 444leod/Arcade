@@ -9,6 +9,8 @@
 #include <iostream>
 #include <thread>
 
+#include <future>
+
 class SoundPlayer {
 public:
     SoundPlayer() {
@@ -19,25 +21,28 @@ public:
     }
 
     void play() {
-        std::thread([this]() {
+        soundFuture = std::async(std::launch::async, [this]() {
             sound.play();
             while (sound.getStatus() == sf::Sound::Playing) {
                 // Wait for the sound to finish playing
                 sf::sleep(sf::milliseconds(100));
             }
-        }).detach();
+        });
     }
 
 private:
     sf::SoundBuffer buffer;
     sf::Sound sound;
+    std::future<void> soundFuture;
 };
 
 int main() {
     try {
         SoundPlayer player;
         player.play();
+        std::cout << "ouais" << std::endl;
         sf::sleep(sf::seconds(2)); // Wait for a while to let the sound play
+        std::cout << "ouais" << std::endl;
     } catch (const std::exception& e) {
         std::cerr << e.what() << std::endl;
         return 84;

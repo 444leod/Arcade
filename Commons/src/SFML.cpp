@@ -177,6 +177,7 @@ private:
 
 #include <iostream>
 #include <thread>
+#include <future>
 
 class SFMLSound : public arc::ISound {
 public:
@@ -207,13 +208,7 @@ public:
     }
 
     virtual void play() {
-        std::thread([this]() {
-            _sound.play();
-            while (_sound.getStatus() == sf::Sound::Playing) {
-                std::cout << "Playing sound" << std::endl;
-
-            }
-        }).detach();
+        _sound.play();
     }
     virtual void stop() { this->_sound.stop(); }
     virtual sf::Sound::Status getStatus() const { return this->_sound.getStatus(); }
