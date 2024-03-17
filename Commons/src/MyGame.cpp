@@ -54,7 +54,7 @@ public:
         lib.fonts().load("font", text);
 
         arc::SoundSpecification sound;
-        sound.path = "test.wav";
+        sound.path = "test.ogg";
         lib.sounds().load("woosh", sound);
 
         // arc::MusicSpecification music;

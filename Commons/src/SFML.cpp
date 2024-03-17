@@ -176,6 +176,7 @@ private:
 };
 
 #include <iostream>
+#include <thread>
 
 class SFMLSound : public arc::ISound {
 public:
@@ -186,27 +187,44 @@ public:
     {
         this->_spec = spec;
         std::cout << "Loading sound: " << spec.path << std::endl;
-        if (!this->_buffer.loadFromFile(spec.path))
+        if (!_buffer.loadFromFile(spec.path))
             return false;
         std::cout << "Sound loaded" << std::endl;
-        this->_sound.setBuffer(this->_buffer);
-        this->_sound.setVolume(100);
-        this->_sound.play();
+        this->_sound.setBuffer(_buffer);
+        try {
+            play();
+        } catch (const std::exception& e) {
+            std::cerr << e.what() << std::endl;
+            return 84;
+        }
+        if (this->_sound.getStatus() != sf::SoundSource::Playing) {
+            std::cout << "Sound is not playing" << std::endl;
+            return true;
+        }
+
+        std::cout << "Sound is playing" << std::endl;
         return true;
     }
 
-    virtual void play() { this->_sound.play(); }
+    virtual void play() {
+        std::thread([this]() {
+            _sound.play();
+            while (_sound.getStatus() == sf::Sound::Playing) {
+                std::cout << "Playing sound" << std::endl;
+
+            }
+        }).detach();
+    }
     virtual void stop() { this->_sound.stop(); }
     virtual sf::Sound::Status getStatus() const { return this->_sound.getStatus(); }
     virtual void setVolume(float volume) { this->_sound.setVolume(volume); }
 
     virtual const arc::SoundSpecification& specification() const { return this->_spec; }
-    const sf::SoundBuffer& buffer() const { return this->_buffer; }
     const sf::Sound& sound() const { return this->_sound; }
 
 private:
-    sf::SoundBuffer _buffer = {};
     sf::Sound _sound = {};
+    sf::SoundBuffer _buffer = {};
     arc::SoundSpecification _spec = {};
 };
 
