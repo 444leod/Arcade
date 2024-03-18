@@ -16,5 +16,6 @@
 //textures
 #define IMAGE_PATH "../assets/snake/images/"
 #define TILESET_ONIX "../assets/snake/images/onix_tileset.png"
+#define TMP_PATH "../assets/WIP/Custom Edited - Pokemon Generation 1 Customs - 095 Onix.png"
 
 #endif /* !SNAKE_HPP_ */

@@ -113,24 +113,8 @@ public:
         score << "Score: " << _score;
 
         lib.display().clear(arc::Color{0, 0, 255, 0});
-        lib.display().draw(lib.textures().get("head_0_east"), 0, 0);
-        lib.display().draw(lib.textures().get("head_1_east"), 0, 1);
-        lib.display().draw(lib.textures().get("head_1_north"), 1, 1);
-        lib.display().draw(lib.textures().get("head_0_north"), 1, 0);
-        lib.display().draw(lib.textures().get("head_0_south"), 2, 0);
-        lib.display().draw(lib.textures().get("head_1_south"), 2, 1);
-        lib.display().draw(lib.textures().get("head_0_west"), 3, 0);
-        lib.display().draw(lib.textures().get("head_1_west"), 3, 1);
-        lib.display().draw(lib.textures().get("tail_east"), 0, 2);
-        lib.display().draw(lib.textures().get("tail_north"), 1, 2);
-        lib.display().draw(lib.textures().get("tail_south"), 2, 2);
-        lib.display().draw(lib.textures().get("tail_west"), 3, 2);
-        lib.display().draw(lib.textures().get("body_horizontal"), 0, 3);
-        lib.display().draw(lib.textures().get("body_vertical"), 1, 3);
-        lib.display().draw(lib.textures().get("body_north_west"), 0, 4);
-        lib.display().draw(lib.textures().get("body_north_east"), 1, 4);
-        lib.display().draw(lib.textures().get("body_south_west"), 2, 4);
-        lib.display().draw(lib.textures().get("body_south_east"), 3, 4);
+        draw_arena(lib);
+        lib.display().draw(lib.textures().get("head_0_east"), _playerPos.x, _playerPos.y);
 
         lib.display().draw(lib.textures().get("Super-Candy"), _goalPos.x, _goalPos.y);
 
@@ -152,6 +136,7 @@ private:
     {
         //Onix Tileset
         arc::TextureSpecification spec;
+
         //Onix Head
         spec.textual.character = 'O';
         spec.textual.color = {255, 0, 0, 255};
@@ -200,12 +185,34 @@ private:
         spec.graphical = arc::TextureImage{TILESET_ONIX, arc::Rect<uint32_t>{196, 256, 64, 64}};
         lib.textures().load("body_south_east", spec);
 
+        //Arena
+        spec.textual.character = ' ';
+        spec.graphical = arc::TextureImage{"../assets/WIP/blue.png"};
+        lib.textures().load("arena_0", spec);
+        spec.graphical = arc::TextureImage{TMP_PATH, arc::Rect<uint32_t>{300, 200, 64, 64}};
+        lib.textures().load("arena_1", spec);
+
 
         //Super-Candy
         spec.textual.character = 'X';
         spec.textual.color = {255, 255, 0, 255};
         spec.graphical = arc::Color{255, 255, 0, 255 };
         lib.textures().load("Super-Candy", spec);
+    }
+
+    void draw_arena(arc::ILibrary& lib)
+    {
+        //draw in a grid pattern
+        bool offset = true;
+        for (int y = 0; y < ARENA_HEIGHT; y++) {
+            for (int x = 0; x < ARENA_WIDTH; x++) {
+                if (x % 2 == (offset ? 0 : 1))
+                    lib.display().draw(lib.textures().get("arena_0"), x, y);
+                else
+                    lib.display().draw(lib.textures().get("arena_1"), x, y);
+            }
+            offset = !offset;
+        }
     }
 
 private:
