@@ -1,12 +1,12 @@
 /*
 ** EPITECH PROJECT, 2024
-** Snake.cpp
+** SnakeGame.cpp
 ** File description:
-** Snake.cpp
+** SnakeGame.cpp
 */
 
 #include "arcade/IGame.hpp"
-#include "Snake.hpp"
+#include "SnakeGame.hpp"
 
 #include <iostream>
 #include <cstdlib>
@@ -18,7 +18,7 @@ struct vec2 {
     int y;
 };
 
-class Snake : public arc::IGame {
+class SnakeGame : public arc::IGame {
 public:
     virtual std::string name() const
     {
@@ -225,5 +225,5 @@ private:
 
 extern "C" arc::IGame* entrypoint()
 {
-    return new Snake;
+    return new SnakeGame;
 }
