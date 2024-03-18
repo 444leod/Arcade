@@ -7,6 +7,8 @@
 
 #include <vector>
 #include <string>
+#include <map>
+
 #include "SnakeGame.hpp"
 
 struct BodyPart {
@@ -21,7 +23,7 @@ class Snake {
             _size = 1;
             _alive = true;
             _direction = std::make_pair(0, 0);
-            _body.push_back(BodyPart {0,0});
+            _body.push_back(BodyPart {ARENA_WIDTH / 2, ARENA_HEIGHT / 2});
         }
 
         ~Snake() = default;
@@ -61,20 +63,34 @@ class Snake {
                 _body[0].y += _direction.second;
         }
 
+
         std::vector<std::pair<BodyPart, std::string>> dump() const
         {
             std::vector<std::pair<BodyPart, std::string>> res;
             for (auto &part : _body) {
-                res.push_back(std::make_pair(part, "head_0_north"));
+                if (&part == &_body[0])
+                    res.push_back(getDumpHead());
+                else
+                    res.push_back(std::make_pair(part, "body_0_north"));
             }
             return res;
         }
 
     private:
+        std::pair<BodyPart, std::string> getDumpHead() const
+        {
+            return std::make_pair(_body[0], _headTextures.at(std::make_tuple(_direction.first, _direction.second)));
+        }
         std::vector<BodyPart> _body;
         int _size;
         int _speed;
         bool _alive;
         std::pair<int, int> _direction;
-
+        std::map<std::tuple<int, int>, std::string> _headTextures = {
+            {{0, -1}, "head_0_south"},
+            {{0, 1}, "head_0_north"},
+            {{-1, 0}, "head_0_east"},
+            {{1, 0}, "head_0_west"},
+            {{0, 0}, "head_0_east"}
+        };
 };

@@ -72,7 +72,7 @@ private:
 class Core {
 public:
     Core()
-        : _sl_lib{"./lib_arcade_ncurses.so"},
+        : _sl_lib{"./lib_arcade_sfml.so"},
           _sl_game{"./arcade_snake.so"},
           _lib(_sl_lib.get()),
           _game(_sl_game.get()),
