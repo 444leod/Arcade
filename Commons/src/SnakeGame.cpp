@@ -61,23 +61,12 @@ public:
 
     virtual void onKeyPressed([[maybe_unused]] arc::ILibrary& lib, arc::Key key)
     {
+        bool playSound = false;
         switch (key) {
-            case arc::Key::Z:
-                _snake.setDirection({0, -1});
-                // _playerDir = {0, -1};
-                lib.display().playSound(lib.sounds().get("woosh"), 50.0f); break;
-            case arc::Key::Q:
-                _snake.setDirection({-1, 0});
-                // _playerDir = {-1, 0};
-                lib.display().playSound(lib.sounds().get("woosh"), 50.0f); break;
-            case arc::Key::S:
-                _snake.setDirection({0, 1});
-                // _playerDir = {0, 1};
-                lib.display().playSound(lib.sounds().get("woosh"), 50.0f); break;
-            case arc::Key::D:
-                _snake.setDirection({1, 0});
-                // _playerDir = {1, 0};
-                lib.display().playSound(lib.sounds().get("woosh"), 50.0f); break;
+            case arc::Key::Z: playSound = _snake.setDirection({0, -1}); break;
+            case arc::Key::Q: playSound = _snake.setDirection({-1, 0}); break;
+            case arc::Key::S: playSound = _snake.setDirection({0, 1}); break;
+            case arc::Key::D: playSound = _snake.setDirection({1, 0}); break;
             case arc::Key::A:
                 if (lib.display().isMusicPlaying(lib.musics().get("pacman-theme")))
                     lib.display().stopMusic(lib.musics().get("pacman-theme"));
@@ -86,6 +75,8 @@ public:
                 break;
             default: break;
         }
+        if (playSound)
+            lib.display().playSound(lib.sounds().get("woosh"), 50.0f);
     }
 
     virtual void onMouseButtonPressed(
@@ -103,13 +94,6 @@ public:
 
         while (_elapsed > UPDATE_TIME) {
             _snake.move();
-            // if ((_playerPos.x > 0 && _playerDir.x < 0) ||
-            //     (_playerPos.x < ARENA_WIDTH - 1 && _playerDir.x > 0))
-            //     _playerPos.x += _playerDir.x;
-
-            // if ((_playerPos.y > 0 && _playerDir.y < 0) ||
-            //     (_playerPos.y < ARENA_HEIGHT - 1 && _playerDir.y > 0))
-            //     _playerPos.y += _playerDir.y;
 
             if (_snake.getHeadPos().first == _goalPos.x && _snake.getHeadPos().second == _goalPos.y) {
                 _score += 1;
@@ -128,7 +112,10 @@ public:
 
         lib.display().clear(arc::Color{0, 0, 255, 0});
         draw_arena(lib);
-        lib.display().draw(lib.textures().get("head_0_east"), _snake.getHeadPos().first, _snake.getHeadPos().second);
+
+        for (auto &part : _snake.dump()) {
+            lib.display().draw(lib.textures().get(part.second), part.first.x, part.first.y);
+        }
 
         lib.display().draw(lib.textures().get("Super-Candy"), _goalPos.x, _goalPos.y);
 
@@ -232,8 +219,6 @@ private:
 private:
     float _elapsed = 0;
     uint32_t _score = 0;
-    vec2 _playerDir = {0, 0};
-    vec2 _playerPos = {0, 0};
     vec2 _goalPos = {0, 0};
     Snake _snake = Snake();
 };

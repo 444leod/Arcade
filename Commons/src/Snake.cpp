@@ -41,26 +41,23 @@ class Snake {
             return _direction;
         }
 
-        void setDirection(std::pair<int, int> direction)
+        bool setDirection(std::pair<int, int> direction)
         {
+            if ((_direction.first == -direction.first && _direction.second == -direction.second)
+                || (_direction.first == direction.first && _direction.second == direction.second))
+                return false;
             _direction = direction;
+            return true;
         }
 
         void move()
         {
-            // if ((_playerPos.x > 0 && _playerDir.x < 0) ||
-            //     (_playerPos.x < ARENA_WIDTH - 1 && _playerDir.x > 0))
-            //     _playerPos.x += _playerDir.x;
-
-            // if ((_playerPos.y > 0 && _playerDir.y < 0) ||
-            //     (_playerPos.y < ARENA_HEIGHT - 1 && _playerDir.y > 0))
-            //     _playerPos.y += _playerDir.y;
             if ((_body[0].x > 0 && _direction.first < 0) ||
-                (_direction.first < ARENA_WIDTH - 1 && _direction.first > 0))
+                (_body[0].x < ARENA_WIDTH - 1 && _direction.first > 0))
                 _body[0].x += _direction.first;
 
             if ((_body[0].y > 0 && _direction.second < 0) ||
-                (_direction.second < ARENA_HEIGHT - 1 && _direction.second > 0))
+                (_body[0].y < ARENA_HEIGHT - 1 && _direction.second > 0))
                 _body[0].y += _direction.second;
         }
 
