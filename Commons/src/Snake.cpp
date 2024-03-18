@@ -11,6 +11,7 @@
 #include <iostream>
 #include <cstdlib>
 #include <sstream>
+#include <unordered_map>
 
 struct vec2 {
     int x;
@@ -30,7 +31,7 @@ public:
         lib.display().setFramerate(60);
         lib.display().setTileSize(64);
         lib.display().setWidth(ARENA_WIDTH);
-        lib.display().setHeight(ARENA_HEIGHT);
+        lib.display().setHeight(ARENA_HEIGHT + 1);
 
         resetGoal();
 
@@ -112,14 +113,32 @@ public:
         score << "Score: " << _score;
 
         lib.display().clear(arc::Color{0, 0, 255, 0});
-        lib.display().draw(lib.textures().get("player"), _playerPos.x, _playerPos.y);
-        lib.display().draw(lib.textures().get("goal"), _goalPos.x, _goalPos.y);
+        lib.display().draw(lib.textures().get("head_0_east"), 0, 0);
+        lib.display().draw(lib.textures().get("head_1_east"), 0, 1);
+        lib.display().draw(lib.textures().get("head_1_north"), 1, 1);
+        lib.display().draw(lib.textures().get("head_0_north"), 1, 0);
+        lib.display().draw(lib.textures().get("head_0_south"), 2, 0);
+        lib.display().draw(lib.textures().get("head_1_south"), 2, 1);
+        lib.display().draw(lib.textures().get("head_0_west"), 3, 0);
+        lib.display().draw(lib.textures().get("head_1_west"), 3, 1);
+        lib.display().draw(lib.textures().get("tail_east"), 0, 2);
+        lib.display().draw(lib.textures().get("tail_north"), 1, 2);
+        lib.display().draw(lib.textures().get("tail_south"), 2, 2);
+        lib.display().draw(lib.textures().get("tail_west"), 3, 2);
+        lib.display().draw(lib.textures().get("body_horizontal"), 0, 3);
+        lib.display().draw(lib.textures().get("body_vertical"), 1, 3);
+        lib.display().draw(lib.textures().get("body_north_west"), 0, 4);
+        lib.display().draw(lib.textures().get("body_north_east"), 1, 4);
+        lib.display().draw(lib.textures().get("body_south_west"), 2, 4);
+        lib.display().draw(lib.textures().get("body_south_east"), 3, 4);
+
+        lib.display().draw(lib.textures().get("Super-Candy"), _goalPos.x, _goalPos.y);
 
         auto width = lib.display().width();
         auto textWidth = lib.display().measure(score.str(), lib.fonts().get("font"), 0, 0).width;
         auto center = (width - textWidth) / 2;
 
-        lib.display().print(score.str(), lib.fonts().get("font"), center, 1);
+        lib.display().print(score.str(), lib.fonts().get("font"), center, ARENA_HEIGHT );
         lib.display().flush();
     }
 
@@ -131,16 +150,62 @@ private:
 
     void initTextures(arc::ILibrary& lib)
     {
+        //Onix Tileset
         arc::TextureSpecification spec;
-        spec.textual.character = '#';
-        spec.textual.color = {255, 0, 0, 255};
-        spec.graphical = arc::TextureImage{"../assets/snake/images/onix_tileset.png", arc::Rect<uint32_t>{0, 0, 64, 64}};
-        lib.textures().load("player", spec);
-
+        //Onix Head
         spec.textual.character = 'O';
+        spec.textual.color = {255, 0, 0, 255};
+        spec.graphical = arc::TextureImage{TILESET_ONIX, arc::Rect<uint32_t>{0, 0, 64, 64}};
+        lib.textures().load("head_0_east", spec);
+        spec.graphical = arc::TextureImage{TILESET_ONIX, arc::Rect<uint32_t>{0, 64, 64, 64}};
+        lib.textures().load("head_1_east", spec);
+        spec.graphical = arc::TextureImage{TILESET_ONIX, arc::Rect<uint32_t>{64, 0, 64, 64}};
+        lib.textures().load("head_0_north", spec);
+        spec.graphical = arc::TextureImage{TILESET_ONIX, arc::Rect<uint32_t>{64, 64, 64, 64}};
+        lib.textures().load("head_1_north", spec);
+        spec.graphical = arc::TextureImage{TILESET_ONIX, arc::Rect<uint32_t>{128, 0, 64, 64}};
+        lib.textures().load("head_0_south", spec);
+        spec.graphical = arc::TextureImage{TILESET_ONIX, arc::Rect<uint32_t>{128, 64, 64, 64}};
+        lib.textures().load("head_1_south", spec);
+        spec.graphical = arc::TextureImage{TILESET_ONIX, arc::Rect<uint32_t>{196, 0, 64, 64}};
+        lib.textures().load("head_0_west", spec);
+        spec.graphical = arc::TextureImage{TILESET_ONIX, arc::Rect<uint32_t>{196, 64, 64, 64}};
+        lib.textures().load("head_1_west", spec);
+
+        //Onix Tail
+        spec.textual.character = '*';
+        spec.graphical = arc::TextureImage{TILESET_ONIX, arc::Rect<uint32_t>{0, 128, 64, 64}};
+        lib.textures().load("tail_east", spec);
+        spec.graphical = arc::TextureImage{TILESET_ONIX, arc::Rect<uint32_t>{64, 128, 64, 64}};
+        lib.textures().load("tail_north", spec);
+        spec.graphical = arc::TextureImage{TILESET_ONIX, arc::Rect<uint32_t>{128, 128, 64, 64}};
+        lib.textures().load("tail_south", spec);
+        spec.graphical = arc::TextureImage{TILESET_ONIX, arc::Rect<uint32_t>{196, 128, 64, 64}};
+        lib.textures().load("tail_west", spec);
+
+        //Onix Straight Body
+        spec.textual.character = 'o';
+        spec.graphical = arc::TextureImage{TILESET_ONIX, arc::Rect<uint32_t>{0, 196, 64, 64}};
+        lib.textures().load("body_horizontal", spec);
+        spec.graphical = arc::TextureImage{TILESET_ONIX, arc::Rect<uint32_t>{64, 196, 64, 64}};
+        lib.textures().load("body_vertical", spec);
+
+        //Onix Corner Body
+        spec.graphical = arc::TextureImage{TILESET_ONIX, arc::Rect<uint32_t>{0, 256, 64, 64}};
+        lib.textures().load("body_north_west", spec);
+        spec.graphical = arc::TextureImage{TILESET_ONIX, arc::Rect<uint32_t>{64, 256, 64, 64}};
+        lib.textures().load("body_north_east", spec);
+        spec.graphical = arc::TextureImage{TILESET_ONIX, arc::Rect<uint32_t>{128, 256, 64, 64}};
+        lib.textures().load("body_south_west", spec);
+        spec.graphical = arc::TextureImage{TILESET_ONIX, arc::Rect<uint32_t>{196, 256, 64, 64}};
+        lib.textures().load("body_south_east", spec);
+
+
+        //Super-Candy
+        spec.textual.character = 'X';
         spec.textual.color = {255, 255, 0, 255};
         spec.graphical = arc::Color{255, 255, 0, 255 };
-        lib.textures().load("goal", spec);
+        lib.textures().load("Super-Candy", spec);
     }
 
 private:
