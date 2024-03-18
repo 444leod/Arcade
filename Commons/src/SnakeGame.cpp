@@ -7,6 +7,7 @@
 
 #include "arcade/IGame.hpp"
 #include "SnakeGame.hpp"
+#include "Snake.cpp"
 
 #include <iostream>
 #include <cstdlib>
@@ -61,10 +62,22 @@ public:
     virtual void onKeyPressed([[maybe_unused]] arc::ILibrary& lib, arc::Key key)
     {
         switch (key) {
-            case arc::Key::Z: _playerDir = {0, -1}; lib.display().playSound(lib.sounds().get("woosh"), 50.0f); break;
-            case arc::Key::Q: _playerDir = {-1, 0}; lib.display().playSound(lib.sounds().get("woosh"), 50.0f); break;
-            case arc::Key::S: _playerDir = {0, 1};  lib.display().playSound(lib.sounds().get("woosh"), 50.0f); break;
-            case arc::Key::D: _playerDir = {1, 0};  lib.display().playSound(lib.sounds().get("woosh"), 50.0f); break;
+            case arc::Key::Z:
+                _snake.setDirection({0, -1});
+                // _playerDir = {0, -1};
+                lib.display().playSound(lib.sounds().get("woosh"), 50.0f); break;
+            case arc::Key::Q:
+                _snake.setDirection({-1, 0});
+                // _playerDir = {-1, 0};
+                lib.display().playSound(lib.sounds().get("woosh"), 50.0f); break;
+            case arc::Key::S:
+                _snake.setDirection({0, 1});
+                // _playerDir = {0, 1};
+                lib.display().playSound(lib.sounds().get("woosh"), 50.0f); break;
+            case arc::Key::D:
+                _snake.setDirection({1, 0});
+                // _playerDir = {1, 0};
+                lib.display().playSound(lib.sounds().get("woosh"), 50.0f); break;
             case arc::Key::A:
                 if (lib.display().isMusicPlaying(lib.musics().get("pacman-theme")))
                     lib.display().stopMusic(lib.musics().get("pacman-theme"));
@@ -89,15 +102,16 @@ public:
         _elapsed += deltaTime;
 
         while (_elapsed > UPDATE_TIME) {
-            if ((_playerPos.x > 0 && _playerDir.x < 0) ||
-                (_playerPos.x < ARENA_WIDTH - 1 && _playerDir.x > 0))
-                _playerPos.x += _playerDir.x;
+            _snake.move();
+            // if ((_playerPos.x > 0 && _playerDir.x < 0) ||
+            //     (_playerPos.x < ARENA_WIDTH - 1 && _playerDir.x > 0))
+            //     _playerPos.x += _playerDir.x;
 
-            if ((_playerPos.y > 0 && _playerDir.y < 0) ||
-                (_playerPos.y < ARENA_HEIGHT - 1 && _playerDir.y > 0))
-                _playerPos.y += _playerDir.y;
+            // if ((_playerPos.y > 0 && _playerDir.y < 0) ||
+            //     (_playerPos.y < ARENA_HEIGHT - 1 && _playerDir.y > 0))
+            //     _playerPos.y += _playerDir.y;
 
-            if (_playerPos.x == _goalPos.x && _playerPos.y == _goalPos.y) {
+            if (_snake.getHeadPos().first == _goalPos.x && _snake.getHeadPos().second == _goalPos.y) {
                 _score += 1;
                 resetGoal();
             }
@@ -114,7 +128,7 @@ public:
 
         lib.display().clear(arc::Color{0, 0, 255, 0});
         draw_arena(lib);
-        lib.display().draw(lib.textures().get("head_0_east"), _playerPos.x, _playerPos.y);
+        lib.display().draw(lib.textures().get("head_0_east"), _snake.getHeadPos().first, _snake.getHeadPos().second);
 
         lib.display().draw(lib.textures().get("Super-Candy"), _goalPos.x, _goalPos.y);
 
@@ -221,6 +235,7 @@ private:
     vec2 _playerDir = {0, 0};
     vec2 _playerPos = {0, 0};
     vec2 _goalPos = {0, 0};
+    Snake _snake = Snake();
 };
 
 extern "C" arc::IGame* entrypoint()

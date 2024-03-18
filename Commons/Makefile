@@ -31,10 +31,10 @@ lib_arcade_mygame.so: src/MyGame.cpp
 	@g++ -shared src/MyGame.cpp -o lib_arcade_mygame.so \
 	-fPIC -iquote ./include -std=c++20 -Wall -Wextra -Werror
 
-arcade_snake.so: src/SnakeGame.cpp
-	@g++ -shared src/SnakeGame.cpp -o arcade_snake.so \
+arcade_snake.so: src/SnakeGame.cpp src/Snake.cpp
+	@g++ -shared src/SnakeGame.cpp src/Snake.cpp -o arcade_snake.so \
 	-fPIC -iquote ./include -std=c++20 -Wall -Wextra -Werror
 
-example: src/Core.cpp src/MyGame.cpp src/SFML.cpp src/NCurses.cpp src/SnakeGame.cpp
+example: src/Core.cpp src/MyGame.cpp src/SFML.cpp src/NCurses.cpp src/SnakeGame.cpp src/Snake.cpp
 	@g++ src/Core.cpp -o example \
 	-iquote ./include -std=c++20 -Wall -Wextra -Werror
