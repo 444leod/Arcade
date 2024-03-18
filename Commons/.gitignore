@@ -2,6 +2,7 @@
 /lib_arcade_sfml.so
 /lib_arcade_mygame.so
 /lib_arcade_ncurses.so
+/arcade_snake.so
 /example
 
 # IntelliJ IDEA

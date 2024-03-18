@@ -73,7 +73,7 @@ class Core {
 public:
     Core()
         : _sl_lib{"./lib_arcade_ncurses.so"},
-          _sl_game{"./lib_arcade_mygame.so"},
+          _sl_game{"./arcade_snake.so"},
           _lib(_sl_lib.get()),
           _game(_sl_game.get()),
           _switch_next_frame{false},
