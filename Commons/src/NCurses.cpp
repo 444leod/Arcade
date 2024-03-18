@@ -243,6 +243,28 @@ public:
         keypad(stdscr, TRUE);
         nodelay(stdscr, TRUE);
 
+        start_color();
+        if (can_change_color()) {
+            _canChangeColor = true;
+            init_color(COLOR_BLACK, 0, 0, 0);
+            init_color(COLOR_RED, 1000, 0, 0);
+            init_color(COLOR_GREEN, 0, 1000, 0);
+            init_color(COLOR_YELLOW, 1000, 1000, 0);
+            init_color(COLOR_BLUE, 0, 0, 1000);
+            init_color(COLOR_MAGENTA, 1000, 0, 1000);
+            init_color(COLOR_CYAN, 0, 1000, 1000);
+            init_color(COLOR_WHITE, 1000, 1000, 1000);
+
+            init_pair(1, COLOR_BLACK, COLOR_BLACK);
+            init_pair(2, COLOR_RED, COLOR_BLACK);
+            init_pair(3, COLOR_GREEN, COLOR_BLACK);
+            init_pair(4, COLOR_YELLOW, COLOR_BLACK);
+            init_pair(5, COLOR_BLUE, COLOR_BLACK);
+            init_pair(6, COLOR_MAGENTA, COLOR_BLACK);
+            init_pair(7, COLOR_CYAN, COLOR_BLACK);
+            init_pair(8, COLOR_WHITE, COLOR_WHITE);
+        }
+
         this->_title = "";
         this->_framerate = 0;
         this->_width = 80;
@@ -273,6 +295,13 @@ public:
     virtual void setWidth(std::size_t width)
     {
         this->_width = width;
+    }
+
+    virtual size_t getPairColor(arc::Color color)
+    {
+        if (_colorPairs.find({color.red, color.green, color.blue}) != _colorPairs.end())
+            return _colorPairs[{color.red, color.green, color.blue}];
+        return 1;
     }
 
     virtual void setHeight(std::size_t height)
@@ -328,6 +357,10 @@ public:
         // TODO: ch could be a MOUSE button
         int ch = getch();
         if (ch != ERR) {
+            if (ch == 27) {
+                this->close();
+                return;
+            }
             arc::Key key = NCursesDisplay::MapNCursesKey(ch);
             arc::Event e;
             e.type = arc::EventType::KEY_PRESSED;
@@ -360,7 +393,12 @@ public:
     virtual void draw(const arc::ITexture& texture, float x, float y)
     {
         auto& spec = static_cast<const NCursesTexture&>(texture).characteristics();
-        mvprintw(y, x, "%c", spec.character);
+        
+        if (_canChangeColor)
+            attron(COLOR_PAIR(getPairColor(spec.color)));
+        mvaddch(y, x, spec.character);
+        if (_canChangeColor)
+            attroff(COLOR_PAIR(getPairColor(spec.color)));
     }
 
     virtual void print(const std::string& string, const arc::IFont& font, float x, float y)
@@ -413,6 +451,17 @@ private:
     std::size_t _height;
     std::size_t _tileSize;
     std::deque<arc::Event> _events;
+    std::map<std::tuple<size_t, size_t, size_t>, int> _colorPairs = {
+        {{0, 0, 0}, 1},
+        {{255, 0, 0}, 2},
+        {{0, 255, 0}, 3},
+        {{255, 255, 0}, 4},
+        {{0, 0, 255}, 5},
+        {{255, 0, 255}, 6},
+        {{0, 255, 255}, 7},
+        {{255, 255, 255}, 8}
+    };
+    bool _canChangeColor = false;
 };
 
 class NCursesLibrary : public arc::ILibrary {
