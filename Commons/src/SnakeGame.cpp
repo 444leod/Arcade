@@ -92,6 +92,8 @@ public:
         _elapsed += deltaTime;
 
         while (_elapsed > UPDATE_TIME) {
+            if (!_snake.getAlive())
+                return;
             _snake.move();
 
             if (_snake.getHeadPos().first == _goalPos.x && _snake.getHeadPos().second == _goalPos.y) {
@@ -111,9 +113,10 @@ public:
 
         lib.display().clear(arc::Color{0, 0, 255, 0});
         draw_arena(lib);
-
-        for (auto &part : _snake.dump()) {
-            lib.display().draw(lib.textures().get(part.second), part.first.x, part.first.y);
+        if (_snake.getAlive()) {
+            for (auto &part : _snake.dump()) {
+                lib.display().draw(lib.textures().get(part.second), part.first.x, part.first.y);
+            }
         }
 
         lib.display().draw(lib.textures().get("Super-Candy"), _goalPos.x, _goalPos.y);
@@ -179,11 +182,11 @@ private:
         spec.graphical = arc::TextureImage{TILESET_ONIX, arc::Rect<uint32_t>{0, 256, 64, 64}};
         lib.textures().load("body_north_west", spec);
         spec.graphical = arc::TextureImage{TILESET_ONIX, arc::Rect<uint32_t>{64, 256, 64, 64}};
-        lib.textures().load("body_north_east", spec);
-        spec.graphical = arc::TextureImage{TILESET_ONIX, arc::Rect<uint32_t>{128, 256, 64, 64}};
         lib.textures().load("body_south_west", spec);
-        spec.graphical = arc::TextureImage{TILESET_ONIX, arc::Rect<uint32_t>{192, 256, 64, 64}};
+        spec.graphical = arc::TextureImage{TILESET_ONIX, arc::Rect<uint32_t>{128, 256, 64, 64}};
         lib.textures().load("body_south_east", spec);
+        spec.graphical = arc::TextureImage{TILESET_ONIX, arc::Rect<uint32_t>{192, 256, 64, 64}};
+        lib.textures().load("body_north_east", spec);
 
         //Arena
         spec.textual.character = ' ';

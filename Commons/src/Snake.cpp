@@ -22,15 +22,15 @@ class Snake {
         {
             _size = 1;
             _alive = true;
-            _direction = std::make_pair(0, 0);
+            _direction = std::make_pair(1, 0);
             _body.push_back(BodyPart {ARENA_WIDTH / 2, ARENA_HEIGHT / 2});
             _body.push_back(BodyPart {ARENA_WIDTH / 2 - 1, ARENA_HEIGHT / 2});
             _body.push_back(BodyPart {ARENA_WIDTH / 2 - 2, ARENA_HEIGHT / 2});
-            // _body.push_back(BodyPart {ARENA_WIDTH / 2 - 3, ARENA_HEIGHT / 2});
-            // _body.push_back(BodyPart {ARENA_WIDTH / 2 - 4, ARENA_HEIGHT / 2});
-            // _body.push_back(BodyPart {ARENA_WIDTH / 2 - 5, ARENA_HEIGHT / 2});
-            // _body.push_back(BodyPart {ARENA_WIDTH / 2 - 6, ARENA_HEIGHT / 2});
-            // _body.push_back(BodyPart {ARENA_WIDTH / 2 - 7, ARENA_HEIGHT / 2});
+            _body.push_back(BodyPart {ARENA_WIDTH / 2 - 3, ARENA_HEIGHT / 2});
+            _body.push_back(BodyPart {ARENA_WIDTH / 2 - 4, ARENA_HEIGHT / 2});
+            _body.push_back(BodyPart {ARENA_WIDTH / 2 - 5, ARENA_HEIGHT / 2});
+            _body.push_back(BodyPart {ARENA_WIDTH / 2 - 6, ARENA_HEIGHT / 2});
+            _body.push_back(BodyPart {ARENA_WIDTH / 2 - 7, ARENA_HEIGHT / 2});
         }
 
         ~Snake() = default;
@@ -61,6 +61,9 @@ class Snake {
 
         void move()
         {
+            int old_x = _body[0].x;
+            int old_y = _body[0].y;
+
             if (!(_direction.first == 0 && _direction.second == 0)) {
                 for (std::size_t i = _body.size() - 1; i > 0; i--) {
                     _body[i].x = _body[i - 1].x;
@@ -74,8 +77,10 @@ class Snake {
             if ((_body[0].y > 0 && _direction.second < 0) ||
                 (_body[0].y < ARENA_HEIGHT - 1 && _direction.second > 0))
                 _body[0].y += _direction.second;
-        }
 
+            if (checkCollision(old_x, old_y))
+                _alive = false;
+        }
 
         std::vector<std::pair<BodyPart, std::string>> dump() const
         {
@@ -95,6 +100,17 @@ class Snake {
         }
 
     private:
+        bool checkCollision(int oldX, int oldY)
+        {
+            if (_body[0].x == oldX && _body[0].y == oldY)
+                return true;
+            for (std::size_t i = 1; i < _body.size(); i++) {
+                if (_body[0].x == _body[i].x && _body[0].y == _body[i].y)
+                    return true;
+            }
+            return false;
+        }
+
         std::pair<BodyPart, std::string> getDumpHead() const
         {
             return std::make_pair(_body[0], _headTextures.at(std::make_tuple(_direction.first, _direction.second)));
@@ -107,20 +123,7 @@ class Snake {
 
         std::pair<BodyPart, std::string> getDumpBody(std::size_t i) const
         {
-            //print previous and next body part to determine texture
-            printf("%d, %d, %d, %d\n",
-                _body[i].x - _body[i - 1].x,
-                _body[i].x - _body[i + 1].x,
-                _body[i].y - _body[i - 1].y,
-                _body[i].y - _body[i + 1].y
-            );
-            try {
-                printf("%s\n", _bodyTextures.at(std::make_tuple(_body[i].x - _body[i - 1].x, _body[i].x - _body[i + 1].x, _body[i].y - _body[i - 1].y, _body[i].y - _body[i + 1].y)).c_str());
-                return std::make_pair(_body[i], _bodyTextures.at(std::make_tuple(_body[i].x - _body[i - 1].x, _body[i].x - _body[i + 1].x, _body[i].y - _body[i - 1].y, _body[i].y - _body[i + 1].y)));
-            } catch (const std::exception& e) {
-                printf("out of range\n");
-            }
-            return std::make_pair(_body[i], "body_horizontal");
+            return std::make_pair(_body[i], _bodyTextures.at(std::make_tuple(_body[i].x - _body[i - 1].x, _body[i].x - _body[i + 1].x, _body[i].y - _body[i - 1].y, _body[i].y - _body[i + 1].y)));
         }
 
         std::vector<BodyPart> _body;
@@ -140,12 +143,23 @@ class Snake {
             {{0, 1}, "tail_north"},
             {{-1, 0}, "tail_east"},
             {{1, 0}, "tail_west"},
-            {{0, 0}, "head_0_east"}
+            {{0, 0}, "body_north_east"}
         };
         std::map<std::tuple<int, int, int, int>, std::string> _bodyTextures = {
             {{1, -1, 0, 0}, "body_horizontal"},
-            {{1, 1, 0, 0}, "body_horizontal"},
             {{-1, 1, 0, 0}, "body_horizontal"},
-            {{-1, 1, -1, 0}, "body_horizontal"}
+            {{-1, -1, 0, 0}, "body_horizontal"},
+            {{0, 0, 1, -1}, "body_vertical"},
+            {{0, 0, -1, 1}, "body_vertical"},
+            {{0, 0, -1, -1}, "body_vertical"},
+            {{0, 1, -1, 0}, "body_south_west"},
+            {{1, 0, 0, -1}, "body_south_west"},
+            {{-1, 0, 0, 1}, "body_north_east"},
+            {{0, -1, 1, 0}, "body_north_east"},
+            {{0, 1, 1, 0}, "body_north_west"},
+            {{1, 0, 0, 1}, "body_north_west"},
+            {{-1, 0, 0, -1}, "body_south_east"},
+            {{0, -1, -1, 0}, "body_south_east"},
+            {{0, 0, 0, 0}, "body_north_east"},
         };
 };
