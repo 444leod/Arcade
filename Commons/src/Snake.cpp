@@ -21,6 +21,7 @@ class Snake {
         Snake()
         {
             _alive = true;
+            _readyToRotate = true;
             _direction = std::make_pair(1, 0);
             _body.push_back(BodyPart {(ARENA_WIDTH + 1) / 2, (ARENA_HEIGHT + 1) / 2});
             _body.push_back(BodyPart {(ARENA_WIDTH + 1) / 2 - 1, (ARENA_HEIGHT + 1) / 2});
@@ -47,11 +48,13 @@ class Snake {
 
         bool setDirection(std::pair<int, int> direction)
         {
-            if ((_direction.first == -direction.first && _direction.second == -direction.second)
-                || (_direction.first == direction.first && _direction.second == direction.second)
-                || _alive == false)
+            if ((_direction.first == -direction.first && _direction.second == -direction.second) ||
+                (_direction.first == direction.first && _direction.second == direction.second) ||
+                _alive == false ||
+                _readyToRotate == false)
                 return false;
             _direction = direction;
+            _readyToRotate = false;
             return true;
         }
 
@@ -60,6 +63,7 @@ class Snake {
             int old_x = _body[0].x;
             int old_y = _body[0].y;
 
+            _readyToRotate = true;
             if (_body[0].x + _direction.first ==  goalPos.first && _body[0].y + _direction.second == goalPos.second) {
                 grow(goalPos.first, goalPos.second);
                 return true;
@@ -148,6 +152,7 @@ class Snake {
         std::vector<BodyPart> _body;
         int _speed;
         bool _alive;
+        bool _readyToRotate;
         std::pair<int, int> _direction;
         std::map<std::tuple<int, int>, std::string> _headTextures = {
             {{0, -1}, "head_0_south"},

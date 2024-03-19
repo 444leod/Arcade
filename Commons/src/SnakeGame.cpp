@@ -79,16 +79,17 @@ public:
     {
         _elapsed += deltaTime;
 
-        while (_elapsed > UPDATE_TIME) {
+        while (_elapsed > _gameSpeed) {
             if (!_snake.getAlive())
                 return;
 
             if (_snake.move(std::make_pair(_goalPos.x, _goalPos.y))) {
                 _score += 1;
+                _gameSpeed -= _gameSpeed < 0.02 ? 0 : 0.005;
                 resetGoal();
             }
 
-            _elapsed -= UPDATE_TIME;
+            _elapsed -= _gameSpeed;
         }
     }
 
@@ -209,7 +210,6 @@ private:
         spec.textual.color = {255, 255, 0, 255};
         spec.graphical = arc::TextureImage{"../assets/snake/images/super_candy.png"};
         lib.textures().load("Super-Candy", spec);
-
     }
 
     void draw_arena(arc::ILibrary& lib)
@@ -245,6 +245,7 @@ private:
 
 private:
     float _elapsed = 0;
+    float _gameSpeed = 0.2;
     std::uint32_t _score = 0;
     vec2 _goalPos = {0, 0};
     Snake _snake = Snake();
