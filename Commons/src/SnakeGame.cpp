@@ -35,27 +35,21 @@ public:
 
         resetGoal();
 
+        // Textures
         initTextures(lib);
 
         // Fonts
         arc::FontSpecification text {
             .color = arc::Color {200, 200, 200, 255},
-            .size = 16,
-            .path = "regular.ttf"
+            .size = 32,
+            .path = FONT_POKEMON
         };
-        lib.fonts().load("font", text);
+        lib.fonts().load("Pokemon", text);
 
         // Sounds
         arc::SoundSpecification sound;
         sound.path = "woosh.wav";
         lib.sounds().load("woosh", sound);
-
-        // Musics
-        arc::MusicSpecification music;
-        music.path = "pacman-theme.wav";
-        music.loop = true;
-        music.isPlaying = false;
-        lib.musics().load("pacman-theme", music);
     }
 
     virtual void onKeyPressed([[maybe_unused]] arc::ILibrary& lib, arc::Key key)
@@ -66,12 +60,6 @@ public:
             case arc::Key::Q: playSound = _snake.setDirection({-1, 0}); break;
             case arc::Key::S: playSound = _snake.setDirection({0, 1}); break;
             case arc::Key::D: playSound = _snake.setDirection({1, 0}); break;
-            case arc::Key::A:
-                if (lib.display().isMusicPlaying(lib.musics().get("pacman-theme")))
-                    lib.display().stopMusic(lib.musics().get("pacman-theme"));
-                else
-                    lib.display().playMusic(lib.musics().get("pacman-theme"), 50.0f);
-                break;
             default: break;
         }
         if (playSound)
@@ -121,10 +109,10 @@ public:
         lib.display().draw(lib.textures().get("Super-Candy"), _goalPos.x, _goalPos.y);
 
         auto width = lib.display().width();
-        auto textWidth = lib.display().measure(score.str(), lib.fonts().get("font"), 0, 0).width;
+        auto textWidth = lib.display().measure(score.str(), lib.fonts().get("Pokemon"), 0, 0).width;
         auto center = (width - textWidth) / 2;
 
-        lib.display().print(score.str(), lib.fonts().get("font"), center, ARENA_HEIGHT + 2);
+        lib.display().print(score.str(), lib.fonts().get("Pokemon"), center, ARENA_HEIGHT + 2);
         lib.display().flush();
     }
 
@@ -219,14 +207,14 @@ private:
         //Super-Candy
         spec.textual.character = 'X';
         spec.textual.color = {255, 255, 0, 255};
-        spec.graphical = arc::Color{255, 255, 0, 255 };
+        spec.graphical = arc::TextureImage{"../assets/snake/images/super_candy.png"};
         lib.textures().load("Super-Candy", spec);
 
     }
 
     void draw_arena(arc::ILibrary& lib)
     {
-
+        // Edges
         lib.display().draw(lib.textures().get("arena_north_edge_solid"), 0, 0);
         lib.display().draw(lib.textures().get("arena_north_edge_solid"), ARENA_WIDTH + 1, 0);
         for (int x = 1; x < ARENA_WIDTH + 1; x++) {
@@ -234,7 +222,6 @@ private:
             lib.display().draw(lib.textures().get("arena_north_edge"), x, 1);
             lib.display().draw(lib.textures().get("arena_south_edge"), x, ARENA_HEIGHT + 1);
         }
-
         for (int y = 2; y < ARENA_HEIGHT + 1; y++) {
             lib.display().draw(lib.textures().get("arena_west_edge"), 0, y);
             lib.display().draw(lib.textures().get("arena_east_edge"), ARENA_WIDTH + 1, y);
@@ -246,7 +233,7 @@ private:
         lib.display().draw(lib.textures().get("arena_south_west_edge"), 0, ARENA_HEIGHT + 1);
         lib.display().draw(lib.textures().get("arena_south_east_edge"), ARENA_WIDTH + 1, ARENA_HEIGHT + 1);
 
-        // Arena
+        // Inside arena
         for (int y = 2; y < ARENA_HEIGHT + 1; y++)
             for (int x = 1; x < ARENA_WIDTH + 1; x++)
                 lib.display().draw(lib.textures().get("arena_0"), x, y);
