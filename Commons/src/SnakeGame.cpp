@@ -94,9 +94,8 @@ public:
         while (_elapsed > UPDATE_TIME) {
             if (!_snake.getAlive())
                 return;
-            _snake.move();
 
-            if (_snake.getHeadPos().first == _goalPos.x && _snake.getHeadPos().second == _goalPos.y) {
+            if (_snake.move(std::make_pair(_goalPos.x, _goalPos.y))) {
                 _score += 1;
                 resetGoal();
             }
@@ -188,6 +187,8 @@ private:
         spec.graphical = arc::TextureImage{TILESET_ONIX, arc::Rect<uint32_t>{192, 256, 64, 64}};
         lib.textures().load("body_north_east", spec);
 
+        spec.graphical = arc::TextureImage{TILESET_ONIX, arc::Rect<uint32_t>{128, 192, 64, 64}};
+        lib.textures().load("empty", spec);
         //Arena
         spec.textual.character = ' ';
         spec.graphical = arc::TextureImage{"../assets/WIP/blue.png"};
@@ -220,7 +221,7 @@ private:
 
 private:
     float _elapsed = 0;
-    uint32_t _score = 0;
+    std::uint32_t _score = 0;
     vec2 _goalPos = {0, 0};
     Snake _snake = Snake();
 };

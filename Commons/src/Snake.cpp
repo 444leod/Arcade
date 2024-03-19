@@ -20,7 +20,6 @@ class Snake {
     public:
         Snake()
         {
-            _size = 1;
             _alive = true;
             _direction = std::make_pair(1, 0);
             _body.push_back(BodyPart {ARENA_WIDTH / 2, ARENA_HEIGHT / 2});
@@ -53,16 +52,22 @@ class Snake {
         bool setDirection(std::pair<int, int> direction)
         {
             if ((_direction.first == -direction.first && _direction.second == -direction.second)
-                || (_direction.first == direction.first && _direction.second == direction.second))
+                || (_direction.first == direction.first && _direction.second == direction.second)
+                || _alive == false)
                 return false;
             _direction = direction;
             return true;
         }
 
-        void move()
+        bool move(std::pair<int, int> goalPos)
         {
             int old_x = _body[0].x;
             int old_y = _body[0].y;
+
+            if (_body[0].x + _direction.first ==  goalPos.first && _body[0].y + _direction.second == goalPos.second) {
+                grow(goalPos.first, goalPos.second);
+                return true;
+            }
 
             if (!(_direction.first == 0 && _direction.second == 0)) {
                 for (std::size_t i = _body.size() - 1; i > 0; i--) {
@@ -80,6 +85,7 @@ class Snake {
 
             if (checkCollision(old_x, old_y))
                 _alive = false;
+            return false;
         }
 
         std::vector<std::pair<BodyPart, std::string>> dump() const
@@ -99,7 +105,13 @@ class Snake {
             return res;
         }
 
+        void grow(int x, int y)
+        {
+            _body.insert(_body.begin(), BodyPart{x, y});
+        }
+
     private:
+
         bool checkCollision(int oldX, int oldY)
         {
             if (_body[0].x == oldX && _body[0].y == oldY)
@@ -123,11 +135,17 @@ class Snake {
 
         std::pair<BodyPart, std::string> getDumpBody(std::size_t i) const
         {
+            try {
+                return std::make_pair(_body[i], _bodyTextures.at(std::make_tuple(_body[i].x - _body[i - 1].x, _body[i].x - _body[i + 1].x, _body[i].y - _body[i - 1].y, _body[i].y - _body[i + 1].y)));
+            } catch (const std::exception &e) {
+                printf("%d, %d, %d, %d\n", _body[i].x - _body[i - 1].x, _body[i].x - _body[i + 1].x, _body[i].y - _body[i - 1].y, _body[i].y - _body[i + 1].y);
+                printf("out of range\n");
+                return std::make_pair(_body[i], "tail_south");
+            }
             return std::make_pair(_body[i], _bodyTextures.at(std::make_tuple(_body[i].x - _body[i - 1].x, _body[i].x - _body[i + 1].x, _body[i].y - _body[i - 1].y, _body[i].y - _body[i + 1].y)));
         }
 
         std::vector<BodyPart> _body;
-        int _size;
         int _speed;
         bool _alive;
         std::pair<int, int> _direction;
@@ -136,22 +154,30 @@ class Snake {
             {{0, 1}, "head_0_north"},
             {{-1, 0}, "head_0_east"},
             {{1, 0}, "head_0_west"},
-            {{0, 0}, "head_0_west"}
+            {{0, 0}, "empty"}
         };
         std::map<std::tuple<int, int>, std::string> _tailTextures = {
             {{0, -1}, "tail_south"},
             {{0, 1}, "tail_north"},
             {{-1, 0}, "tail_east"},
             {{1, 0}, "tail_west"},
-            {{0, 0}, "body_north_east"}
+            {{0, 0}, "empty"}
         };
         std::map<std::tuple<int, int, int, int>, std::string> _bodyTextures = {
             {{1, -1, 0, 0}, "body_horizontal"},
             {{-1, 1, 0, 0}, "body_horizontal"},
             {{-1, -1, 0, 0}, "body_horizontal"},
+            {{1, 0, 0, 0}, "body_horizontal"},
+            {{0, -1, 0, 0}, "body_horizontal"},
+            {{-1, 0, 0, 0}, "body_horizontal"},
+            {{0, 1, 0, 0}, "body_horizontal"},
             {{0, 0, 1, -1}, "body_vertical"},
             {{0, 0, -1, 1}, "body_vertical"},
             {{0, 0, -1, -1}, "body_vertical"},
+            {{0, 0, 1, 0}, "body_vertical"},
+            {{0, 0, 0, -1}, "body_vertical"},
+            {{0, 0, -1, 0}, "body_vertical"},
+            {{0, 0, 0, 1}, "body_vertical"},
             {{0, 1, -1, 0}, "body_south_west"},
             {{1, 0, 0, -1}, "body_south_west"},
             {{-1, 0, 0, 1}, "body_north_east"},
@@ -160,6 +186,6 @@ class Snake {
             {{1, 0, 0, 1}, "body_north_west"},
             {{-1, 0, 0, -1}, "body_south_east"},
             {{0, -1, -1, 0}, "body_south_east"},
-            {{0, 0, 0, 0}, "body_north_east"},
+            {{0, 0, 0, 0}, "empty"},
         };
 };
