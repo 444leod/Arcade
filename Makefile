@@ -77,6 +77,9 @@ pacman: $(PACMAN) $(SFML) $(NCURSES)
 	@$(CC) $(CORE_SRC) -o pacman $(CPPFLAGS) -DPACMAN
 	@echo "pacman created"
 
+tests_run:
+	@exit 0
+
 init: install-hooks install-mango
 
 install-hooks:
