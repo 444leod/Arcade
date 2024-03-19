@@ -22,14 +22,10 @@ class Snake {
         {
             _alive = true;
             _direction = std::make_pair(1, 0);
-            _body.push_back(BodyPart {ARENA_WIDTH / 2, ARENA_HEIGHT / 2});
-            _body.push_back(BodyPart {ARENA_WIDTH / 2 - 1, ARENA_HEIGHT / 2});
-            _body.push_back(BodyPart {ARENA_WIDTH / 2 - 2, ARENA_HEIGHT / 2});
-            _body.push_back(BodyPart {ARENA_WIDTH / 2 - 3, ARENA_HEIGHT / 2});
-            _body.push_back(BodyPart {ARENA_WIDTH / 2 - 4, ARENA_HEIGHT / 2});
-            _body.push_back(BodyPart {ARENA_WIDTH / 2 - 5, ARENA_HEIGHT / 2});
-            _body.push_back(BodyPart {ARENA_WIDTH / 2 - 6, ARENA_HEIGHT / 2});
-            _body.push_back(BodyPart {ARENA_WIDTH / 2 - 7, ARENA_HEIGHT / 2});
+            _body.push_back(BodyPart {(ARENA_WIDTH + 1) / 2, (ARENA_HEIGHT + 1) / 2});
+            _body.push_back(BodyPart {(ARENA_WIDTH + 1) / 2 - 1, (ARENA_HEIGHT + 1) / 2});
+            _body.push_back(BodyPart {(ARENA_WIDTH + 1) / 2 - 2, (ARENA_HEIGHT + 1) / 2});
+            _body.push_back(BodyPart {(ARENA_WIDTH + 1) / 2 - 3, (ARENA_HEIGHT + 1) / 2});
         }
 
         ~Snake() = default;
@@ -75,12 +71,12 @@ class Snake {
                     _body[i].y = _body[i - 1].y;
                 }
             }
-            if ((_body[0].x > 0 && _direction.first < 0) ||
-                (_body[0].x < ARENA_WIDTH - 1 && _direction.first > 0))
+            if ((_body[0].x > 1 && _direction.first < 0) ||
+                (_body[0].x < ARENA_WIDTH  && _direction.first > 0))
                 _body[0].x += _direction.first;
 
-            if ((_body[0].y > 0 && _direction.second < 0) ||
-                (_body[0].y < ARENA_HEIGHT - 1 && _direction.second > 0))
+            if ((_body[0].y > 1 && _direction.second < 0) ||
+                (_body[0].y < ARENA_HEIGHT  && _direction.second > 0))
                 _body[0].y += _direction.second;
 
             if (checkCollision(old_x, old_y))
@@ -125,24 +121,28 @@ class Snake {
 
         std::pair<BodyPart, std::string> getDumpHead() const
         {
-            return std::make_pair(_body[0], _headTextures.at(std::make_tuple(_direction.first, _direction.second)));
+            return std::make_pair(_body[0], _headTextures.at(std::make_tuple(
+                _direction.first,
+                _direction.second
+            )));
         }
 
         std::pair<BodyPart, std::string> getDumpTail(std::size_t len) const
         {
-            return std::make_pair(_body[len - 1], _tailTextures.at(std::make_tuple(_body[len - 1].x - _body[len - 2].x, _body[len - 1].y - _body[len - 2].y)));
+            return std::make_pair(_body[len - 1], _tailTextures.at(std::make_tuple(
+                    _body[len - 1].x - _body[len - 2].x,
+                    _body[len - 1].y - _body[len - 2].y
+            )));
         }
 
         std::pair<BodyPart, std::string> getDumpBody(std::size_t i) const
         {
-            try {
-                return std::make_pair(_body[i], _bodyTextures.at(std::make_tuple(_body[i].x - _body[i - 1].x, _body[i].x - _body[i + 1].x, _body[i].y - _body[i - 1].y, _body[i].y - _body[i + 1].y)));
-            } catch (const std::exception &e) {
-                printf("%d, %d, %d, %d\n", _body[i].x - _body[i - 1].x, _body[i].x - _body[i + 1].x, _body[i].y - _body[i - 1].y, _body[i].y - _body[i + 1].y);
-                printf("out of range\n");
-                return std::make_pair(_body[i], "tail_south");
-            }
-            return std::make_pair(_body[i], _bodyTextures.at(std::make_tuple(_body[i].x - _body[i - 1].x, _body[i].x - _body[i + 1].x, _body[i].y - _body[i - 1].y, _body[i].y - _body[i + 1].y)));
+            return std::make_pair(_body[i], _bodyTextures.at(std::make_tuple(
+                _body[i].x - _body[i - 1].x,
+                _body[i].x - _body[i + 1].x,
+                _body[i].y - _body[i - 1].y,
+                _body[i].y - _body[i + 1].y
+            )));
         }
 
         std::vector<BodyPart> _body;

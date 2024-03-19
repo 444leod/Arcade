@@ -30,8 +30,8 @@ public:
         lib.display().setTitle("Snake");
         lib.display().setFramerate(60);
         lib.display().setTileSize(64);
-        lib.display().setWidth(ARENA_WIDTH);
-        lib.display().setHeight(ARENA_HEIGHT + 1);
+        lib.display().setWidth(ARENA_WIDTH + 2);
+        lib.display().setHeight(ARENA_HEIGHT + 1 + 2);
 
         resetGoal();
 
@@ -130,8 +130,8 @@ public:
 
 private:
     void resetGoal() {
-        _goalPos.x = rand() % ARENA_WIDTH;
-        _goalPos.y = rand() % ARENA_HEIGHT;
+        _goalPos.x = rand() % ARENA_WIDTH + 1;
+        _goalPos.y = rand() % ARENA_HEIGHT + 1;
     }
 
     void initTextures(arc::ILibrary& lib)
@@ -208,8 +208,8 @@ private:
     {
         //draw in a grid pattern
         bool offset = true;
-        for (int y = 0; y < ARENA_HEIGHT; y++) {
-            for (int x = 0; x < ARENA_WIDTH; x++) {
+        for (int y = 1; y < ARENA_HEIGHT + 1; y++) {
+            for (int x = 1; x < ARENA_WIDTH + 1; x++) {
                 if (x % 2 == (offset ? 0 : 1))
                     lib.display().draw(lib.textures().get("arena_0"), x, y);
                 else
