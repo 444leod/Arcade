@@ -286,7 +286,7 @@ public:
         this->_width = width;
     }
 
-    virtual const size_t getPairColor(const arc::Color color) const
+    virtual size_t getPairColor(const arc::Color color) const
     {
         if (_colorPairs.find({color.red, color.green, color.blue}) != _colorPairs.end())
             return _colorPairs.at({color.red, color.green, color.blue});
