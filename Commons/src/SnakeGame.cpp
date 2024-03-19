@@ -124,7 +124,7 @@ public:
         auto textWidth = lib.display().measure(score.str(), lib.fonts().get("font"), 0, 0).width;
         auto center = (width - textWidth) / 2;
 
-        lib.display().print(score.str(), lib.fonts().get("font"), center, ARENA_HEIGHT );
+        lib.display().print(score.str(), lib.fonts().get("font"), center, ARENA_HEIGHT + 2);
         lib.display().flush();
     }
 
@@ -136,7 +136,6 @@ private:
 
     void initTextures(arc::ILibrary& lib)
     {
-        //Onix Tileset
         arc::TextureSpecification spec;
 
         //Onix Head
@@ -187,36 +186,74 @@ private:
         spec.graphical = arc::TextureImage{TILESET_ONIX, arc::Rect<uint32_t>{192, 256, 64, 64}};
         lib.textures().load("body_north_east", spec);
 
+        //Empty
         spec.graphical = arc::TextureImage{TILESET_ONIX, arc::Rect<uint32_t>{128, 192, 64, 64}};
         lib.textures().load("empty", spec);
+
         //Arena
         spec.textual.character = ' ';
-        spec.graphical = arc::TextureImage{"../assets/WIP/blue.png"};
+        spec.graphical = arc::TextureImage{TILESET_CAVE, arc::Rect<uint32_t>{16, 176, 16, 16}};
         lib.textures().load("arena_0", spec);
-        spec.graphical = arc::TextureImage{TMP_PATH, arc::Rect<uint32_t>{300, 200, 64, 64}};
-        lib.textures().load("arena_1", spec);
+        spec.graphical = arc::TextureImage{TILESET_CAVE, arc::Rect<uint32_t>{16, 160, 16, 16}};
+        lib.textures().load("arena_north_edge", spec);
 
+        spec.textual.character = '+';
+        spec.graphical = arc::TextureImage{TILESET_CAVE, arc::Rect<uint32_t>{16, 176, 16, 16}};
+        lib.textures().load("arena_north_edge_solid", spec);
+        spec.graphical = arc::TextureImage{TILESET_CAVE, arc::Rect<uint32_t>{16, 192, 16, 16}};
+        lib.textures().load("arena_south_edge", spec);
+        spec.graphical = arc::TextureImage{TILESET_CAVE, arc::Rect<uint32_t>{0, 176, 16, 16}};
+        lib.textures().load("arena_west_edge", spec);
+        spec.graphical = arc::TextureImage{TILESET_CAVE, arc::Rect<uint32_t>{32, 176, 16, 16}};
+        lib.textures().load("arena_east_edge", spec);
+
+        spec.graphical = arc::TextureImage{TILESET_CAVE, arc::Rect<uint32_t>{48, 192, 16, 16}};
+        lib.textures().load("arena_north_west_edge", spec);
+        spec.graphical = arc::TextureImage{TILESET_CAVE, arc::Rect<uint32_t>{64, 192, 16, 16}};
+        lib.textures().load("arena_north_east_edge", spec);
+        spec.graphical = arc::TextureImage{TILESET_CAVE, arc::Rect<uint32_t>{48, 160, 16, 16}};
+        lib.textures().load("arena_south_west_edge", spec);
+        spec.graphical = arc::TextureImage{TILESET_CAVE, arc::Rect<uint32_t>{62, 160, 16, 16}};
+        lib.textures().load("arena_south_east_edge", spec);
 
         //Super-Candy
         spec.textual.character = 'X';
         spec.textual.color = {255, 255, 0, 255};
         spec.graphical = arc::Color{255, 255, 0, 255 };
         lib.textures().load("Super-Candy", spec);
+
     }
 
     void draw_arena(arc::ILibrary& lib)
     {
-        //draw in a grid pattern
-        bool offset = true;
-        for (int y = 1; y < ARENA_HEIGHT + 1; y++) {
-            for (int x = 1; x < ARENA_WIDTH + 1; x++) {
-                if (x % 2 == (offset ? 0 : 1))
-                    lib.display().draw(lib.textures().get("arena_0"), x, y);
-                else
-                    lib.display().draw(lib.textures().get("arena_1"), x, y);
-            }
-            offset = !offset;
+
+        lib.display().draw(lib.textures().get("arena_north_edge_solid"), 0, 0);
+        lib.display().draw(lib.textures().get("arena_north_edge_solid"), ARENA_WIDTH + 1, 0);
+        for (int x = 1; x < ARENA_WIDTH + 1; x++) {
+            lib.display().draw(lib.textures().get("arena_north_edge_solid"), x, 0);
+            lib.display().draw(lib.textures().get("arena_north_edge"), x, 1);
+            lib.display().draw(lib.textures().get("arena_south_edge"), x, ARENA_HEIGHT + 1);
         }
+
+        for (int y = 2; y < ARENA_HEIGHT + 1; y++) {
+            lib.display().draw(lib.textures().get("arena_west_edge"), 0, y);
+            lib.display().draw(lib.textures().get("arena_east_edge"), ARENA_WIDTH + 1, y);
+        }
+
+        // Corners
+        lib.display().draw(lib.textures().get("arena_north_west_edge"), 0, 1);
+        lib.display().draw(lib.textures().get("arena_north_east_edge"), ARENA_WIDTH + 1, 1);
+        lib.display().draw(lib.textures().get("arena_south_west_edge"), 0, ARENA_HEIGHT + 1);
+        lib.display().draw(lib.textures().get("arena_south_east_edge"), ARENA_WIDTH + 1, ARENA_HEIGHT + 1);
+
+        // Arena
+        for (int y = 2; y < ARENA_HEIGHT + 1; y++)
+            for (int x = 1; x < ARENA_WIDTH + 1; x++)
+                lib.display().draw(lib.textures().get("arena_0"), x, y);
+        
+        // Menu background
+        for (int x = 0; x < ARENA_WIDTH + 2; x++)
+            lib.display().draw(lib.textures().get("arena_0"), x, ARENA_HEIGHT + 2);
     }
 
 private:
