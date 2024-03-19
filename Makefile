@@ -37,6 +37,7 @@ all: $(NAME)
 
 $(NAME):	$(OBJ)
 	$(CC) $(OBJ) $(CPPFLAGS) -o $(NAME)
+	make -C src/sdl
 
 debug:
 	$(CC) $(SRC) $(CPPFLAGS) $(DEBUGFLAGS) -o $(NAME)
@@ -63,12 +64,15 @@ clean:
 	rm -f $(OBJ)
 	rm -f *.gcda
 	rm -f *.gcno
+	make clean -C src/sdl
 
 fclean:	clean
 	rm -f $(NAME)
 	rm -f $(TESTS_NAME)
+	make fclean -C src/sdl
 
 re:	fclean all
+	make re -C src/sdl
 
 bonus: fclean $(BONUS_OBJ)
 	$(CC) $(BONUS_OBJ) $(CPPFLAGS) -o $(NAME)
