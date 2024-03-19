@@ -1,77 +1,81 @@
 ##
 ## EPITECH PROJECT, 2024
-## Arcade
+## Makefile
 ## File description:
 ## Makefile
 ##
 
-NAME = arcade
+SFML = lib/arcade_sfml.so
+NCURSES = lib/arcade_ncurses.so
+EXAMPLE = lib/arcade_example.so
+PACMAN = lib/arcade_pacman.so
+CORE = arcade
 
-SRC			=	${SRC_MAIN}
-
-SRC_MAIN 	= ./src/main.cpp
-
-OBJ			=	$(SRC:.cpp=.o)
-
-BONUS_SRC = \
-
-BONUS_OBJ  =	$(BONUS_SRC:.cpp=.o)
-
-PYTHON_TESTER = ./tests/tester.py
-
-TESTS_NAME	=	unit_tests
-
-TESTS_SRC	=	$(filter-out ./src/main.cpp, $(SRC)) ./tests/tests.cpp \
-
-TESTS_OBJ	=	$(TESTS_SRC:.cpp=.o)
-
-CC			=	g++
-
-CPPFLAGS	=	-std=c++20 -W -Wall -Wextra -Wpedantic -I./include/
-
-DEBUGFLAGS = 	-g
-
-TESTS_FLAGS	=	-lcriterion --coverage -fprofile-arcs -ftest-coverage
-
-all: $(NAME)
-
-$(NAME):	$(OBJ)
-	$(CC) $(OBJ) $(CPPFLAGS) -o $(NAME)
-
-debug:
-	$(CC) $(SRC) $(CPPFLAGS) $(DEBUGFLAGS) -o $(NAME)
-
-run:	all
-	./$(NAME) -d $(D)
-
-tests_run:	fclean $(TESTS_OBJ)
-	$(CC) $(TESTS_OBJ) $(CPPFLAGS) -o $(TESTS_NAME)
-	@./$(TESTS_NAME)
-	@$(PYTHON_TESTER)
-
-
-$(TESTS_NAME):
-	@$(CC) -o $(TESTS_NAME) $(TESTS_SRC) $(CPPFLAGS) $(TESTS_FLAGS)
-
-cov:
-	gcovr --exclude tests -u
-
-covb:
-	gcovr --exclude tests -ub
+all: $(LIB_DIR) core games graphics
 
 clean:
-	rm -f $(OBJ)
-	rm -f *.gcda
-	rm -f *.gcno
 
-fclean:	clean
-	rm -f $(NAME)
-	rm -f $(TESTS_NAME)
+fclean: clean
+	@rm -f $(SFML)
+	@rm -f $(NCURSES)
+	@rm -f $(EXAMPLE)
+	@rm -f $(PACMAN)
+	@rm -f $(CORE)
+	@rm -f core
 
-re:	fclean all
+re:
+	@$(MAKE) -s fclean
+	@$(MAKE) -s all
 
-bonus: fclean $(BONUS_OBJ)
-	$(CC) $(BONUS_OBJ) $(CPPFLAGS) -o $(NAME)
+core: $(CORE)
+games: $(EXAMPLE) $(PACMAN)
+graphics: $(SFML) $(NCURSES)
+
+LIB_DIR = lib
+$(LIB_DIR):
+	@mkdir -p $(LIB_DIR)
+
+CC = g++
+
+SHARED_FLAGS = -shared
+CPPFLAGS = -fPIC -iquote ./include -std=c++20 -Wall -Wextra -Werror
+SFML_FLAGS = -lsfml-graphics -lsfml-window -lsfml-system -lsfml-audio
+NCURSES_FLAGS = -lncurses
+# SDL2_FLAGS = -lSDL2 -lSDL2_image -lSDL2_ttf -lSDL2_mixer
+
+SFML_SRC = src/Graphics/SFML.cpp
+$(SFML): $(SFML_SRC) | $(LIB_DIR)
+	@$(CC) $(SHARED_FLAGS) $(SFML_SRC) -o $(SFML) $(CPPFLAGS) $(SFML_FLAGS)
+	@echo "$(SFML) created"
+
+NCURSES_SRC = src/Graphics/NCurses.cpp
+$(NCURSES): $(NCURSES_SRC) | $(LIB_DIR)
+	@$(CC) $(SHARED_FLAGS) $(NCURSES_SRC) -o $(NCURSES) $(CPPFLAGS) \
+		$(NCURSES_FLAGS)
+	@echo "$(NCURSES) created"
+
+EXAMPLE_SRC = src/Games/Example/Example.cpp
+$(EXAMPLE): $(EXAMPLE_SRC) | $(LIB_DIR)
+	@$(CC) $(SHARED_FLAGS) $(EXAMPLE_SRC) -o $(EXAMPLE) $(CPPFLAGS)
+	@echo "$(EXAMPLE) created"
+
+PACMAN_SRC = src/Games/Pacman/Pacman.cpp
+$(PACMAN): $(PACMAN_SRC) | $(LIB_DIR)
+	@$(CC) $(SHARED_FLAGS) $(PACMAN_SRC) -o $(PACMAN) $(CPPFLAGS)
+	@echo "$(PACMAN) created"
+
+CORE_SRC = src/Core.cpp
+$(CORE): $(CORE_SRC)
+	@$(CC) $(CORE_SRC) -o $(CORE) $(CPPFLAGS)
+	@echo "$(CORE) created"
+
+example: $(CORE) $(EXAMPLE) $(SFML) $(NCURSES)
+	@$(CC) $(CORE_SRC) -o example $(CPPFLAGS)
+	@echo "example created"
+
+pacman: $(PACMAN) $(SFML) $(NCURSES)
+	@$(CC) $(CORE_SRC) -o pacman $(CPPFLAGS) -DPACMAN
+	@echo "pacman created"
 
 init: install-hooks install-mango
 
