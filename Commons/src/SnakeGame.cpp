@@ -12,7 +12,6 @@
 #include <iostream>
 #include <cstdlib>
 #include <sstream>
-#include <unordered_map>
 
 struct vec2 {
     int x;
@@ -153,9 +152,9 @@ private:
         lib.textures().load("head_0_south", spec);
         spec.graphical = arc::TextureImage{TILESET_ONIX, arc::Rect<uint32_t>{128, 64, 64, 64}};
         lib.textures().load("head_1_south", spec);
-        spec.graphical = arc::TextureImage{TILESET_ONIX, arc::Rect<uint32_t>{196, 0, 64, 64}};
+        spec.graphical = arc::TextureImage{TILESET_ONIX, arc::Rect<uint32_t>{192, 0, 64, 64}};
         lib.textures().load("head_0_west", spec);
-        spec.graphical = arc::TextureImage{TILESET_ONIX, arc::Rect<uint32_t>{196, 64, 64, 64}};
+        spec.graphical = arc::TextureImage{TILESET_ONIX, arc::Rect<uint32_t>{192, 64, 64, 64}};
         lib.textures().load("head_1_west", spec);
 
         //Onix Tail
@@ -166,14 +165,14 @@ private:
         lib.textures().load("tail_north", spec);
         spec.graphical = arc::TextureImage{TILESET_ONIX, arc::Rect<uint32_t>{128, 128, 64, 64}};
         lib.textures().load("tail_south", spec);
-        spec.graphical = arc::TextureImage{TILESET_ONIX, arc::Rect<uint32_t>{196, 128, 64, 64}};
+        spec.graphical = arc::TextureImage{TILESET_ONIX, arc::Rect<uint32_t>{192, 128, 64, 64}};
         lib.textures().load("tail_west", spec);
 
         //Onix Straight Body
         spec.textual.character = 'o';
-        spec.graphical = arc::TextureImage{TILESET_ONIX, arc::Rect<uint32_t>{0, 196, 64, 64}};
+        spec.graphical = arc::TextureImage{TILESET_ONIX, arc::Rect<uint32_t>{0, 192, 64, 64}};
         lib.textures().load("body_horizontal", spec);
-        spec.graphical = arc::TextureImage{TILESET_ONIX, arc::Rect<uint32_t>{64, 196, 64, 64}};
+        spec.graphical = arc::TextureImage{TILESET_ONIX, arc::Rect<uint32_t>{64, 192, 64, 64}};
         lib.textures().load("body_vertical", spec);
 
         //Onix Corner Body
@@ -183,7 +182,7 @@ private:
         lib.textures().load("body_north_east", spec);
         spec.graphical = arc::TextureImage{TILESET_ONIX, arc::Rect<uint32_t>{128, 256, 64, 64}};
         lib.textures().load("body_south_west", spec);
-        spec.graphical = arc::TextureImage{TILESET_ONIX, arc::Rect<uint32_t>{196, 256, 64, 64}};
+        spec.graphical = arc::TextureImage{TILESET_ONIX, arc::Rect<uint32_t>{192, 256, 64, 64}};
         lib.textures().load("body_south_east", spec);
 
         //Arena
