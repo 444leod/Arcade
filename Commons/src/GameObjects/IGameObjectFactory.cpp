@@ -1,19 +1,16 @@
 /*
 ** EPITECH PROJECT, 2024
-** Arcade
+** GameObjects
 ** File description:
 ** IGameObjectFactory
 */
 
-class IGameObjectFactory{
-    public:
-        IGameObjectFactory()
-        {
-            
-        }
+#include "IGameObjectFactory.hpp"
 
-        ~IGameObjectFactory() = default;
+IGameObjectFactory::IGameObjectFactory()
+{
+}
 
-    protected:
-    private:
-};
+IGameObjectFactory::~IGameObjectFactory()
+{
+}
