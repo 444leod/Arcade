@@ -42,7 +42,7 @@ namespace arc
         virtual const TextureSpecification& specification() const { return this->_spec; }
         SDL_Texture *raw() const { return this->_texture; }
         Color color() const { return this->_color; }
-        SDL_Rect *rect() { return &this->_rect; }
+        const SDL_Rect *rect() const { return &this->_rect; }
 
     private:
         Color _color = {};
