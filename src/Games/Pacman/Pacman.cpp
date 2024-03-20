@@ -28,7 +28,7 @@ public:
     virtual void initialize(arc::ILibrary& lib)
     {
         lib.display().setTitle("Arcade");
-        lib.display().setFramerate(30);
+        lib.display().setFramerate(60);
         lib.display().setTileSize(32);
 
         // Textures

@@ -22,8 +22,8 @@ public:
     ~MyGame()
     {
         //write the score into a file as a int not a string
-        std::ofstream file("score.txt", std::ios::app);
-        file << &_score << std::endl;
+        // std::ofstream file("score.txt", std::ios::app);
+        // file << &_score << std::endl;
     }
 
     virtual std::string name() const
@@ -34,7 +34,7 @@ public:
     virtual void initialize(arc::ILibrary& lib)
     {
         lib.display().setTitle("Arcade");
-        lib.display().setFramerate(30);
+        lib.display().setFramerate(60);
         lib.display().setTileSize(16);
         lib.display().setWidth(25);
         lib.display().setHeight(25);
