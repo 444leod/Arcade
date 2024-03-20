@@ -19,21 +19,22 @@ namespace arc
         SDLTexture() = default;
         ~SDLTexture() = default;
 
-
         bool load(const TextureSpecification& spec,
             SDL_Texture *texture,
-            std::optional<arc::Rect<uint32_t>> rect)
+            std::optional<Rect<uint32_t>> rect)
         {
             if (std::holds_alternative<Color>(spec.graphical))
                 _color = std::get<Color>(spec.graphical);
             this->_spec = spec;
             this->_texture = texture;
             if (rect.has_value()) {
-                this->_rect = new SDL_Rect();
-                this->_rect->x = (int)rect.value().x;
-                this->_rect->y = (int)rect.value().y;
-                this->_rect->w = (int)rect.value().width;
-                this->_rect->h = (int)rect.value().height;
+                this->_rect.x = (int)rect.value().x;
+                this->_rect.y = (int)rect.value().y;
+                this->_rect.w = (int)rect.value().width;
+                this->_rect.h = (int)rect.value().height;
+            } else {
+                SDL_QueryTexture(this->_texture, NULL, NULL,
+                    &this->_rect.w, &this->_rect.h);
             }
             return true;
         }
@@ -41,11 +42,11 @@ namespace arc
         virtual const TextureSpecification& specification() const { return this->_spec; }
         SDL_Texture *raw() const { return this->_texture; }
         Color color() const { return this->_color; }
-        const SDL_Rect *rect() const { return this->_rect; }
+        SDL_Rect *rect() { return &this->_rect; }
 
     private:
         Color _color = {};
-        SDL_Rect *_rect = NULL;
+        SDL_Rect _rect = {0, 0, 0, 0};
         SDL_Texture *_texture = nullptr;
         TextureSpecification _spec = {};
     };
@@ -54,7 +55,11 @@ namespace arc
     {
     public:
         SDLTextureManager(SDL_Renderer *renderer) : _renderer(renderer) {}
-        ~SDLTextureManager() = default;
+        ~SDLTextureManager()
+        {
+            for (auto pair : this->_textures)
+                SDL_DestroyTexture(pair.second.raw());
+        }
 
         virtual bool load(const std::string& name, const TextureSpecification& spec
             )
@@ -253,10 +258,31 @@ namespace arc
             return true;
         }
 
+        static Key MapSDLKey(SDL_Keycode key)
+        {
+            if (key >= SDL_KeyCode::SDLK_a && key <= SDL_KeyCode::SDLK_z)
+                return (Key)((uint32_t)Key::A + key - SDL_KeyCode::SDLK_a);
+            if (key >= SDL_KeyCode::SDLK_RIGHT && key <= SDL_KeyCode::SDLK_UP)
+                return (Key)((uint32_t)Key::UP + key - SDL_KeyCode::SDLK_RIGHT);
+
+            switch (key)
+            {
+            case SDL_KeyCode::SDLK_SPACE:
+                return Key::SPACE;
+            case SDL_KeyCode::SDLK_KP_ENTER:
+                return Key::ENTER;
+            case SDL_KeyCode::SDLK_ESCAPE:
+                return Key::ESCAPE;
+            default:
+                return Key::UNKNOWN;
+            }
+            return Key::UNKNOWN;
+        }
+
         virtual void update([[maybe_unused]] float deltaTime)
         {
-            SDL_Event sdlEvent;
-            Event arcEvent;
+            SDL_Event sdlEvent = {};
+            Event arcEvent = {};
 
             while (SDL_PollEvent(&sdlEvent)) {
                 switch (sdlEvent.type)
@@ -264,11 +290,10 @@ namespace arc
                 case SDL_EventType::SDL_QUIT:
                     this->_opened = false;
                     break;
-                case SDL_EventType::SDL_KEYDOWN:
-                    arcEvent.type = EventType::KEY_PRESSED;
-                    arcEvent.key = (Key)(sdlEvent.key.keysym.sym - SDL_KeyCode::SDLK_a);
-                    _events.push_back(arcEvent);
                 default:
+                    arcEvent.type = EventType::KEY_PRESSED;
+                    arcEvent.key = MapSDLKey(sdlEvent.key.keysym.sym);
+                    _events.push_back(arcEvent);
                     break;
                 }
             }
@@ -276,7 +301,7 @@ namespace arc
 
         virtual void clear(Color color = {0, 0, 0, 255})
         {
-                SDL_SetRenderDrawColor(this->_renderer, color.red, color.green, color.blue, color.alpha);
+            SDL_SetRenderDrawColor(this->_renderer, color.red, color.green, color.blue, color.alpha);
             SDL_RenderClear(this->_renderer);
         }
 
@@ -325,7 +350,7 @@ namespace arc
         SDL_Renderer *_renderer = nullptr;
 
         bool _opened = false;
-        std::deque<arc::Event> _events;
+        std::deque<Event> _events;
         std::string _title = "";
         uint32_t _framerate = 0;
         std::size_t _tileSize = 0;
@@ -341,7 +366,12 @@ namespace arc
             _textures(SDLTextureManager(_renderer))
         {
         }
-        ~SDLLibrary() = default;
+        ~SDLLibrary()
+        {
+            SDL_DestroyRenderer(this->_renderer);
+            SDL_DestroyWindow(this->_window);
+            SDL_Quit();
+        }
 
         virtual std::string name() const
         {
@@ -368,8 +398,8 @@ namespace arc
         SDLTextureManager _textures;
         SDLFontManager _fonts;
 
-        SDL_Window *_window;
-        SDL_Renderer *_renderer;
+        SDL_Window *_window = nullptr;
+        SDL_Renderer *_renderer = nullptr;
     };
 }
 
