@@ -77,7 +77,7 @@ public:
           _lib(_sl_lib.get()),
           _game(_sl_game.get()),
           _switch_next_frame{false},
-          _isSFML{false}
+          _isSFML{true}
     {
         if (_lib == nullptr || _game == nullptr)
             throw std::runtime_error("Failed to load library or game");
@@ -178,6 +178,5 @@ int main()
         std::cerr << e.what() << std::endl;
         return 84;
     }
-
     return 0;
 }

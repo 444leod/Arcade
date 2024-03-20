@@ -7,7 +7,8 @@
 
 #include "arcade/IGame.hpp"
 #include "SnakeGame.hpp"
-#include "Snake.cpp"
+#include "Snake.hpp"
+#include "GameObjects/SuperCandy.hpp"
 
 #include <iostream>
 #include <cstdlib>
@@ -34,6 +35,7 @@ public:
         lib.display().setHeight(ARENA_HEIGHT + 1 + 2);
 
         resetGoal();
+        _superCandy.setPos({_goalPos.x, _goalPos.y});
 
         // Textures
         initTextures(lib);
@@ -87,6 +89,8 @@ public:
                 _score += 1;
                 _gameSpeed -= _gameSpeed < 0.02 ? 0 : 0.005;
                 resetGoal();
+                _superCandy.setPos({_goalPos.x, _goalPos.y});
+                printf("%d, %d\n", _superCandy.getPos().x, _superCandy.getPos().y);
             }
 
             _elapsed -= _gameSpeed;
@@ -249,6 +253,7 @@ private:
     std::uint32_t _score = 0;
     vec2 _goalPos = {0, 0};
     Snake _snake = Snake();
+    SuperCandy _superCandy = SuperCandy("Super-Candy", {0, 0});
 };
 
 extern "C" arc::IGame* entrypoint()
