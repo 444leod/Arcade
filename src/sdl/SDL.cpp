@@ -10,6 +10,7 @@
 #include <deque>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
+#include <SDL2/SDL_ttf.h>
 
 namespace arc
 {
@@ -110,22 +111,49 @@ namespace arc
         SDLFont() = default;
         ~SDLFont() = default;
 
-        virtual const FontSpecification& specificiation() const
+
+        bool load(const FontSpecification& spec)
         {
-            return _spec;
+            this->_spec = spec;
+            this->_font = TTF_OpenFont(spec.path.c_str(), spec.size);
+            this->_color = {
+                .r = spec.color.red,
+                .g = spec.color.green,
+                .b = spec.color.blue,
+                .a = spec.color.alpha,
+            };
+            return true;
         }
+
+        virtual const FontSpecification& specificiation() const { return _spec; }
+        TTF_Font *font() { return this->_font; }
+        SDL_Color color() { return this->_color; }
 
     private:
         FontSpecification _spec = {};
+        TTF_Font *_font = nullptr;
+        SDL_Color _color = {0, 0, 0, 0};
     };
 
     class SDLFontManager : public IFontManager
     {
     public:
-        virtual bool load(const std::string& name, const FontSpecification& specification)
+        SDLFontManager()
         {
-            (void)name;
-            (void)specification;
+            TTF_Init();
+        }
+        ~SDLFontManager()
+        {
+            TTF_Quit();
+        }
+
+        virtual bool load(const std::string& name, const FontSpecification& spec)
+        {
+            auto font = SDLFont();
+
+            if (!font.load(spec))
+                return false;
+            this->_fonts[name] = font;
             return true;
         }
 
@@ -325,19 +353,26 @@ namespace arc
 
         virtual void print(const std::string& string, const IFont& font, float x, float y)
         {
-            (void)string;
-            (void)font;
-            (void)x;
-            (void)y;
+            auto attr = dynamic_cast<const SDLFont&>(font);
+            auto surf = TTF_RenderText_Solid(attr.font(), string.c_str(), attr.color());
+            auto tex = SDL_CreateTextureFromSurface(this->_renderer, surf);
+            SDL_Rect rect = {
+                (int)(x * (float)this->_tileSize),
+                (int)(y * (float)this->_tileSize),
+                surf->w, surf->h };
+            SDL_RenderCopy(this->_renderer, tex, NULL, &rect);
+            SDL_FreeSurface(surf);
         }
 
         virtual Rect<float> measure(const std::string& string, const IFont& font, float x, float y)
         {
-            (void)string;
-            (void)font;
-            (void)x;
-            (void)y;
-            return Rect<float>();
+            auto attr = dynamic_cast<const SDLFont&>(font);
+            auto surf = TTF_RenderText_Solid(attr.font(), string.c_str(), attr.color());
+            Rect<float> rect = { x, y,
+                (float)surf->w  / this->_tileSize,
+                (float)surf->h  / this->_tileSize};
+            SDL_FreeSurface(surf);
+            return rect;
         }
 
         virtual void flush()

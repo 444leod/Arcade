@@ -11,14 +11,15 @@ CC	=	g++
 
 CPPFLAGS	=	-W -Wall -Wextra -Wpedantic	\
 				-std=c++20 -I../../include/	\
-				-lSDL2 -lSDL2_image	\
+				-lSDL2 -lSDL2_image -lSDL2_ttf	\
 				-shared -fPIC
 
 SRC	=	SDL.cpp
 
 all:
 	$(CC) -o $(NAME) $(SRC) $(CPPFLAGS)
-	mv $(NAME) ../../lib
+##	mv $(NAME) ../../lib
+	cp arcade_sdl.so ../../../Arcade-Commons/
 
 clean:
 	rm -f $(OBJ)
