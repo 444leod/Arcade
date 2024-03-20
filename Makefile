@@ -43,12 +43,12 @@ SFML_FLAGS = -lsfml-graphics -lsfml-window -lsfml-system -lsfml-audio
 NCURSES_FLAGS = -lncurses
 # SDL2_FLAGS = -lSDL2 -lSDL2_image -lSDL2_ttf -lSDL2_mixer
 
-SFML_SRC = src/Graphics/SFML.cpp
+SFML_SRC = src/Graphics/SFML/SFML.cpp
 $(SFML): $(SFML_SRC) | $(LIB_DIR)
 	@$(CC) $(SHARED_FLAGS) $(SFML_SRC) -o $(SFML) $(CPPFLAGS) $(SFML_FLAGS)
 	@echo "$(SFML) created"
 
-NCURSES_SRC = src/Graphics/NCurses.cpp
+NCURSES_SRC = src/Graphics/NCurses/NCurses.cpp
 $(NCURSES): $(NCURSES_SRC) | $(LIB_DIR)
 	@$(CC) $(SHARED_FLAGS) $(NCURSES_SRC) -o $(NCURSES) $(CPPFLAGS) \
 		$(NCURSES_FLAGS)
@@ -64,7 +64,7 @@ $(PACMAN): $(PACMAN_SRC) | $(LIB_DIR)
 	@$(CC) $(SHARED_FLAGS) $(PACMAN_SRC) -o $(PACMAN) $(CPPFLAGS)
 	@echo "$(PACMAN) created"
 
-CORE_SRC = src/Core.cpp
+CORE_SRC = src/Core/Core.cpp
 $(CORE): $(CORE_SRC)
 	@$(CC) $(CORE_SRC) -o $(CORE) $(CPPFLAGS)
 	@echo "$(CORE) created"
