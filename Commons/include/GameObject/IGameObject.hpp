@@ -20,6 +20,7 @@ class IGameObject {
             int deltaScore;
             int deltaSpeed;
             int deltaGrowth;
+            bool killPlayer;
         };
 
         virtual ~IGameObject() = default;

@@ -9,9 +9,6 @@
 #include <string>
 #include <map>
 
-#include "SnakeGame.hpp"
-
-
 class Snake {
     private:
         struct BodyPart {

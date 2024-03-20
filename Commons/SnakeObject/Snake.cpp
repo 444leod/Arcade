@@ -10,6 +10,7 @@
 #include <map>
 
 #include "Snake.hpp"
+#include "SnakeConstants.hpp"
 
 // Public Member Functions
 

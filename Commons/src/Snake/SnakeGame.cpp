@@ -6,8 +6,8 @@
 */
 
 #include "arcade/IGame.hpp"
-#include "SnakeGame.hpp"
-#include "Snake.hpp"
+#include "../../SnakeObject/SnakeConstants.hpp"
+#include "../../SnakeObject/Snake.hpp"
 #include "GameObjects/SuperCandy.hpp"
 
 #include <iostream>
@@ -79,8 +79,8 @@ public:
 
     virtual void update([[maybe_unused]] arc::ILibrary& lib, float deltaTime)
     {
+        //todo snake.update()
         _elapsed += deltaTime;
-
         while (_elapsed > _gameSpeed) {
             if (!_snake.getAlive())
                 return;
@@ -95,6 +95,8 @@ public:
 
             _elapsed -= _gameSpeed;
         }
+
+
     }
 
     virtual void draw(arc::ILibrary& lib)
@@ -254,6 +256,7 @@ private:
     vec2 _goalPos = {0, 0};
     Snake _snake = Snake();
     SuperCandy _superCandy = SuperCandy("Super-Candy", {0, 0});
+
 };
 
 extern "C" arc::IGame* entrypoint()

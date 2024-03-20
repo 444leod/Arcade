@@ -5,13 +5,14 @@
 ** SuperCandy
 */
 
-#include "AGameObject.hpp"
+#include "GameObject/AGameObject.hpp"
 
 #pragma once
 
-class SuperCandy : public AGameObject{
+class SuperCandy : public AGameObject {
     public:
-        SuperCandy(std::string textureName, IGameObject::pos pos) : AGameObject(textureName, pos) {}
+        SuperCandy(std::string textureName, IGameObject::pos pos);
+
         ~SuperCandy() = default;
 
     protected:
