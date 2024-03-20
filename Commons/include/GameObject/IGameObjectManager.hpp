@@ -8,7 +8,7 @@
 #include <vector>
 #include <string>
 
-#include "IGameObject.hpp"
+#include "GameObject/IGameObject.hpp"
 
 #pragma once
 

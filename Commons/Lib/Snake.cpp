@@ -2,28 +2,28 @@
 ** EPITECH PROJECT, 2024
 ** Arcade
 ** File description:
-** Snake
+** SnakeObject
 */
 
 #include <vector>
 #include <string>
 #include <map>
 
-#include "Snake.hpp"
-#include "SnakeConstants.hpp"
+#include "SnakeObject/SnakeObject.hpp"
+#include "SnakeObject/SnakeConstants.hpp"
 
 // Public Member Functions
 
-Snake::Snake()
+SnakeObject::SnakeObject()
 {
     _alive = true;
     _readyToRotate = true;
     _direction = std::make_pair(1, 0);
     for (int i = 0; i < 4; i++)
-        _body.push_back(Snake::BodyPart {(ARENA_WIDTH + 1) / 2 - i, (ARENA_HEIGHT + 1) / 2});
+        _body.push_back(SnakeObject::BodyPart {(ARENA_WIDTH + 1) / 2 - i, (ARENA_HEIGHT + 1) / 2});
 }
 
-bool Snake::setDirection(std::pair<int, int> direction)
+bool SnakeObject::setDirection(std::pair<int, int> direction)
 {
     if ((_direction.first == -direction.first && _direction.second == -direction.second) ||
         (_direction.first == direction.first && _direction.second == direction.second) ||
@@ -35,7 +35,7 @@ bool Snake::setDirection(std::pair<int, int> direction)
     return true;
 }
 
-bool Snake::move(std::pair<int, int> goalPos)
+bool SnakeObject::move(std::pair<int, int> goalPos)
 {
     int old_x = _body[0].x;
     int old_y = _body[0].y;
@@ -65,15 +65,10 @@ bool Snake::move(std::pair<int, int> goalPos)
     return false;
 }
 
-void Snake::grow(int x, int y, std::size_t size)
-{
-    for (size_t i = 0; i < size; i++)
-        _body.insert(_body.begin(), Snake::BodyPart{x, y});
-}
 
-std::vector<std::pair<Snake::BodyPart, std::string>> Snake::dump() const
+std::vector<std::pair<SnakeObject::BodyPart, std::string>> SnakeObject::dump() const
 {
-    std::vector<std::pair<Snake::BodyPart, std::string>> res;
+    std::vector<std::pair<SnakeObject::BodyPart, std::string>> res;
     std::size_t len = _body.size();
     std::size_t i = 0;
     for (auto &part : _body) {
@@ -90,7 +85,13 @@ std::vector<std::pair<Snake::BodyPart, std::string>> Snake::dump() const
 
 // Privates Member Functions
 
-bool Snake::checkCollision(int oldX, int oldY)
+void SnakeObject::grow(int x, int y, std::size_t size)
+{
+    for (size_t i = 0; i < size; i++)
+        _body.insert(_body.begin(), SnakeObject::BodyPart{x, y});
+}
+
+bool SnakeObject::checkCollision(int oldX, int oldY)
 {
     if (_body[0].x == oldX && _body[0].y == oldY)
         return true;
@@ -101,7 +102,7 @@ bool Snake::checkCollision(int oldX, int oldY)
     return false;
 }
 
-std::pair<Snake::BodyPart, std::string> Snake::getDumpHead() const
+std::pair<SnakeObject::BodyPart, std::string> SnakeObject::getDumpHead() const
 {
     return std::make_pair(_body[0], _headTextures.at(std::make_tuple(
         _direction.first,
@@ -109,7 +110,7 @@ std::pair<Snake::BodyPart, std::string> Snake::getDumpHead() const
     )));
 }
 
-std::pair<Snake::BodyPart, std::string> Snake::getDumpTail(std::size_t len) const
+std::pair<SnakeObject::BodyPart, std::string> SnakeObject::getDumpTail(std::size_t len) const
 {
     return std::make_pair(_body[len - 1], _tailTextures.at(std::make_tuple(
             _body[len - 1].x - _body[len - 2].x,
@@ -117,7 +118,7 @@ std::pair<Snake::BodyPart, std::string> Snake::getDumpTail(std::size_t len) cons
     )));
 }
 
-std::pair<Snake::BodyPart, std::string> Snake::getDumpBody(std::size_t i) const
+std::pair<SnakeObject::BodyPart, std::string> SnakeObject::getDumpBody(std::size_t i) const
 {
     return std::make_pair(_body[i], _bodyTextures.at(std::make_tuple(
         _body[i].x - _body[i - 1].x,

@@ -5,7 +5,7 @@
 ** AGameObject
 */
 
-#include "IGameObject.hpp"
+#include "GameObject/IGameObject.hpp"
 
 #pragma once
 

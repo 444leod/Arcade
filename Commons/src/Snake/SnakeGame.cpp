@@ -6,8 +6,8 @@
 */
 
 #include "arcade/IGame.hpp"
-#include "../../SnakeObject/SnakeConstants.hpp"
-#include "../../SnakeObject/Snake.hpp"
+#include "SnakeObject/SnakeConstants.hpp"
+#include "SnakeObject/SnakeObject.hpp"
 #include "GameObjects/SuperCandy.hpp"
 
 #include <iostream>
@@ -95,8 +95,6 @@ public:
 
             _elapsed -= _gameSpeed;
         }
-
-
     }
 
     virtual void draw(arc::ILibrary& lib)
@@ -254,7 +252,7 @@ private:
     float _gameSpeed = 0.2;
     std::uint32_t _score = 0;
     vec2 _goalPos = {0, 0};
-    Snake _snake = Snake();
+    SnakeObject _snake = SnakeObject();
     SuperCandy _superCandy = SuperCandy("Super-Candy", {0, 0});
 
 };

@@ -9,7 +9,7 @@
 #include <string>
 #include <map>
 
-class Snake {
+class SnakeObject {
     private:
         struct BodyPart {
             int x;
@@ -17,9 +17,9 @@ class Snake {
         };
 
     public:
-        Snake();
+        SnakeObject();
 
-        ~Snake() = default;
+        ~SnakeObject() = default;
 
         bool getAlive() const {return _alive;}
 
@@ -31,20 +31,20 @@ class Snake {
 
         bool move(std::pair<int, int> goalPos);
 
-        void grow(int x, int y, std::size_t size);
-
-        std::vector<std::pair<Snake::BodyPart, std::string>> dump() const;
+        std::vector<std::pair<SnakeObject::BodyPart, std::string>> dump() const;
 
     private:
+        void grow(int x, int y, std::size_t size);
+
         bool checkCollision(int oldX, int oldY);
 
-        std::pair<Snake::BodyPart, std::string> getDumpHead() const;
+        std::pair<SnakeObject::BodyPart, std::string> getDumpHead() const;
 
-        std::pair<Snake::BodyPart, std::string> getDumpTail(std::size_t len) const;
+        std::pair<SnakeObject::BodyPart, std::string> getDumpTail(std::size_t len) const;
 
-        std::pair<Snake::BodyPart, std::string> getDumpBody(std::size_t i) const;
+        std::pair<SnakeObject::BodyPart, std::string> getDumpBody(std::size_t i) const;
 
-        std::vector<Snake::BodyPart> _body;
+        std::vector<SnakeObject::BodyPart> _body;
         int _speed;
         bool _alive;
         bool _readyToRotate;
