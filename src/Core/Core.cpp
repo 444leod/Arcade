@@ -19,6 +19,9 @@ public:
     {
         this->_path = path;
         this->_handle = dlopen(path.c_str(), RTLD_LAZY);
+        if (this->_handle == nullptr) {
+            std::cout << dlerror() << std::endl;
+        }
         std::cout << "Loading " << path << " (" << this->_handle << ")" << std::endl;
     }
 
@@ -183,21 +186,15 @@ public:
 
 private:
     std::vector<std::string> _graphicLibraries = {
-        "./lib/arcade_ncurses.so",
         "./lib/arcade_sfml.so",
+        "./lib/arcade_ncurses.so",
         // "./lib_arcade_sdl.so",
     };
     size_t _currentGraphicLibrary = 0;
-    #if PACMAN
-        std::vector<std::string> _gameLibraries = {
-            "./lib/arcade_pacman.so",
-        };
-    #else
-        std::vector<std::string> _gameLibraries = {
-            "./lib/arcade_example.so",
-            "./lib/arcade_pacman.so"
-        };
-    #endif
+    std::vector<std::string> _gameLibraries = {
+        "./lib/arcade_example.so",
+        "./lib/arcade_pacman.so",
+    };
     size_t _currentGameLibrary = 0;
 
     SharedLibraryLoader<arc::ILibrary> _sl_lib;
