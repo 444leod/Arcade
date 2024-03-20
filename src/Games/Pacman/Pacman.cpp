@@ -6,17 +6,20 @@
 */
 
 #include "IGame.hpp"
+#include "MapHandler.hpp"
+#include "Player.hpp"
+#include "IEntity.hpp"
 
 #include <iostream>
 #include <cstdlib>
 #include <sstream>
 #include <fstream>
 #include <map>
+#include <vector>
+#include <memory>
 
-struct vec2 {
-    int x;
-    int y;
-};
+// using pacman::MapHandler;
+// using pacman::player::Player;
 
 class MyGame : public arc::IGame {
 public:
@@ -24,6 +27,7 @@ public:
     {
         return "MyGame";
     }
+
 
     virtual void initialize(arc::ILibrary& lib)
     {
@@ -40,23 +44,27 @@ public:
 
         spec.textual.character = '.';
         spec.textual.color = {255, 255, 0, 255};
-        spec.graphical = arc::Color{255, 255, 0, 255 };
+        spec.graphical = arc::TextureImage{"assets/pacman/board.png", arc::Rect<uint32_t>{1024, 0, 32, 32}};
         lib.textures().load("coin", spec);
 
         spec.textual.character = 'O';
         spec.textual.color = {255, 0, 0, 255};
-        spec.graphical = arc::Color{255, 0, 0, 255 };
+        spec.graphical = arc::TextureImage{"assets/pacman/board.png", arc::Rect<uint32_t>{1056, 0, 32, 32}};
         lib.textures().load("fruit", spec);
 
         spec.textual.character = ' ';
         spec.textual.color = {255, 255, 255, 255};
-        spec.graphical = arc::Color{255, 255, 255, 255 };
-        lib.textures().load("wall", spec);
+        for (uint16_t i = 0; i <= 33; ++i) {
+            std::stringstream ss;
+            ss << "wall_" << (i + 2);
+            spec.graphical = arc::TextureImage{"assets/pacman/board.png", arc::Rect<uint32_t>{static_cast<uint16_t>(i * 32), 0, 32, 32}};
+            lib.textures().load(ss.str(), spec);
+        }
 
         spec.textual.character = ' ';
         spec.textual.color = {0, 0, 0, 255};
-        spec.graphical = arc::Color{0, 0, 0, 255 };
-        lib.textures().load("void", spec);
+        spec.graphical = arc::Color{0, 0, 0, 255};
+        lib.textures().load("empty", spec);
 
         // Fonts
         arc::FontSpecification text {
@@ -66,84 +74,27 @@ public:
         };
         lib.fonts().load("font", text);
 
-        // Sounds
-        // arc::SoundSpecification sound;
-        // sound.path = "assets/woosh.wav";
-        // lib.sounds().load("woosh", sound);
-
-        // // Musics
-        // arc::MusicSpecification music;
-        // music.path = "assets/pacman-theme.wav";
-        // music.loop = true;
-        // lib.musics().load("pacman-theme", music);
-
-        std::ifstream file("src/Games/Pacman/pacman.txt");
-        if (!file.is_open())
-            throw std::runtime_error("Error: can't open the map.\n");
-
-        std::string line;
-        int y = 0;
-        size_t teleportersNumber = 0;
-        size_t lineSize = 0;
-        while (std::getline(file, line)) {
-            if (lineSize == 0)
-                lineSize = line.size();
-            else if (line.size() != lineSize)
-                throw std::runtime_error("Error: map not rectangular\n");
-            for (size_t x = 0; x < line.size(); x++) {
-                if (line[x] == 'P') {
-                    _playerPos.x = x;
-                    _playerPos.y = y;
-                    line[x] = ' ';
-                } else if (line[x] == 'T') {
-                    if (teleportersNumber >= 2)
-                        throw std::runtime_error("Error: too many teleporters\n");
-                    if (teleportersNumber == 0) {
-                        _teleporters.first.first = x;
-                        _teleporters.first.second = y;
-                        teleportersNumber++;
-                    } else {
-                        _teleporters.second.first = x;
-                        _teleporters.second.second = y;
-                        teleportersNumber++;
-                    }
-                }
-            }
-            _map.push_back(line);
-            y++;
-        }
-        if (teleportersNumber != 2 && teleportersNumber != 0)
-            throw std::runtime_error("Error: not enough teleporters\n");
-        if (_playerPos.x == -1 || _playerPos.y == -1)
-            throw std::runtime_error("Error: player not found\n");
-        lib.display().setWidth(lineSize);
-        lib.display().setHeight(_map.size() + 1);
+        lib.display().setWidth(_mapHandler.getMapSizeX());
+        lib.display().setHeight(_mapHandler.getMapSizeY() + 5);
+        _player->setPos(_mapHandler.getPlayerPos());
     }
 
     virtual void onKeyPressed([[maybe_unused]] arc::ILibrary& lib, arc::Key key)
     {
         switch (key) {
             case arc::Key::Z:
-                _playerDir = {0, -1};
-                // lib.display().playSound(lib.sounds().get("woosh"), 50.0f);
+                _player->queueMove({0, -1});
                 break;
             case arc::Key::Q:
-                _playerDir = {-1, 0};
-                // lib.display().playSound(lib.sounds().get("woosh"), 50.0f);
+                _player->queueMove({-1, 0});
                 break;
             case arc::Key::S:
-                _playerDir = {0, 1};
-                // lib.display().playSound(lib.sounds().get("woosh"), 50.0f);
+                _player->queueMove({0, 1});
                 break;
             case arc::Key::D:
-                _playerDir = {1, 0};
-                // lib.display().playSound(lib.sounds().get("woosh"), 50.0f);
+                _player->queueMove({1, 0});
                 break;
             case arc::Key::A:
-                // if (lib.display().isMusicPlaying(lib.musics().get("pacman-theme")))
-                    // lib.display().stopMusic(lib.musics().get("pacman-theme"));
-                // else
-                    // lib.display().playMusic(lib.musics().get("pacman-theme"), 50.0f);
                 break;
             default: break;
         }
@@ -158,44 +109,12 @@ public:
     {
     }
 
-    virtual void update([[maybe_unused]] arc::ILibrary& lib, float deltaTime)
+    virtual void update([[maybe_unused]] arc::ILibrary& lib, [[maybe_unused]]float deltaTime)
     {
-        _elapsed += deltaTime;
-        while (_elapsed > 0.1) {
-            if (((_playerPos.x > 0 && _playerDir.x < 0) || ((size_t)_playerPos.x < _map[0].size() - 1 && _playerDir.x > 0)) && _map[_playerPos.y][_playerPos.x + _playerDir.x] != '#')
-                _playerPos.x += _playerDir.x;
-
-            if (((_playerPos.y > 0 && _playerDir.y < 0) || ((size_t)_playerPos.y < _map.size() - 1 && _playerDir.y > 0)) && _map[_playerPos.y + _playerDir.y][_playerPos.x] != '#')
-                _playerPos.y += _playerDir.y;
-
-            if (_map[_playerPos.y][_playerPos.x] == '.') {
-                _score += 10;
-                _map[_playerPos.y][_playerPos.x] = ' ';
-            }
-            if (_map[_playerPos.y][_playerPos.x] == 'o') {
-                _score += 100;
-                _map[_playerPos.y][_playerPos.x] = ' ';
-            }
-            if (_map[_playerPos.y][_playerPos.x] == 'T') {
-                _score += 10;
-                _map[_playerPos.y][_playerPos.x] = 't';
-            }
-            if (_map[_playerPos.y][_playerPos.x] == 't') {
-                if ((size_t)_playerPos.x == _teleporters.first.first && (size_t)_playerPos.y == _teleporters.first.second) {
-                    _playerPos.x = _teleporters.second.first;
-                    _playerPos.y = _teleporters.second.second;
-                } else {
-                    _playerPos.x = _teleporters.first.first;
-                    _playerPos.y = _teleporters.first.second;
-                }
-                if (_map[_playerPos.y][_playerPos.x] == 'T') {
-                    _score += 10;
-                    _map[_playerPos.y][_playerPos.x] = 't';
-                }
-            }
-
-            _elapsed -= 0.1;
-        }
+        _steps++;
+        _player->move(deltaTime, _mapHandler);
+        _mapHandler.processPlayerPos(_player->getPos(), _player->getDirection());
+        _player->setPos(_mapHandler.getPlayerPos());
     }
 
     virtual void draw(arc::ILibrary& lib)
@@ -204,44 +123,23 @@ public:
 
         score << "Score: " << _score;
 
-        lib.display().clear(arc::Color{255, 255, 255, 0});
-        size_t y = 1;
-        std::pair<uint32_t, uint32_t> teleporter1;
-        for (auto &line : _map) {
-            for (size_t x = 0; x < line.size(); x++) {
-                switch (line[x]) {
-                    case 'P':
-                        lib.display().draw(lib.textures().get("void"), x, y);
-                        break;
-                    case 'T':
-                        lib.display().draw(lib.textures().get("coin"), x, y);
-                        break;
-                    case '.':
-                        lib.display().draw(lib.textures().get("coin"), x, y);
-                        break;
-                    case 'o':
-                        lib.display().draw(lib.textures().get("fruit"), x, y);
-                        break;
-                    case '#':
-                        lib.display().draw(lib.textures().get("wall"), x, y);
-                        break;
-                    default:
-                        lib.display().draw(lib.textures().get("void"), x, y);
-                        break;
-                }
-            }
-            y++;
+        lib.display().clear(arc::Color{0, 0, 0, 0});
+
+        for (auto [pos, texture] : _mapHandler.dumpTextures()) {
+            lib.display().draw(lib.textures().get(texture), pos.x, pos.y);
         }
-        lib.display().draw(lib.textures().get("player"), _playerPos.x, _playerPos.y + 1);
+
+        // vec2i initialPos = _player->getPos();
+        // vec2f playerPos = _player->getPosf();
+        // playerPos.x = initialPos.x + playerPos.x;
+        // playerPos.y = initialPos.y + playerPos.y;
+        vec2i playerPos = _player->getPos();
+        lib.display().draw(lib.textures().get("player"), playerPos.x, playerPos.y);
         auto width = lib.display().width();
         auto textWidth = lib.display().measure(score.str(), lib.fonts().get("font"), 0, 0).width;
         auto center = (width - textWidth) / 2;
 
-        lib.display().print(score.str(), lib.fonts().get("font"), center, 0);
-
-        std::stringstream currentPos;
-        currentPos << "X: " << _playerPos.x << " Y: " << _playerPos.y << " \"" << _map[_playerPos.y][_playerPos.x] << "\"";
-        lib.display().print(currentPos.str(), lib.fonts().get("font"), 30, 30);
+        lib.display().print(score.str(), lib.fonts().get("font"), center, _mapHandler.getMapSizeX() + 3);
 
         lib.display().flush();
     }
@@ -249,13 +147,26 @@ public:
 private:
     float _elapsed = 0;
     uint32_t _score = 0;
-    vec2 _playerDir = {0, 0};
-    vec2 _playerPos = {-1, -1};
-    std::vector<std::string> _map;
-    std::pair<std::pair<uint32_t, uint32_t>, std::pair<uint32_t, uint32_t>> _teleporters;
+    uint32_t _steps = 0;
+
+    MapHandler _mapHandler;
+    std::unique_ptr<pacman::IEntity> _player = std::make_unique<pacman::player::Player>();
 };
+
+std::ostream& operator<<(std::ostream& os, const vec2i& vec)
+{
+    os << "(" << vec.x << ", " << vec.y << ")";
+    return os;
+}
+
+std::ostream& operator<<(std::ostream& os, const vec2f& vec)
+{
+    os << "(" << vec.x << ", " << vec.y << ")";
+    return os;
+}
 
 extern "C" arc::IGame* entrypoint()
 {
     return new MyGame;
 }
+
