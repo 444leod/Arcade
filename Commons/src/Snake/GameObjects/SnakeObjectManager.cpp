@@ -26,11 +26,11 @@ SnakeObjectManager::~SnakeObjectManager() {}
 
 void SnakeObjectManager::update(position objectCollided, SnakeObject& snake, [[maybe_unused]] float deltaTime)
 {
-    if (objectCollided.x == -1 && objectCollided.y == -1) {
+    if (position{-1, -1} == objectCollided) {
         return;
     }
     for (auto &obj : _gameObjects) {
-        if (obj->getPos().x == objectCollided.x && obj->getPos().y == objectCollided.y) {
+        if (obj->getPos() == objectCollided) {
             obj->applyEffect(snake);
         }
         obj->setPos(getSpawnPos(snake.getPositions()));

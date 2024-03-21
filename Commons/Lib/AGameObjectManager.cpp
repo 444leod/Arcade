@@ -42,8 +42,10 @@ position AGameObjectManager::getSpawnPos(std::vector<position> forbidenPositions
         rand() % ARENA_WIDTH + 1,
         rand() % ARENA_HEIGHT + 1
     };
+    for (auto &obj : _gameObjects) {
+        forbidenPositions.push_back(obj->getPos());
+    }
     while (std::find(forbidenPositions.begin(), forbidenPositions.end(), pos) != forbidenPositions.end()) {
-        printf("forbiden\n");
         pos = position {
             rand() % ARENA_WIDTH + 1,
             rand() % ARENA_HEIGHT + 1

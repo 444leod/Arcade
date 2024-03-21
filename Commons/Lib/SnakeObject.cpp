@@ -45,15 +45,9 @@ position SnakeObject::update([[maybe_unused]] std::vector<position> objectsPos, 
         if (!_alive)
             return {-1, -1};
         position movRes = move(objectsPos);
-        if (movRes.x != -1 && movRes.y != -1) {
+        if (position{-1, -1} != movRes) {
             return movRes;
-            // _score += 1;
-            // _gameSpeed -= _gameSpeed < 0.02 ? 0 : 0.005;
-            // resetGoal();
-            // _superCandy.setPos({_goalPos.x, _goalPos.y});
-            // printf("%d, %d\n", _superCandy.getPos().x, _superCandy.getPos().y);
         }
-
         _elapsed -= _speed;
     }
     return {-1, -1};
@@ -99,12 +93,12 @@ position SnakeObject::move([[maybe_unused]] std::vector<position> objectsPos)
     //     grow(goalPos.first, goalPos.second, 1);
     //     return true;
     // }
+
     for (auto &pos : objectsPos) {
         if (_body[0].x + _direction.first == pos.x && _body[0].y + _direction.second == pos.y) {
             return pos;
         }
     }
-
     if (!(_direction.first == 0 && _direction.second == 0)) {
         for (std::size_t i = _body.size() - 1; i > 0; i--) {
             _body[i].x = _body[i - 1].x;
