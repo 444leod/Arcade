@@ -5,7 +5,7 @@
 ## Makefile
 ##
 
-NAME	=	arcade_sdl.so
+NAME	=	lib_arcade_sdl.so
 
 CC	=	g++
 
@@ -19,7 +19,7 @@ SRC	=	SDL.cpp
 all:
 	$(CC) -o $(NAME) $(SRC) $(CPPFLAGS)
 ##	mv $(NAME) ../../lib
-	cp arcade_sdl.so ../../../Arcade-Commons/
+	cp $(NAME) ../../../Arcade-Commons/
 
 clean:
 	rm -f $(OBJ)
