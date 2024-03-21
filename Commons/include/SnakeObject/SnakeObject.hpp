@@ -43,6 +43,8 @@ class SnakeObject {
 
         void setScore(int score) {_score = score;}
 
+        void setGrowToggle(bool growthToggle) {_growthToggle = growthToggle;}
+
         void grow(int x, int y, std::size_t size);
 
     private:
@@ -62,7 +64,9 @@ class SnakeObject {
         float _elapsed;
         bool _alive;
         bool _readyToRotate;
+        bool _growthToggle;
         std::pair<int, int> _direction;
+        std::pair<int, int> _oldDirection;
         std::map<std::tuple<int, int>, std::string> _headTextures = {
             {{0, -1}, "head_0_south"},
             {{0, 1}, "head_0_north"},

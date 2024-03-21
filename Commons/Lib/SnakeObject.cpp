@@ -21,7 +21,9 @@ SnakeObject::SnakeObject()
     _elapsed = 0;
     _alive = true;
     _readyToRotate = true;
+    _growthToggle = true;
     _direction = std::make_pair(1, 0);
+    _oldDirection = std::make_pair(1, 0);
     for (int i = 0; i < 4; i++)
         _body.push_back(SnakeObject::BodyPart {(ARENA_WIDTH + 1) / 2 - i, (ARENA_HEIGHT + 1) / 2});
 }
@@ -33,6 +35,7 @@ bool SnakeObject::setDirection(std::pair<int, int> direction)
         _alive == false ||
         _readyToRotate == false)
         return false;
+    _oldDirection = _direction;
     _direction = direction;
     _readyToRotate = false;
     return true;
@@ -87,17 +90,19 @@ position SnakeObject::move([[maybe_unused]] std::vector<position> objectsPos)
     int old_x = _body[0].x;
     int old_y = _body[0].y;
 
+    _oldDirection = _direction;
     _readyToRotate = true;
-
-    // if (_body[0].x + _direction.first ==  goalPos.first && _body[0].y + _direction.second == goalPos.second) {
-    //     grow(goalPos.first, goalPos.second, 1);
-    //     return true;
-    // }
 
     for (auto &pos : objectsPos) {
         if (_body[0].x + _direction.first == pos.x && _body[0].y + _direction.second == pos.y) {
+            _growthToggle = false;
             return pos;
         }
+    }
+
+    if (_growthToggle == false) {
+        _growthToggle = true;
+        return {-1, -1};
     }
     if (!(_direction.first == 0 && _direction.second == 0)) {
         for (std::size_t i = _body.size() - 1; i > 0; i--) {
@@ -115,6 +120,7 @@ position SnakeObject::move([[maybe_unused]] std::vector<position> objectsPos)
 
     if (checkCollision(old_x, old_y))
         _alive = false;
+    _growthToggle = true;    
     return {-1, -1};
 }
 
@@ -138,8 +144,8 @@ bool SnakeObject::checkCollision(int oldX, int oldY)
 std::pair<SnakeObject::BodyPart, std::string> SnakeObject::getDumpHead() const
 {
     return std::make_pair(_body[0], _headTextures.at(std::make_tuple(
-        _direction.first,
-        _direction.second
+        _oldDirection.first,
+        _oldDirection.second
     )));
 }
 
