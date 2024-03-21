@@ -11,8 +11,8 @@ CC	=	g++
 
 CPPFLAGS	=	-W -Wall -Wextra -Wpedantic	\
 				-std=c++20 -I../../include/	\
-				-lSDL2 -lSDL2_image -lSDL2_ttf	\
-				-shared -fPIC
+				-lSDL2 -lSDL2_image -lSDL2_ttf -lSDL2_mixer	\
+				-shared -fPIC -g
 
 SRC	=	SDL.cpp
 
