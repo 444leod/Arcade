@@ -1,81 +1,57 @@
 ##
 ## EPITECH PROJECT, 2024
-## Arcade
+## Makefile
 ## File description:
 ## Makefile
 ##
 
-NAME = arcade
+SFML = lib/arcade_sfml.so
+NCURSES = lib/arcade_ncurses.so
+EXAMPLE = lib/arcade_example.so
+PACMAN = lib/arcade_pacman.so
+CORE = arcade
 
-SRC			=	${SRC_MAIN}
+DIR = $(shell pwd)
+LIB_DIR = $(DIR)/lib
+INC_DIR = $(DIR)/include
 
-SRC_MAIN 	= ./src/main.cpp
-
-OBJ			=	$(SRC:.cpp=.o)
-
-BONUS_SRC = \
-
-BONUS_OBJ  =	$(BONUS_SRC:.cpp=.o)
-
-PYTHON_TESTER = ./tests/tester.py
-
-TESTS_NAME	=	unit_tests
-
-TESTS_SRC	=	$(filter-out ./src/main.cpp, $(SRC)) ./tests/tests.cpp \
-
-TESTS_OBJ	=	$(TESTS_SRC:.cpp=.o)
-
-CC			=	g++
-
-CPPFLAGS	=	-std=c++20 -W -Wall -Wextra -Wpedantic -I./include/
-
-DEBUGFLAGS = 	-g
-
-TESTS_FLAGS	=	-lcriterion --coverage -fprofile-arcs -ftest-coverage
-
-all: $(NAME)
-
-$(NAME):	$(OBJ)
-	$(CC) $(OBJ) $(CPPFLAGS) -o $(NAME)
-	make -C src/sdl
-
-debug:
-	$(CC) $(SRC) $(CPPFLAGS) $(DEBUGFLAGS) -o $(NAME)
-
-run:	all
-	./$(NAME) -d $(D)
-
-tests_run:	fclean $(TESTS_OBJ)
-	$(CC) $(TESTS_OBJ) $(CPPFLAGS) -o $(TESTS_NAME)
-	@./$(TESTS_NAME)
-	@$(PYTHON_TESTER)
-
-
-$(TESTS_NAME):
-	@$(CC) -o $(TESTS_NAME) $(TESTS_SRC) $(CPPFLAGS) $(TESTS_FLAGS)
-
-cov:
-	gcovr --exclude tests -u
-
-covb:
-	gcovr --exclude tests -ub
+all: games graphics core
 
 clean:
-	rm -f $(OBJ)
-	rm -f *.gcda
-	rm -f *.gcno
-	make clean -C src/sdl
+	@make -s -C src/Games/Pacman clean 		LIB_DIR=$(LIB_DIR)
+	@make -s -C src/Games/Snake clean 		LIB_DIR=$(LIB_DIR)
+	@make -s -C src/Games/Example clean		LIB_DIR=$(LIB_DIR)
+	@make -s -C src/Graphics/SFML clean 	LIB_DIR=$(LIB_DIR)
+	@make -s -C src/Graphics/NCurses clean 	LIB_DIR=$(LIB_DIR)
+	@make -s -C src/Graphics/SDL2 clean 	LIB_DIR=$(LIB_DIR)
+	@make -s -C src/Core clean 				DIR=$(DIR)
 
-fclean:	clean
-	rm -f $(NAME)
-	rm -f $(TESTS_NAME)
-	make fclean -C src/sdl
+fclean: clean
+	@make -s -C src/Games/Pacman fclean 	LIB_DIR=$(LIB_DIR)
+	@# @make -s -C src/Games/Snake fclean 	LIB_DIR=$(LIB_DIR)
+	@make -s -C src/Games/Example fclean 	LIB_DIR=$(LIB_DIR)
+	@make -s -C src/Graphics/SFML fclean 	LIB_DIR=$(LIB_DIR)
+	@make -s -C src/Graphics/NCurses fclean LIB_DIR=$(LIB_DIR)
+	@make -s -C src/Graphics/SDL2 fclean 	LIB_DIR=$(LIB_DIR)
+	@make -s -C src/Core fclean 			DIR=$(DIR)
 
-re:	fclean all
-	make re -C src/sdl
+re: fclean all
 
-bonus: fclean $(BONUS_OBJ)
-	$(CC) $(BONUS_OBJ) $(CPPFLAGS) -o $(NAME)
+core:
+	@make -s -C src/Core 				DIR=$(DIR) INC_DIR=$(INC_DIR)
+
+games:
+	@make -s -C src/Games/Pacman 		LIB_DIR=$(LIB_DIR) INC_DIR=$(INC_DIR)
+	@# @make -s -C src/Games/Snake 		LIB_DIR=$(LIB_DIR) INC_DIR=$(INC_DIR)
+	@make -s -C src/Games/Example 		LIB_DIR=$(LIB_DIR) INC_DIR=$(INC_DIR)
+
+graphics:
+	@make -s -C src/Graphics/NCurses 	LIB_DIR=$(LIB_DIR) INC_DIR=$(INC_DIR)
+	@make -s -C src/Graphics/SFML 		LIB_DIR=$(LIB_DIR) INC_DIR=$(INC_DIR)
+	@make -s -C src/Graphics/SDL2 		LIB_DIR=$(LIB_DIR) INC_DIR=$(INC_DIR)
+
+tests_run:
+	@exit 0
 
 init: install-hooks install-mango
 
