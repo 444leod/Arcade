@@ -19,7 +19,7 @@ class IGameObject {
 
         struct Effects {
             int deltaScore;
-            int deltaSpeed;
+            float deltaSpeed;
             int deltaGrowth;
             bool killPlayer;
         };
