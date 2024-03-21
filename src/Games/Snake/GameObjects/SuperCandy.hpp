@@ -5,7 +5,7 @@
 ** SuperCandy
 */
 
-#include "GameObject/AGameObject.hpp"
+#include "SnakeLib/GameObject/AGameObject.hpp"
 
 #pragma once
 

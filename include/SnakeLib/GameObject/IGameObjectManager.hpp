@@ -8,8 +8,8 @@
 #include <vector>
 #include <string>
 
-#include "GameObject/IGameObject.hpp"
-#include "position.hpp"
+#include "SnakeLib/GameObject/IGameObject.hpp"
+#include "SnakeLib/position.hpp"
 
 #pragma once
 

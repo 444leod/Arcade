@@ -8,7 +8,7 @@
 #include <vector>
 #include <memory>
 
-#include "GameObject/IGameObjectManager.hpp"
+#include "SnakeLib/GameObject/IGameObjectManager.hpp"
 
 #pragma once
 

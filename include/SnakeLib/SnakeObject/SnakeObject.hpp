@@ -9,7 +9,7 @@
 #include <string>
 #include <map>
 
-#include "position.hpp"
+#include "SnakeLib/position.hpp"
 
 class SnakeObject {
     private:

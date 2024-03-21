@@ -9,8 +9,8 @@
 #include <string>
 #include <map>
 
-#include "SnakeObject/SnakeObject.hpp"
-#include "SnakeObject/SnakeConstants.hpp"
+#include "SnakeLib/SnakeObject/SnakeObject.hpp"
+#include "SnakeLib/SnakeObject/SnakeConstants.hpp"
 
 // Public Member Functions
 

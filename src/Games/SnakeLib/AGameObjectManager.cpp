@@ -5,8 +5,8 @@
 ** AGameObjectManager
 */
 
-#include "GameObject/AGameObjectManager.hpp"
-#include "SnakeObject/SnakeConstants.hpp"
+#include "SnakeLib/GameObject/AGameObjectManager.hpp"
+#include "SnakeLib/SnakeObject/SnakeConstants.hpp"
 #include <algorithm>
 
 std::vector<std::pair<position, std::string>> AGameObjectManager::dump() const

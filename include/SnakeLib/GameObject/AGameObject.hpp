@@ -5,7 +5,7 @@
 ** AGameObject
 */
 
-#include "GameObject/IGameObject.hpp"
+#include "SnakeLib/GameObject/IGameObject.hpp"
 
 #pragma once
 

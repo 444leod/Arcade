@@ -5,7 +5,7 @@
 ** AGameObject
 */
 
-#include "GameObject/AGameObject.hpp"
+#include "SnakeLib/GameObject/AGameObject.hpp"
 
 void AGameObject::applyEffect([[maybe_unused]] SnakeObject &snake)
 {

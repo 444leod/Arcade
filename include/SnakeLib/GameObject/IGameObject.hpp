@@ -6,7 +6,7 @@
 */
 
 #include <string>
-#include "SnakeObject/SnakeObject.hpp"
+#include "SnakeLib/SnakeObject/SnakeObject.hpp"
 
 #pragma once
 

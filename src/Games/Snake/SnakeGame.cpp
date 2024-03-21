@@ -5,8 +5,8 @@
 ** SnakeGame.cpp
 */
 
-#include "arcade/IGame.hpp"
-#include "SnakeObject/SnakeConstants.hpp"
+#include "IGame.hpp"
+#include "SnakeLib/SnakeObject/SnakeConstants.hpp"
 #include "GameObjects/SuperCandy.hpp"
 #include "GameObjects/SnakeObjectManager.hpp"
 
@@ -46,9 +46,9 @@ public:
         lib.fonts().load("Pokemon", text);
 
         // Sounds
-        arc::SoundSpecification sound;
-        sound.path = "woosh.wav";
-        lib.sounds().load("woosh", sound);
+        // arc::SoundSpecification sound;
+        // sound.path = "woosh.wav";
+        // lib.sounds().load("woosh", sound);
     }
 
     virtual void onKeyPressed([[maybe_unused]] arc::ILibrary& lib, arc::Key key)
@@ -61,8 +61,9 @@ public:
             case arc::Key::D: playSound = _snake.setDirection({1, 0}); break;
             default: break;
         }
-        if (playSound)
-            lib.display().playSound(lib.sounds().get("woosh"), 50.0f);
+        (void)playSound;
+        // if (playSound)
+            // lib.display().playSound(lib.sounds().get("woosh"), 50.0f);
     }
 
     virtual void onMouseButtonPressed(
@@ -191,7 +192,7 @@ private:
         //Super Candy
         spec.textual.character = 'X';
         spec.textual.color = {255, 255, 0, 255};
-        spec.graphical = arc::TextureImage{"../assets/snake/images/super_candy.png"};
+        spec.graphical = arc::TextureImage{SUPER_CANDY};
         lib.textures().load("super_candy", spec);
     }
 

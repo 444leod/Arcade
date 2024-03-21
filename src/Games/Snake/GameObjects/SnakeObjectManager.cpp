@@ -7,7 +7,7 @@
 
 #include "SnakeObjectManager.hpp"
 #include "SuperCandy.hpp"
-#include "SnakeObject/SnakeConstants.hpp"
+#include "SnakeLib/SnakeObject/SnakeConstants.hpp"
 #include <memory>
 
 SnakeObjectManager::SnakeObjectManager()

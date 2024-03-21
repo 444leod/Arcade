@@ -195,6 +195,7 @@ private:
     #else
         std::vector<std::string> _gameLibraries = {
             "./lib/arcade_example.so",
+            "./lib/arcade_snake.so",
             "./lib/arcade_pacman.so"
         };
     #endif
