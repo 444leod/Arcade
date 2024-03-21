@@ -185,7 +185,7 @@ private:
     std::vector<std::string> _graphicLibraries = {
         "./lib/arcade_ncurses.so",
         "./lib/arcade_sfml.so",
-        // "./lib_arcade_sdl.so",
+        "./lib/arcade_sdl2.so",
     };
     size_t _currentGraphicLibrary = 0;
     #if PACMAN

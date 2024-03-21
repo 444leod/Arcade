@@ -10,7 +10,6 @@
 #include <iostream>
 #include <cstdlib>
 #include <sstream>
-#include <fstream>
 
 struct vec2 {
     int x;
@@ -19,13 +18,6 @@ struct vec2 {
 
 class MyGame : public arc::IGame {
 public:
-    ~MyGame()
-    {
-        //write the score into a file as a int not a string
-        // std::ofstream file("score.txt", std::ios::app);
-        // file << &_score << std::endl;
-    }
-
     virtual std::string name() const
     {
         return "MyGame";
@@ -34,7 +26,7 @@ public:
     virtual void initialize(arc::ILibrary& lib)
     {
         lib.display().setTitle("Arcade");
-        lib.display().setFramerate(60);
+        lib.display().setFramerate(30);
         lib.display().setTileSize(16);
         lib.display().setWidth(25);
         lib.display().setHeight(25);
@@ -62,30 +54,30 @@ public:
         lib.fonts().load("font", text);
 
         // Sounds
-        // arc::SoundSpecification sound;
-        // sound.path = "assets/woosh.wav";
-        // lib.sounds().load("woosh", sound);
+        arc::SoundSpecification sound;
+        sound.path = "assets/woosh.wav";
+        lib.sounds().load("woosh", sound);
 
-        // // Musics
-        // arc::MusicSpecification music;
-        // music.path = "assets/pacman-theme.wav";
-        // music.loop = true;
-        // music.isPlaying = false;
-        // lib.musics().load("pacman-theme", music);
+        // Musics
+        arc::MusicSpecification music;
+        music.path = "assets/pacman-theme.wav";
+        music.loop = true;
+        music.isPlaying = false;
+        lib.musics().load("pacman-theme", music);
     }
 
     virtual void onKeyPressed([[maybe_unused]] arc::ILibrary& lib, arc::Key key)
     {
         switch (key) {
-            case arc::Key::Z: _playerDir = {0, -1}; /*lib.display().playSound(lib.sounds().get("woosh"), 50.0f)*/; break;
-            case arc::Key::Q: _playerDir = {-1, 0}; /*lib.display().playSound(lib.sounds().get("woosh"), 50.0f)*/; break;
-            case arc::Key::S: _playerDir = {0, 1};  /*lib.display().playSound(lib.sounds().get("woosh"), 50.0f)*/; break;
-            case arc::Key::D: _playerDir = {1, 0};  /*lib.display().playSound(lib.sounds().get("woosh"), 50.0f)*/; break;
+            case arc::Key::Z: _playerDir = {0, -1}; lib.sounds().play("woosh", 50.0f); break;
+            case arc::Key::Q: _playerDir = {-1, 0}; lib.sounds().play("woosh", 50.0f); break;
+            case arc::Key::S: _playerDir = {0, 1};  lib.sounds().play("woosh", 50.0f); break;
+            case arc::Key::D: _playerDir = {1, 0};  lib.sounds().play("woosh", 50.0f); break;
             case arc::Key::A:
-                // if (lib.display().isMusicPlaying(lib.musics().get("pacman-theme")))
-                //     lib.display().stopMusic(lib.musics().get("pacman-theme"));
-                // else
-                //     lib.display().playMusic(lib.musics().get("pacman-theme"), 50.0f);
+                if (lib.musics().isPlaying("pacman-theme"))
+                    lib.musics().stop("pacman-theme");
+                else
+                    lib.musics().play("pacman-theme", 50.0f);
                 break;
             default: break;
         }
