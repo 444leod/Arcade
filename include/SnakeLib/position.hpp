@@ -12,11 +12,11 @@ class position {
         int x;
         int y;
 
-        bool operator== (position &rightPos) const 
+        bool operator== (const position &rightPos) const 
         {
             return (x == rightPos.x && y == rightPos.y);
         }
-        bool operator!= (position &rightPos) const 
+        bool operator!= (const position &rightPos) const 
         {
             return !(x == rightPos.x && y == rightPos.y);
         }
