@@ -31,10 +31,10 @@ lib_arcade_mygame.so: src/MyGame.cpp
 	@g++ -shared src/MyGame.cpp -o lib_arcade_mygame.so \
 	-fPIC -iquote ./include -std=c++20 -Wall -Wextra -Werror
 
-arcade_snake.so: src/Snake/SnakeGame.cpp Lib/Snake.cpp src/Snake/GameObjects/SuperCandy.cpp Lib/AGameObjectManager.cpp
-	@g++ -shared src/Snake/SnakeGame.cpp Lib/Snake.cpp src/Snake/GameObjects/SuperCandy.cpp Lib/AGameObjectManager.cpp -o arcade_snake.so \
+arcade_snake.so: src/Snake/SnakeGame.cpp Lib/SnakeObject.cpp src/Snake/GameObjects/SuperCandy.cpp Lib/AGameObjectManager.cpp Lib/AGameObject.cpp src/Snake/GameObjects/SnakeObjectManager.cpp
+	@g++ -shared src/Snake/SnakeGame.cpp Lib/SnakeObject.cpp src/Snake/GameObjects/SuperCandy.cpp Lib/AGameObjectManager.cpp Lib/AGameObject.cpp src/Snake/GameObjects/SnakeObjectManager.cpp -o arcade_snake.so \
 	-fPIC -iquote ./include -std=c++20 -Wall -Wextra -Werror
 
-example: src/Core.cpp src/MyGame.cpp src/SFML.cpp src/NCurses.cpp src/Snake/SnakeGame.cpp Lib/Snake.cpp src/Snake/GameObjects/SuperCandy.cpp
+example: src/Core.cpp src/MyGame.cpp src/SFML.cpp src/NCurses.cpp src/Snake/SnakeGame.cpp Lib/SnakeObject.cpp Lib/AGameObject.cpp src/Snake/GameObjects/SuperCandy.cpp
 	@g++ src/Core.cpp -o example \
 	-iquote ./include -std=c++20 -Wall -Wextra -Werror

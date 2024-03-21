@@ -7,8 +7,8 @@
 
 #include "arcade/IGame.hpp"
 #include "SnakeObject/SnakeConstants.hpp"
-#include "SnakeObject/SnakeObject.hpp"
 #include "GameObjects/SuperCandy.hpp"
+#include "GameObjects/SnakeObjectManager.hpp"
 
 #include <iostream>
 #include <cstdlib>
@@ -33,9 +33,6 @@ public:
         lib.display().setTileSize(64);
         lib.display().setWidth(ARENA_WIDTH + 2);
         lib.display().setHeight(ARENA_HEIGHT + 1 + 2);
-
-        resetGoal();
-        _superCandy.setPos({_goalPos.x, _goalPos.y});
 
         // Textures
         initTextures(lib);
@@ -79,29 +76,15 @@ public:
 
     virtual void update([[maybe_unused]] arc::ILibrary& lib, float deltaTime)
     {
-        //todo snake.update()
-        _elapsed += deltaTime;
-        while (_elapsed > _gameSpeed) {
-            if (!_snake.getAlive())
-                return;
-
-            if (_snake.move(std::make_pair(_goalPos.x, _goalPos.y))) {
-                _score += 1;
-                _gameSpeed -= _gameSpeed < 0.02 ? 0 : 0.005;
-                resetGoal();
-                _superCandy.setPos({_goalPos.x, _goalPos.y});
-                printf("%d, %d\n", _superCandy.getPos().x, _superCandy.getPos().y);
-            }
-
-            _elapsed -= _gameSpeed;
-        }
+        position objectCollided = _snake.update(_snakeManager.getPos(), deltaTime);
+        _snakeManager.update(objectCollided, _snake, deltaTime);
     }
 
     virtual void draw(arc::ILibrary& lib)
     {
         std::stringstream score;
 
-        score << "Score: " << _score;
+        score << "Score: " << _snake.getScore();
 
         lib.display().clear(arc::Color{0, 0, 255, 0});
         draw_arena(lib);
@@ -110,8 +93,9 @@ public:
                 lib.display().draw(lib.textures().get(part.second), part.first.x, part.first.y);
             }
         }
-
-        lib.display().draw(lib.textures().get("Super-Candy"), _goalPos.x, _goalPos.y);
+        for (auto &part : _snakeManager.dump()) {
+                lib.display().draw(lib.textures().get(part.second), part.first.x, part.first.y);
+            }
 
         auto width = lib.display().width();
         auto textWidth = lib.display().measure(score.str(), lib.fonts().get("Pokemon"), 0, 0).width;
@@ -122,11 +106,6 @@ public:
     }
 
 private:
-    void resetGoal() {
-        _goalPos.x = rand() % ARENA_WIDTH + 1;
-        _goalPos.y = rand() % ARENA_HEIGHT + 1;
-    }
-
     void initTextures(arc::ILibrary& lib)
     {
         arc::TextureSpecification spec;
@@ -209,11 +188,11 @@ private:
         spec.graphical = arc::TextureImage{TILESET_CAVE, arc::Rect<uint32_t>{62, 160, 16, 16}};
         lib.textures().load("arena_south_east_edge", spec);
 
-        //Super-Candy
+        //Super Candy
         spec.textual.character = 'X';
         spec.textual.color = {255, 255, 0, 255};
         spec.graphical = arc::TextureImage{"../assets/snake/images/super_candy.png"};
-        lib.textures().load("Super-Candy", spec);
+        lib.textures().load("super_candy", spec);
     }
 
     void draw_arena(arc::ILibrary& lib)
@@ -248,13 +227,8 @@ private:
     }
 
 private:
-    float _elapsed = 0;
-    float _gameSpeed = 0.2;
-    std::uint32_t _score = 0;
-    vec2 _goalPos = {0, 0};
     SnakeObject _snake = SnakeObject();
-    SuperCandy _superCandy = SuperCandy("Super-Candy", {0, 0});
-
+    SnakeObjectManager _snakeManager = SnakeObjectManager();
 };
 
 extern "C" arc::IGame* entrypoint()

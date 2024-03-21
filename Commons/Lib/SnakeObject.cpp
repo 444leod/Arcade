@@ -16,6 +16,9 @@
 
 SnakeObject::SnakeObject()
 {
+    _score = 0;
+    _speed = 0.2;
+    _elapsed = 0;
     _alive = true;
     _readyToRotate = true;
     _direction = std::make_pair(1, 0);
@@ -35,36 +38,26 @@ bool SnakeObject::setDirection(std::pair<int, int> direction)
     return true;
 }
 
-bool SnakeObject::move(std::pair<int, int> goalPos)
+position SnakeObject::update([[maybe_unused]] std::vector<position> objectsPos, float deltaTime)
 {
-    int old_x = _body[0].x;
-    int old_y = _body[0].y;
-
-    _readyToRotate = true;
-    if (_body[0].x + _direction.first ==  goalPos.first && _body[0].y + _direction.second == goalPos.second) {
-        grow(goalPos.first, goalPos.second, 1);
-        return true;
-    }
-
-    if (!(_direction.first == 0 && _direction.second == 0)) {
-        for (std::size_t i = _body.size() - 1; i > 0; i--) {
-            _body[i].x = _body[i - 1].x;
-            _body[i].y = _body[i - 1].y;
+    _elapsed += deltaTime;
+    while (_elapsed > _speed) {
+        if (!_alive)
+            return {-1, -1};
+        position movRes = move(objectsPos);
+        if (movRes.x != -1 && movRes.y != -1) {
+            return movRes;
+            // _score += 1;
+            // _gameSpeed -= _gameSpeed < 0.02 ? 0 : 0.005;
+            // resetGoal();
+            // _superCandy.setPos({_goalPos.x, _goalPos.y});
+            // printf("%d, %d\n", _superCandy.getPos().x, _superCandy.getPos().y);
         }
+
+        _elapsed -= _speed;
     }
-    if ((_body[0].x > 1 && _direction.first < 0) ||
-        (_body[0].x < ARENA_WIDTH  && _direction.first > 0))
-        _body[0].x += _direction.first;
-
-    if ((_body[0].y > 1 && _direction.second < 0) ||
-        (_body[0].y < ARENA_HEIGHT  && _direction.second > 0))
-        _body[0].y += _direction.second;
-
-    if (checkCollision(old_x, old_y))
-        _alive = false;
-    return false;
+    return {-1, -1};
 }
-
 
 std::vector<std::pair<SnakeObject::BodyPart, std::string>> SnakeObject::dump() const
 {
@@ -83,7 +76,53 @@ std::vector<std::pair<SnakeObject::BodyPart, std::string>> SnakeObject::dump() c
     return res;
 }
 
+std::vector<position> SnakeObject::getPositions() const
+{
+    std::vector<position> res;
+
+    for (auto &part : _body) {
+        res.push_back({part.x, part.y});
+    }
+    return res;
+}
+
 // Privates Member Functions
+
+position SnakeObject::move([[maybe_unused]] std::vector<position> objectsPos)
+{
+    int old_x = _body[0].x;
+    int old_y = _body[0].y;
+
+    _readyToRotate = true;
+
+    // if (_body[0].x + _direction.first ==  goalPos.first && _body[0].y + _direction.second == goalPos.second) {
+    //     grow(goalPos.first, goalPos.second, 1);
+    //     return true;
+    // }
+    for (auto &pos : objectsPos) {
+        if (_body[0].x + _direction.first == pos.x && _body[0].y + _direction.second == pos.y) {
+            return pos;
+        }
+    }
+
+    if (!(_direction.first == 0 && _direction.second == 0)) {
+        for (std::size_t i = _body.size() - 1; i > 0; i--) {
+            _body[i].x = _body[i - 1].x;
+            _body[i].y = _body[i - 1].y;
+        }
+    }
+    if ((_body[0].x > 1 && _direction.first < 0) ||
+        (_body[0].x < ARENA_WIDTH  && _direction.first > 0))
+        _body[0].x += _direction.first;
+
+    if ((_body[0].y > 1 && _direction.second < 0) ||
+        (_body[0].y < ARENA_HEIGHT  && _direction.second > 0))
+        _body[0].y += _direction.second;
+
+    if (checkCollision(old_x, old_y))
+        _alive = false;
+    return {-1, -1};
+}
 
 void SnakeObject::grow(int x, int y, std::size_t size)
 {

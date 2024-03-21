@@ -9,10 +9,13 @@
 
 #pragma once
 
-class SnakeObjectManager : public AGameObjectManager{
+class SnakeObjectManager : public AGameObjectManager {
     public:
         SnakeObjectManager();
+
         ~SnakeObjectManager();
+
+        void update(position objectCollided, SnakeObject& snake, float deltaTime) override;
 
     protected:
     private:

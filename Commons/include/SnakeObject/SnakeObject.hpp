@@ -9,6 +9,8 @@
 #include <string>
 #include <map>
 
+#include "position.hpp"
+
 class SnakeObject {
     private:
         struct BodyPart {
@@ -21,20 +23,30 @@ class SnakeObject {
 
         ~SnakeObject() = default;
 
+        float getSpeed() const {return _speed;}
+
         bool getAlive() const {return _alive;}
 
-        std::pair<int, int> getHeadPos() const {return std::make_pair(_body[0].x, _body[0].y);}
+        int getScore() const {return _score;}
 
-        std::pair<int, int> getDirection() const {return _direction;}
+        std::vector<position> getPositions() const;
+
+        position update(std::vector<position> objectsPos, float deltaTime);
 
         bool setDirection(std::pair<int, int> direction);
 
-        bool move(std::pair<int, int> goalPos);
-
         std::vector<std::pair<SnakeObject::BodyPart, std::string>> dump() const;
 
-    private:
+        void setSpeed(float speed) {_speed = speed;}
+
+        void setAlive(bool alive) {_alive = alive;}
+
+        void setScore(int score) {_score = score;}
+
         void grow(int x, int y, std::size_t size);
+
+    private:
+        position move(std::vector<position> objectsPos);
 
         bool checkCollision(int oldX, int oldY);
 
@@ -45,7 +57,9 @@ class SnakeObject {
         std::pair<SnakeObject::BodyPart, std::string> getDumpBody(std::size_t i) const;
 
         std::vector<SnakeObject::BodyPart> _body;
-        int _speed;
+        int _score;
+        float _speed;
+        float _elapsed;
         bool _alive;
         bool _readyToRotate;
         std::pair<int, int> _direction;

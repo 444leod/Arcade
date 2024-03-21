@@ -8,19 +8,27 @@
 #include <vector>
 #include <memory>
 
-#include "GameObject/IGameObject.hpp"
+#include "GameObject/IGameObjectManager.hpp"
 
 #pragma once
 
-class AGameObjectManager {
+class AGameObjectManager : public IGameObjectManager{
     public:
-        virtual ~AGameObjectManager() = default;
+        AGameObjectManager() {};
 
-        virtual void update() = 0;
+        ~AGameObjectManager() {};
 
-        virtual std::vector<std::pair<IGameObject::pos, std::string>> dump() = 0;
+        virtual void update(position objectCollided, SnakeObject& snake, float deltaTime) = 0;
+
+        virtual std::vector<std::pair<position, std::string>> dump() const;
+
+        virtual std::vector<position> getPos() const;
+        
+        virtual void applyEffects(SnakeObject &snake) const;
 
     protected:
+        virtual position getSpawnPos(std::vector<position> forbidenPositions) const;
+
         std::vector<std::shared_ptr<IGameObject>> _gameObjects;
     private:
 };

@@ -9,24 +9,28 @@
 
 #pragma once
 
-class AGameObject : public IGameObject{
+class AGameObject : public IGameObject {
     public:
-        AGameObject(std::string textureName, IGameObject::pos pos) : _textureName(textureName), _pos(pos) {}
+        AGameObject(position pos) : _pos(pos) {}
 
         virtual ~AGameObject() = default;
 
-        virtual std::pair<IGameObject::pos, std::string> dumpTexture() {return std::make_pair(_pos, _textureName);}
+        virtual std::pair<position, std::string> dumpTexture() const {return std::make_pair(_pos, _textureName);}
 
-        virtual IGameObject::Effects getEffects() {return _effects;}
+        virtual IGameObject::Effects getEffects() const {return _effects;}
 
-        virtual void setPos(IGameObject::pos pos) {_pos = pos;}
+        virtual void setPos(position pos) {_pos = pos;}
 
-        virtual IGameObject::pos getPos() const {return _pos;}
+        virtual position getPos() const {return _pos;}
+
+        virtual void applyEffect(SnakeObject &snake);
 
     protected:
         std::string _textureName;
         IGameObject::Effects _effects;
-        IGameObject::pos _pos;
+        position _pos;
+        bool _autoRespawn;
+        bool _destroyable;
 
     private:
 };

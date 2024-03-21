@@ -11,7 +11,7 @@
 
 class SuperCandy : public AGameObject {
     public:
-        SuperCandy(std::string textureName, IGameObject::pos pos);
+        SuperCandy(position pos);
 
         ~SuperCandy() = default;
 

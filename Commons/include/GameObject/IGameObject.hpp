@@ -6,6 +6,7 @@
 */
 
 #include <string>
+#include "SnakeObject/SnakeObject.hpp"
 
 #pragma once
 
@@ -25,9 +26,15 @@ class IGameObject {
 
         virtual ~IGameObject() = default;
 
-        virtual std::pair<IGameObject::pos, std::string> dumpTexture() = 0;
+        virtual std::pair<position, std::string> dumpTexture() const = 0;
 
-        virtual IGameObject::Effects getEffects() = 0;
+        virtual IGameObject::Effects getEffects() const = 0;
+
+        virtual void setPos(position pos) = 0;
+
+        virtual position getPos() const = 0;
+
+        virtual void applyEffect(SnakeObject &snake) = 0;
 
     protected:
     private:

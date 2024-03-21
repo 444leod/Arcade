@@ -9,13 +9,11 @@
 
 #include "SuperCandy.hpp"
 
-SuperCandy::SuperCandy(std::string textureName, IGameObject::pos pos) : AGameObject(textureName, pos)
+SuperCandy::SuperCandy(position pos) : AGameObject(pos)
 {
-    _effects = {
-        1,
-        0,
-        0,
-        false
-    };
-
+    _textureName = "super_candy";
+    _effects.deltaScore = 10;
+    _effects.deltaSpeed = 0;
+    _effects.deltaGrowth = 1;
+    _effects.killPlayer = false;
 }
