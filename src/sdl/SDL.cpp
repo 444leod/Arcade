@@ -25,9 +25,11 @@ namespace arc
             Mix_FreeChunk(this->_sound);
         }
 
-        bool load(const std::string& file)
+        bool load(const SoundSpecification& spec)
         {
-            _sound = Mix_LoadWAV(file.c_str());
+            _spec = spec;
+            std::cout << "Loading: " << spec.path << std::endl;
+            _sound = Mix_LoadWAV(spec.path.c_str());
             if (_sound == nullptr)
                 std::cout << Mix_GetError() << std::endl;
             return _sound != nullptr;
@@ -57,13 +59,16 @@ namespace arc
             if (Mix_OpenAudio(48000, MIX_DEFAULT_FORMAT, 2, 4096))
                 std::cout << Mix_GetError() << std::endl;
         }
-        ~SDLSoundManager() = default;
+        ~SDLSoundManager()
+        {
+            Mix_CloseAudio();
+        }
 
         virtual bool load(const std::string& name, const SoundSpecification& spec)
         {
             auto sound = std::make_shared<SDLSound>();
 
-            if (!sound->load(spec.path))
+            if (!sound->load(spec))
                 return false;
             this->_sounds[name] = sound;
             return true;
@@ -71,13 +76,13 @@ namespace arc
 
         virtual std::vector<std::pair<std::string, SoundSpecification>> dump() const
         {
-            auto specs = std::vector<std::pair<std::string, arc::SoundSpecification>>{};
+            auto specs = std::vector<std::pair<std::string, SoundSpecification>>{};
             specs.reserve(_sounds.size());
 
-            for (auto& [name, sound] : this->_sounds) {
+            for (const auto& [name, sound] : this->_sounds) {
+                std::cout << "Dumping: " << name << ": " << sound->specification().path << std::endl;
                 specs.push_back({name, sound->specification()});
             }
-
             return specs;
         }
 
@@ -105,11 +110,15 @@ namespace arc
     {
     public:
         SDLMusic() = default;
-        ~SDLMusic() = default;
-
-        bool load(const std::string& file)
+        ~SDLMusic()
         {
-            _music = Mix_LoadMUS(file.c_str());
+            Mix_FreeMusic(this->_music);
+        }
+
+        bool load(const MusicSpecification& spec)
+        {
+            _spec = spec;
+            _music = Mix_LoadMUS(spec.path.c_str());
             return this->_music != nullptr;
         }
 
@@ -140,7 +149,7 @@ namespace arc
         {
             auto music = std::make_shared<SDLMusic>();
 
-            if (!music->load(spec.path))
+            if (!music->load(spec))
                 return false;
             this->_musics[name] = music;
             return true;
@@ -148,13 +157,11 @@ namespace arc
 
         virtual std::vector<std::pair<std::string, MusicSpecification>> dump()
         {
-            auto specs = std::vector<std::pair<std::string, arc::MusicSpecification>>{};
+            auto specs = std::vector<std::pair<std::string, MusicSpecification>>{};
             specs.reserve(_musics.size());
 
-            for (auto& [name, music] : this->_musics) {
+            for (const auto& [name, music] : this->_musics)
                 specs.push_back({name, music->specification()});
-            }
-
             return specs;
         }
 
@@ -277,7 +284,6 @@ namespace arc
 
             for (const auto& [name, texture] : this->_textures)
                 specs.push_back({name, texture->specification()});
-
             return specs;
         }
 
@@ -351,7 +357,6 @@ namespace arc
 
             for (const auto& [name, font] : this->_fonts)
                 specs.push_back({name, font->specification()});
-
             return specs;
         }
 
