@@ -38,7 +38,7 @@ namespace pacman {
             TileType getTileType(vec2i pos);
 
             vec2i getPlayerPos();
-            pacman::player::State processPlayerPos(vec2i newPos, vec2i direction);
+            pacman::player::State processPlayerPos(vec2i newPos, vec2i direction, uint32_t& score, std::vector<vec2f> ghostsPos, vec2f pacmanPos);
 
         protected:
         private:

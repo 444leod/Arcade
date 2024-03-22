@@ -83,7 +83,7 @@ vec2i MapHandler::getPlayerPos()
     return _playerPos;
 }
 
-pacman::player::State MapHandler::processPlayerPos(vec2i newPos, vec2i direction)
+pacman::player::State MapHandler::processPlayerPos(vec2i newPos, vec2i direction, uint32_t& score, std::vector<vec2f> ghostPos, vec2f pacmanPos)
 {
     if (_nextPlayerPos != vec2i(-1, -1)) {
         _playerPos = _nextPlayerPos;
@@ -98,13 +98,20 @@ pacman::player::State MapHandler::processPlayerPos(vec2i newPos, vec2i direction
         if (_playerPos == teleporter.second && direction == vec2i(1, 0))
             _nextPlayerPos = teleporter.first;
     }
+    for (auto &ghost : ghostPos) {
+        float tolerance = 0.4f;
+        if (std::abs(pacmanPos.x - ghost.x) <= tolerance && std::abs(pacmanPos.y - ghost.y) <= tolerance)
+            return pacman::player::State::DEAD;
+    }
     TileType tile = _tileTypes.at(_map[_playerPos.y][_playerPos.x]);
     switch (tile) {
         case TileType::COIN:
             _map[_playerPos.y][_playerPos.x] = static_cast<int>(TileType::VOID);
+            score += 10;
             return pacman::player::State::ALIVE;
         case TileType::FRUIT:
             _map[_playerPos.y][_playerPos.x] = static_cast<int>(TileType::VOID);
+            score += 100;
             return pacman::player::State::HUNGRY;
         default:
             break;
