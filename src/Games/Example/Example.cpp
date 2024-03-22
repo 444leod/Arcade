@@ -12,7 +12,7 @@
 #include <sstream>
 #include <fstream>
 
-struct vec2 {
+struct Vec2 {
     int x;
     int y;
 };
@@ -149,9 +149,9 @@ private:
 private:
     float _elapsed = 0;
     uint32_t _score = 0;
-    vec2 _playerDir = {0, 0};
-    vec2 _playerPos = {0, 0};
-    vec2 _goalPos = {0, 0};
+    Vec2 _playerDir = {0, 0};
+    Vec2 _playerPos = {0, 0};
+    Vec2 _goalPos = {0, 0};
 };
 
 extern "C" arc::IGame* entrypoint()

@@ -13,7 +13,7 @@
 SnakeObjectManager::SnakeObjectManager()
 {
     _gameObjects.push_back(std::make_shared<SuperCandy>(
-        getSpawnPos(std::vector<position> {
+        getSpawnPos(std::vector<Vec2i> {
             {(ARENA_WIDTH + 1) / 2 - 0, (ARENA_HEIGHT + 1) / 2},
             {(ARENA_WIDTH + 1) / 2 - 1, (ARENA_HEIGHT + 1) / 2},
             {(ARENA_WIDTH + 1) / 2 - 2, (ARENA_HEIGHT + 1) / 2},
@@ -24,9 +24,9 @@ SnakeObjectManager::SnakeObjectManager()
 
 SnakeObjectManager::~SnakeObjectManager() {}
 
-void SnakeObjectManager::update(position objectCollided, SnakeObject& snake, [[maybe_unused]] float deltaTime)
+void SnakeObjectManager::update(Vec2i objectCollided, SnakeObject& snake, [[maybe_unused]] float deltaTime)
 {
-    if (position{-1, -1} == objectCollided) {
+    if (Vec2i{-1, -1} == objectCollided) {
         return;
     }
     for (auto &obj : _gameObjects) {

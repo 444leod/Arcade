@@ -129,11 +129,11 @@ public:
             lib.display().draw(lib.textures().get(texture), pos.x, pos.y);
         }
 
-        // vec2i initialPos = _player->getPos();
-        // vec2f playerPos = _player->getPosf();
+        // Vec2i initialPos = _player->getPos();
+        // Vec2f playerPos = _player->getPosf();
         // playerPos.x = initialPos.x + playerPos.x;
         // playerPos.y = initialPos.y + playerPos.y;
-        vec2i playerPos = _player->getPos();
+        Vec2i playerPos = _player->getPos();
         lib.display().draw(lib.textures().get("player"), playerPos.x, playerPos.y);
         auto width = lib.display().width();
         auto textWidth = lib.display().measure(score.str(), lib.fonts().get("font"), 0, 0).width;
@@ -153,13 +153,13 @@ private:
     std::unique_ptr<pacman::IEntity> _player = std::make_unique<pacman::player::Player>();
 };
 
-std::ostream& operator<<(std::ostream& os, const vec2i& vec)
+std::ostream& operator<<(std::ostream& os, const Vec2i& vec)
 {
     os << "(" << vec.x << ", " << vec.y << ")";
     return os;
 }
 
-std::ostream& operator<<(std::ostream& os, const vec2f& vec)
+std::ostream& operator<<(std::ostream& os, const Vec2f& vec)
 {
     os << "(" << vec.x << ", " << vec.y << ")";
     return os;

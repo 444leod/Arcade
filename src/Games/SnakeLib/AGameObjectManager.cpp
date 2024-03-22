@@ -9,9 +9,9 @@
 #include "SnakeLib/SnakeObject/SnakeConstants.hpp"
 #include <algorithm>
 
-std::vector<std::pair<position, std::string>> AGameObjectManager::dump() const
+std::vector<std::pair<Vec2i, std::string>> AGameObjectManager::dump() const
 {
-    std::vector<std::pair<position, std::string>> res;
+    std::vector<std::pair<Vec2i, std::string>> res;
 
     for (auto &obj : _gameObjects) {
         res.push_back(obj->dumpTexture());
@@ -19,9 +19,9 @@ std::vector<std::pair<position, std::string>> AGameObjectManager::dump() const
     return res;
 }
 
-std::vector<position> AGameObjectManager::getPos() const
+std::vector<Vec2i> AGameObjectManager::getPos() const
 {
-    std::vector<position> res;
+    std::vector<Vec2i> res;
 
     for (auto &obj : _gameObjects) {
         res.push_back(obj->getPos());
@@ -36,9 +36,9 @@ void AGameObjectManager::applyEffects(SnakeObject &snake) const
     }
 }
 
-position AGameObjectManager::getSpawnPos(std::vector<position> forbidenPositions) const
+Vec2i AGameObjectManager::getSpawnPos(std::vector<Vec2i> forbidenPositions) const
 {
-    position pos {
+    Vec2i pos {
         rand() % ARENA_WIDTH + 1,
         rand() % ARENA_HEIGHT + 1
     };
@@ -46,7 +46,7 @@ position AGameObjectManager::getSpawnPos(std::vector<position> forbidenPositions
         forbidenPositions.push_back(obj->getPos());
     }
     while (std::find(forbidenPositions.begin(), forbidenPositions.end(), pos) != forbidenPositions.end()) {
-        pos = position {
+        pos = Vec2i {
             rand() % ARENA_WIDTH + 1,
             rand() % ARENA_HEIGHT + 1
         };

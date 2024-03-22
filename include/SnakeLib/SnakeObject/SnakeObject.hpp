@@ -9,15 +9,9 @@
 #include <string>
 #include <map>
 
-#include "SnakeLib/position.hpp"
+#include "Vec2.hpp"
 
 class SnakeObject {
-    private:
-        struct BodyPart {
-            int x;
-            int y;
-        };
-
     public:
         SnakeObject();
 
@@ -29,13 +23,13 @@ class SnakeObject {
 
         int getScore() const {return _score;}
 
-        std::vector<position> getPositions() const;
+        std::vector<Vec2i> getPositions() const;
 
-        position update(std::vector<position> objectsPos, float deltaTime);
+        Vec2i update(std::vector<Vec2i> objectsPos, float deltaTime);
 
         bool setDirection(std::pair<int, int> direction);
 
-        std::vector<std::pair<SnakeObject::BodyPart, std::string>> dump() const;
+        std::vector<std::pair<Vec2i, std::string>> dump() const;
 
         void setSpeed(float speed) {_speed = speed;}
 
@@ -48,17 +42,17 @@ class SnakeObject {
         void grow(int x, int y, std::size_t size);
 
     private:
-        position move(std::vector<position> objectsPos);
+        Vec2i move(std::vector<Vec2i> objectsPos);
 
         bool checkCollision(int oldX, int oldY);
 
-        std::pair<SnakeObject::BodyPart, std::string> getDumpHead() const;
+        std::pair<Vec2i, std::string> getDumpHead() const;
 
-        std::pair<SnakeObject::BodyPart, std::string> getDumpTail(std::size_t len) const;
+        std::pair<Vec2i, std::string> getDumpTail(std::size_t len) const;
 
-        std::pair<SnakeObject::BodyPart, std::string> getDumpBody(std::size_t i) const;
+        std::pair<Vec2i, std::string> getDumpBody(std::size_t i) const;
 
-        std::vector<SnakeObject::BodyPart> _body;
+        std::vector<Vec2i> _body;
         int _score;
         float _speed;
         float _elapsed;

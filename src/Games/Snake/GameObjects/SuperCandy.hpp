@@ -11,7 +11,7 @@
 
 class SuperCandy : public AGameObject {
     public:
-        SuperCandy(position pos);
+        SuperCandy(Vec2i pos);
 
         ~SuperCandy() = default;
 

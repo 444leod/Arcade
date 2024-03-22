@@ -25,7 +25,7 @@ SnakeObject::SnakeObject()
     _direction = std::make_pair(1, 0);
     _oldDirection = std::make_pair(1, 0);
     for (int i = 0; i < 4; i++)
-        _body.push_back(SnakeObject::BodyPart {(ARENA_WIDTH + 1) / 2 - i, (ARENA_HEIGHT + 1) / 2});
+        _body.push_back(Vec2i {(ARENA_WIDTH + 1) / 2 - i, (ARENA_HEIGHT + 1) / 2});
 }
 
 bool SnakeObject::setDirection(std::pair<int, int> direction)
@@ -41,14 +41,14 @@ bool SnakeObject::setDirection(std::pair<int, int> direction)
     return true;
 }
 
-position SnakeObject::update([[maybe_unused]] std::vector<position> objectsPos, float deltaTime)
+Vec2i SnakeObject::update([[maybe_unused]] std::vector<Vec2i> objectsPos, float deltaTime)
 {
     _elapsed += deltaTime;
     while (_elapsed > _speed) {
         if (!_alive)
             return {-1, -1};
-        position movRes = move(objectsPos);
-        if (position{-1, -1} != movRes) {
+        Vec2i movRes = move(objectsPos);
+        if (Vec2i{-1, -1} != movRes) {
             return movRes;
         }
         _elapsed -= _speed;
@@ -56,9 +56,9 @@ position SnakeObject::update([[maybe_unused]] std::vector<position> objectsPos, 
     return {-1, -1};
 }
 
-std::vector<std::pair<SnakeObject::BodyPart, std::string>> SnakeObject::dump() const
+std::vector<std::pair<Vec2i, std::string>> SnakeObject::dump() const
 {
-    std::vector<std::pair<SnakeObject::BodyPart, std::string>> res;
+    std::vector<std::pair<Vec2i, std::string>> res;
     std::size_t len = _body.size();
     std::size_t i = 0;
     for (auto &part : _body) {
@@ -73,9 +73,9 @@ std::vector<std::pair<SnakeObject::BodyPart, std::string>> SnakeObject::dump() c
     return res;
 }
 
-std::vector<position> SnakeObject::getPositions() const
+std::vector<Vec2i> SnakeObject::getPositions() const
 {
-    std::vector<position> res;
+    std::vector<Vec2i> res;
 
     for (auto &part : _body) {
         res.push_back({part.x, part.y});
@@ -85,7 +85,7 @@ std::vector<position> SnakeObject::getPositions() const
 
 // Privates Member Functions
 
-position SnakeObject::move([[maybe_unused]] std::vector<position> objectsPos)
+Vec2i SnakeObject::move([[maybe_unused]] std::vector<Vec2i> objectsPos)
 {
     int old_x = _body[0].x;
     int old_y = _body[0].y;
@@ -127,7 +127,7 @@ position SnakeObject::move([[maybe_unused]] std::vector<position> objectsPos)
 void SnakeObject::grow(int x, int y, std::size_t size)
 {
     for (size_t i = 0; i < size; i++)
-        _body.insert(_body.begin(), SnakeObject::BodyPart{x, y});
+        _body.insert(_body.begin(), Vec2i{x, y});
 }
 
 bool SnakeObject::checkCollision(int oldX, int oldY)
@@ -141,7 +141,7 @@ bool SnakeObject::checkCollision(int oldX, int oldY)
     return false;
 }
 
-std::pair<SnakeObject::BodyPart, std::string> SnakeObject::getDumpHead() const
+std::pair<Vec2i, std::string> SnakeObject::getDumpHead() const
 {
     return std::make_pair(_body[0], _headTextures.at(std::make_tuple(
         _oldDirection.first,
@@ -149,7 +149,7 @@ std::pair<SnakeObject::BodyPart, std::string> SnakeObject::getDumpHead() const
     )));
 }
 
-std::pair<SnakeObject::BodyPart, std::string> SnakeObject::getDumpTail(std::size_t len) const
+std::pair<Vec2i, std::string> SnakeObject::getDumpTail(std::size_t len) const
 {
     return std::make_pair(_body[len - 1], _tailTextures.at(std::make_tuple(
             _body[len - 1].x - _body[len - 2].x,
@@ -157,7 +157,7 @@ std::pair<SnakeObject::BodyPart, std::string> SnakeObject::getDumpTail(std::size
     )));
 }
 
-std::pair<SnakeObject::BodyPart, std::string> SnakeObject::getDumpBody(std::size_t i) const
+std::pair<Vec2i, std::string> SnakeObject::getDumpBody(std::size_t i) const
 {
     return std::make_pair(_body[i], _bodyTextures.at(std::make_tuple(
         _body[i].x - _body[i - 1].x,

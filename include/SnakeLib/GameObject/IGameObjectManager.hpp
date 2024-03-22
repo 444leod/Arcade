@@ -9,7 +9,6 @@
 #include <string>
 
 #include "SnakeLib/GameObject/IGameObject.hpp"
-#include "SnakeLib/position.hpp"
 
 #pragma once
 
@@ -17,15 +16,15 @@ class IGameObjectManager {
     public:
         virtual ~IGameObjectManager() = default;
 
-        virtual void update(position objectCollided, SnakeObject& snake, float deltaTime) = 0;
+        virtual void update(Vec2i objectCollided, SnakeObject& snake, float deltaTime) = 0;
 
-        virtual std::vector<std::pair<position, std::string>> dump() const = 0;
+        virtual std::vector<std::pair<Vec2i, std::string>> dump() const = 0;
 
-        virtual std::vector<position> getPos() const = 0;
+        virtual std::vector<Vec2i> getPos() const = 0;
         
         virtual void applyEffects(SnakeObject &snake) const = 0;
 
     protected:
-        virtual position getSpawnPos(std::vector<position> forbidenPositions) const = 0;
+        virtual Vec2i getSpawnPos(std::vector<Vec2i> forbidenPositions) const = 0;
     private:
 };

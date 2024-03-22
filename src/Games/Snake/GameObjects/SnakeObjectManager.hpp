@@ -6,6 +6,7 @@
 */
 
 #include "SnakeLib/GameObject/AGameObjectManager.hpp"
+#include "Vec2.hpp"
 
 #pragma once
 
@@ -15,7 +16,7 @@ class SnakeObjectManager : public AGameObjectManager {
 
         ~SnakeObjectManager();
 
-        void update(position objectCollided, SnakeObject& snake, float deltaTime) override;
+        void update(Vec2i objectCollided, SnakeObject& snake, float deltaTime) override;
 
     protected:
     private:

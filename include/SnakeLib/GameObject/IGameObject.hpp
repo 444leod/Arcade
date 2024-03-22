@@ -12,11 +12,6 @@
 
 class IGameObject {
     public:
-        struct pos {
-            int x;
-            int y;
-        };
-
         struct Effects {
             int deltaScore;
             float deltaSpeed;
@@ -26,13 +21,13 @@ class IGameObject {
 
         virtual ~IGameObject() = default;
 
-        virtual std::pair<position, std::string> dumpTexture() const = 0;
+        virtual std::pair<Vec2i, std::string> dumpTexture() const = 0;
 
         virtual IGameObject::Effects getEffects() const = 0;
 
-        virtual void setPos(position pos) = 0;
+        virtual void setPos(Vec2i pos) = 0;
 
-        virtual position getPos() const = 0;
+        virtual Vec2i getPos() const = 0;
 
         virtual void applyEffect(SnakeObject &snake) = 0;
 

@@ -9,7 +9,7 @@
 
 #include "SuperCandy.hpp"
 
-SuperCandy::SuperCandy(position pos) : AGameObject(pos)
+SuperCandy::SuperCandy(Vec2i pos) : AGameObject(pos)
 {
     _textureName = "super_candy";
     _effects.deltaScore = 10;

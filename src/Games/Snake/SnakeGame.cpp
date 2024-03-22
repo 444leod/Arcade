@@ -14,11 +14,6 @@
 #include <cstdlib>
 #include <sstream>
 
-struct vec2 {
-    int x;
-    int y;
-};
-
 class SnakeGame : public arc::IGame {
 public:
     virtual std::string name() const
@@ -77,7 +72,7 @@ public:
 
     virtual void update([[maybe_unused]] arc::ILibrary& lib, float deltaTime)
     {
-        position objectCollided = _snake.update(_snakeManager.getPos(), deltaTime);
+        Vec2i objectCollided = _snake.update(_snakeManager.getPos(), deltaTime);
         _snakeManager.update(objectCollided, _snake, deltaTime);
     }
 

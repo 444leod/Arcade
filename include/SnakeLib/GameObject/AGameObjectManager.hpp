@@ -18,16 +18,16 @@ class AGameObjectManager : public IGameObjectManager{
 
         ~AGameObjectManager() {};
 
-        virtual void update(position objectCollided, SnakeObject& snake, float deltaTime) = 0;
+        virtual void update(Vec2i objectCollided, SnakeObject& snake, float deltaTime) = 0;
 
-        virtual std::vector<std::pair<position, std::string>> dump() const;
+        virtual std::vector<std::pair<Vec2i, std::string>> dump() const;
 
-        virtual std::vector<position> getPos() const;
+        virtual std::vector<Vec2i> getPos() const;
         
         virtual void applyEffects(SnakeObject &snake) const;
 
     protected:
-        virtual position getSpawnPos(std::vector<position> forbidenPositions) const;
+        virtual Vec2i getSpawnPos(std::vector<Vec2i> forbidenPositions) const;
 
         std::vector<std::shared_ptr<IGameObject>> _gameObjects;
     private:
