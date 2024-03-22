@@ -15,7 +15,7 @@ DIR = $(shell pwd)
 LIB_DIR = $(DIR)/lib
 INC_DIR = $(DIR)/include
 
-all: games graphics core
+all: games graphicals core
 
 clean:
 	@make -s -C src/Games/Pacman clean 		LIB_DIR=$(LIB_DIR)
@@ -45,7 +45,7 @@ games:
 	@make -s -C src/Games/Snake 		LIB_DIR=$(LIB_DIR) INC_DIR=$(INC_DIR)
 	@make -s -C src/Games/Example 		LIB_DIR=$(LIB_DIR) INC_DIR=$(INC_DIR)
 
-graphics:
+graphicals:
 	@make -s -C src/Graphics/NCurses 	LIB_DIR=$(LIB_DIR) INC_DIR=$(INC_DIR)
 	@make -s -C src/Graphics/SFML 		LIB_DIR=$(LIB_DIR) INC_DIR=$(INC_DIR)
 	@# @make -s -C src/Graphics/SDL2 	LIB_DIR=$(LIB_DIR) INC_DIR=$(INC_DIR)
