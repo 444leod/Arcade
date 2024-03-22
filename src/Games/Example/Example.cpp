@@ -6,16 +6,12 @@
 */
 
 #include "IGame.hpp"
+#include "RandomNumberGenerator.hpp"
+#include "Vec2.hpp"
 
 #include <iostream>
-#include <cstdlib>
 #include <sstream>
 #include <fstream>
-
-struct Vec2 {
-    int x;
-    int y;
-};
 
 class MyGame : public arc::IGame {
 public:
@@ -142,16 +138,16 @@ public:
 
 private:
     void resetGoal() {
-        _goalPos.x = rand() % 25;
-        _goalPos.y = rand() % 25;
+        _goalPos.x = rng::rand(1, 24);
+        _goalPos.y = rng::rand(1, 24);
     }
 
 private:
     float _elapsed = 0;
     uint32_t _score = 0;
-    Vec2 _playerDir = {0, 0};
-    Vec2 _playerPos = {0, 0};
-    Vec2 _goalPos = {0, 0};
+    Vec2i _playerDir = {0, 0};
+    Vec2i _playerPos = {0, 0};
+    Vec2i _goalPos = {0, 0};
 };
 
 extern "C" arc::IGame* entrypoint()
