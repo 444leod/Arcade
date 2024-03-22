@@ -20,31 +20,31 @@ vec2i AEntity::getPos() const
     return _pos;
 }
 
-// vec2f AEntity::getPosf() const
-// {
-//     return _posf;
-// }
+vec2f AEntity::getPosf() const
+{
+    return _posf;
+}
 
 void AEntity::setPos(vec2f pos)
 {
     _pos = vec2i(pos.x, pos.y);
-    _posf = vec2f(pos.x, pos.y);
 }
 
 void AEntity::setPos(vec2i pos)
 {
-    _pos.x = pos.x;
-    _pos.y = pos.y;
-    _posf.x = pos.x;
-    _posf.y = pos.y;
+    _pos = pos;
 }
 
 void AEntity::setPos(float x, float y)
 {
     _pos.x = x;
     _pos.y = y;
-    _posf.x = x;
-    _posf.y = y;
+}
+
+void AEntity::setPosf(vec2i pos)
+{
+    _posf.x = static_cast<int>(pos.x);
+    _posf.y = static_cast<int>(pos.y);
 }
 
 void AEntity::setDirection(vec2i direction)
@@ -64,12 +64,13 @@ vec2i AEntity::getDirection() const
 
 void AEntity::move(float deltaTime, [[maybe_unused]]pacman::MapHandler& map)
 {
-    _elapsed += deltaTime * _speed;
+    _elapsed += (deltaTime * _speed);
     while (_elapsed >= 0.2) {
         _elapsed -= 0.2;
         if (_moveQueue.size()) {
             vec2i nextMove = _moveQueue.front();
             if (map.isTileWalkable(_pos + nextMove)) {
+                _lastPos = _pos;
                 _pos += nextMove;
                 _direction = nextMove;
                 _moveQueue.erase(_moveQueue.begin());
@@ -77,24 +78,27 @@ void AEntity::move(float deltaTime, [[maybe_unused]]pacman::MapHandler& map)
             }
         }
         if (map.isTileWalkable(_pos + _direction)) {
+            _lastPos = _pos;
             _pos += _direction;
-            return;
+            _posf = vec2f(_lastPos.x, _lastPos.y);
+        } else {
+            _lastPos = _pos;
         }
     }
 }
 
-// void AEntity::movef(float deltaTime, [[maybe_unused]]pacman::MapHandler& map)
-// {
-//     _elapsedf += deltaTime * _speed;
-//     while (_elapsedf >= 0.2) {
-//         _elapsedf -= 0.2;
-//         if (map.isTileWalkable(_pos + _direction)) {
-//             _posf.x += _direction.x * 0.1;
-//             _posf.y += _direction.y * 0.1;
-//             return;
-//         }
-//     }
-// }
+void AEntity::movef(float deltaTime, [[maybe_unused]]pacman::MapHandler& map)
+{
+    _elapsedf += (deltaTime * _speed);
+    while (_elapsedf >= 0.02) {
+        _elapsedf -= 0.02;
+        if (_pos != _lastPos) {
+            _posf.x += (_direction.x * 0.1);
+            _posf.y += (_direction.y * 0.1);
+            return;
+        }
+    }
+}
 
 void AEntity::setMoveQueue(std::vector<vec2i> moveQueue)
 {
@@ -114,4 +118,51 @@ void AEntity::queueMove(Direction direction)
 size_t AEntity::getSpeed() const
 {
     return _speed;
+}
+
+void AEntity::initTextures(arc::ITextureManager &manager)
+{
+    pacman::Direction dir = pacman::Direction::UP;
+    arc::TextureSpecification spec;
+    spec.textual.character = 'E';
+    spec.textual.color = {0, 0, 0, 255};
+
+    for (int i = 0; i < 4; i++) {
+        std::stringstream ss;
+        ss << "entity_" << i;
+
+        spec.graphical = arc::TextureImage{"assets/tileset.png", arc::Rect<uint32_t>{static_cast<uint32_t>(i * 16), 0, 16, 16}};
+        manager.load(ss.str(), spec);
+        _textures[dir] = {ss.str()};
+    }
+}
+
+std::map<pacman::Direction, std::vector<std::string>> AEntity::getTextures() const
+{
+    return _textures;
+}
+
+std::string AEntity::getName() const
+{
+    return _name;
+}
+
+std::string AEntity::getTexture(uint16_t tick)
+{
+    pacman::Direction direction;
+    vec2f pos;
+    if (this->getDirection() == vec2i(0, 0))
+        return this->_name + "_start";
+
+    for (auto [dir, vec] : pacman::DirectionToVec2) {
+        if (vec == this->getDirection()) {
+            direction = dir;
+            break;
+        }
+    }
+    auto entityTextures = this->getTextures();
+    auto entityTexture = entityTextures[direction];
+    if (entityTexture.size() == 0)
+        return "";
+    return entityTexture[tick % entityTexture.size()];
 }
