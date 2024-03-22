@@ -90,6 +90,7 @@ public:
         [[maybe_unused]] int32_t y
     )
     {
+        std::cout << "Pressed: " << (uint32_t)button << " at X,Y: " << x << "," << y << std::endl;
     }
 
     virtual void update([[maybe_unused]] arc::ILibrary& lib, float deltaTime)
