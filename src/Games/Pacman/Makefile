@@ -10,7 +10,10 @@ NAME = $(LIB_DIR)/arcade_pacman.so
 CPPFLAGS = -fPIC -iquote $(INC_DIR) -std=c++20 -Wall -Wextra -Werror
 SHARED_FLAGS = -shared
 
-SRC = ./Pacman.cpp
+SRC = ./Pacman.cpp \
+	./AEntity.cpp \
+	./Player.cpp \
+	./MapHandler.cpp \
 
 all: $(NAME)
 
