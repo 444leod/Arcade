@@ -18,9 +18,9 @@ namespace pacman {
                 ~Player() = default;
 
                 void queueMove(Direction direction) override;
-                void queueMove(vec2i move) override;
-                void setMoveQueue(std::vector<vec2i> moveQueue) override;
-                void setPos(const vec2i pos) override;
+                void queueMove(Vec2i move) override;
+                void setMoveQueue(std::vector<Vec2i> moveQueue) override;
+                void setPos(const Vec2i pos) override;
 
             protected:
             private:
