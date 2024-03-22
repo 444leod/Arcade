@@ -28,10 +28,9 @@ namespace arc
         bool load(const SoundSpecification& spec)
         {
             _spec = spec;
-            std::cout << "Loading: " << spec.path << std::endl;
             _sound = Mix_LoadWAV(spec.path.c_str());
             if (_sound == nullptr)
-                std::cout << Mix_GetError() << std::endl;
+                std::cerr << Mix_GetError() << std::endl;
             return _sound != nullptr;
         }
 
@@ -56,7 +55,7 @@ namespace arc
         SDLSoundManager()
         {
             if (Mix_OpenAudio(48000, MIX_DEFAULT_FORMAT, 2, 4096))
-                std::cout << Mix_GetError() << std::endl;
+                std::cerr << Mix_GetError() << std::endl;
         }
         ~SDLSoundManager()
         {
@@ -78,10 +77,8 @@ namespace arc
             auto specs = std::vector<std::pair<std::string, SoundSpecification>>{};
             specs.reserve(_sounds.size());
 
-            for (const auto& [name, sound] : this->_sounds) {
-                std::cout << "Dumping: " << name << ": " << sound->specification().path << std::endl;
+            for (const auto& [name, sound] : this->_sounds)
                 specs.push_back({name, sound->specification()});
-            }
             return specs;
         }
 
