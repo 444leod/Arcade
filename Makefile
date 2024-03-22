@@ -28,7 +28,7 @@ clean:
 
 fclean: clean
 	@make -s -C src/Games/Pacman fclean 	LIB_DIR=$(LIB_DIR)
-	@# @make -s -C src/Games/Snake fclean 	LIB_DIR=$(LIB_DIR)
+	@make -s -C src/Games/Snake fclean 	LIB_DIR=$(LIB_DIR)
 	@make -s -C src/Games/Example fclean 	LIB_DIR=$(LIB_DIR)
 	@make -s -C src/Graphics/SFML fclean 	LIB_DIR=$(LIB_DIR)
 	@make -s -C src/Graphics/NCurses fclean LIB_DIR=$(LIB_DIR)
@@ -42,7 +42,7 @@ core:
 
 games:
 	@make -s -C src/Games/Pacman 		LIB_DIR=$(LIB_DIR) INC_DIR=$(INC_DIR)
-	@# @make -s -C src/Games/Snake 		LIB_DIR=$(LIB_DIR) INC_DIR=$(INC_DIR)
+	@make -s -C src/Games/Snake 		LIB_DIR=$(LIB_DIR) INC_DIR=$(INC_DIR)
 	@make -s -C src/Games/Example 		LIB_DIR=$(LIB_DIR) INC_DIR=$(INC_DIR)
 
 graphics:

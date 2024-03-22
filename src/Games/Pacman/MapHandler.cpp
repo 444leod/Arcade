@@ -17,8 +17,6 @@
 #include "CSVParser.hpp"
 #include "Pacman.hpp"
 
-using pacman::vec2i;
-using pacman::vec2f;
 using pacman::TileType;
 
 using pacman::MapHandler;
@@ -50,9 +48,9 @@ uint16_t MapHandler::getMapSizeY() const
     return _map.size();
 }
 
-std::vector<std::pair<vec2i, std::string>> MapHandler::dumpTextures() const
+std::vector<std::pair<Vec2i, std::string>> MapHandler::dumpTextures() const
 {
-    std::vector<std::pair<vec2i, std::string>> res;
+    std::vector<std::pair<Vec2i, std::string>> res;
     for (uint16_t y = 0; y < _map.size(); ++y) {
         for (uint16_t x = 0; x < _map[y].size(); ++x) {
             res.push_back({{x, y}, _textures.at(_map[y][x])});
@@ -68,34 +66,34 @@ bool MapHandler::isTileWalkable(int x, int y) const
     return _tileTypes.at(_map[y][x]) != TileType::WALL;
 }
 
-bool MapHandler::isTileWalkable(vec2i pos) const
+bool MapHandler::isTileWalkable(Vec2i pos) const
 {
     return isTileWalkable(pos.x, pos.y);
 }
 
-TileType MapHandler::getTileType(vec2i pos)
+TileType MapHandler::getTileType(Vec2i pos)
 {
     return _tileTypes.at(_map[pos.y][pos.x]);
 }
 
-vec2i MapHandler::getPlayerPos()
+Vec2i MapHandler::getPlayerPos()
 {
     return _playerPos;
 }
 
-pacman::player::State MapHandler::processPlayerPos(vec2i newPos, vec2i direction)
+pacman::player::State MapHandler::processPlayerPos(Vec2i newPos, Vec2i direction)
 {
-    if (_nextPlayerPos != vec2i(-1, -1)) {
+    if (_nextPlayerPos != Vec2i(-1, -1)) {
         _playerPos = _nextPlayerPos;
-        _nextPlayerPos = vec2i(-1, -1);
+        _nextPlayerPos = Vec2i(-1, -1);
         return pacman::player::State::ALIVE;
     } else
         _playerPos = newPos;
 
     for (auto &teleporter : _teleporters) {
-        if (_playerPos == teleporter.first && direction == vec2i(-1, 0))
+        if (_playerPos == teleporter.first && direction == Vec2i(-1, 0))
             _nextPlayerPos = teleporter.second;
-        if (_playerPos == teleporter.second && direction == vec2i(1, 0))
+        if (_playerPos == teleporter.second && direction == Vec2i(1, 0))
             _nextPlayerPos = teleporter.first;
     }
     TileType tile = _tileTypes.at(_map[_playerPos.y][_playerPos.x]);

@@ -12,28 +12,28 @@ using pacman::player::Player;
 
 void Player::queueMove(Direction direction)
 {
-    if (_direction == vec2i(0, 0)) {
+    if (_direction == Vec2i(0, 0)) {
         _direction = pacman::DirectionToVec2[direction];
         return;
     }
     _moveQueue = {pacman::DirectionToVec2[direction]};
 }
 
-void Player::queueMove(vec2i move)
+void Player::queueMove(Vec2i move)
 {
-    if (_direction == vec2i(0, 0)) {
+    if (_direction == Vec2i(0, 0)) {
         _direction = move;
         return;
     }
     _moveQueue = {move};
 }
 
-void Player::setMoveQueue(std::vector<vec2i> moveQueue)
+void Player::setMoveQueue(std::vector<Vec2i> moveQueue)
 {
     _moveQueue = moveQueue;
 }
 
-void Player::setPos(const vec2i pos)
+void Player::setPos(const Vec2i pos)
 {
     _pos = pos;
 }
