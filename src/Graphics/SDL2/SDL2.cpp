@@ -473,7 +473,7 @@ namespace arc
             {
             case SDL_KeyCode::SDLK_SPACE:
                 return Key::SPACE;
-            case SDL_KeyCode::SDLK_KP_ENTER:
+            case SDL_KeyCode::SDLK_RETURN:
                 return Key::ENTER;
             case SDL_KeyCode::SDLK_ESCAPE:
                 return Key::ESCAPE;
