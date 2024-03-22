@@ -486,6 +486,22 @@ namespace arc
             return Key::UNKNOWN;
         }
 
+        static MouseButton MapSDLButton(uint8_t button)
+        {
+            switch (button)
+            {
+            case SDL_BUTTON_LEFT:
+                return MouseButton::LEFT;
+            case SDL_BUTTON_RIGHT:
+                return MouseButton::RIGHT;
+            case SDL_BUTTON_MIDDLE:
+                return MouseButton::MIDDLE;
+            default:
+                break;
+            }
+            return MouseButton::UNKNOWN;
+        }
+
         virtual void update([[maybe_unused]] float deltaTime)
         {
             SDL_Event sdlEvent = {};
@@ -497,10 +513,21 @@ namespace arc
                 case SDL_EventType::SDL_QUIT:
                     this->_opened = false;
                     break;
-                default:
+                case SDL_EventType::SDL_KEYDOWN:
                     arcEvent.type = EventType::KEY_PRESSED;
                     arcEvent.key = MapSDLKey(sdlEvent.key.keysym.sym);
                     _events.push_back(arcEvent);
+                    break;
+                case SDL_EventType::SDL_MOUSEBUTTONDOWN:
+                    arcEvent.type = EventType::MOUSE_BUTTON_PRESSED;
+                    arcEvent.mouse = {
+                        .button = MapSDLButton(sdlEvent.button.button),
+                        .x = sdlEvent.button.x / (int)this->_tileSize,
+                        .y = sdlEvent.button.y / (int)this->_tileSize
+                    };
+                    _events.push_back(arcEvent);
+                    break;
+                default:
                     break;
                 }
             }
