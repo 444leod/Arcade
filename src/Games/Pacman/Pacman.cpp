@@ -80,7 +80,7 @@ public:
             ghost->initTextures(lib.textures());
         }
 
-        RandomNumberGenerator rng;
+        rng::RandomNumberGenerator rng;
         for (auto &ghost : _ghosts) {
             Vec2i ghostPos;
             do {
@@ -132,7 +132,7 @@ public:
             ghost->move(deltaTime, _mapHandler);
         }
         if (_elapsed1 >= 0.2) {
-            RandomNumberGenerator rng;
+            rng::RandomNumberGenerator rng;
             for (auto& ghost : _ghosts) {
                 pacman::Direction direction = pacman::Direction(rng.generate() % 4);
                 ghost->setMoveQueue({pacman::DirectionToVec2[direction]});
