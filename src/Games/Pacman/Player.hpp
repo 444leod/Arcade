@@ -14,13 +14,14 @@ namespace pacman {
     namespace player {
         class Player : public pacman::AEntity {
             public:
-                Player() = default;
+                Player();
                 ~Player() = default;
 
                 void queueMove(Direction direction) override;
                 void queueMove(vec2i move) override;
                 void setMoveQueue(std::vector<vec2i> moveQueue) override;
-                void setPos(const vec2i pos) override;
+
+                void initTextures(arc::ITextureManager& manager) override;
 
             protected:
             private:

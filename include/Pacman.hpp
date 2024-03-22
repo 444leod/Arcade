@@ -18,6 +18,14 @@ namespace pacman {
         FRUIT,
         PLAYER
     };
+
+    inline std::map<TileType, std::string> TileTypeToString = {
+        {TileType::VOID, "VOID"},
+        {TileType::COIN, "COIN"},
+        {TileType::WALL, "WALL"},
+        {TileType::FRUIT, "FRUIT"},
+        {TileType::PLAYER, "PLAYER"}
+    };
     class vec2f {
         public:
             vec2f(float x, float y) : x(x), y(y) {}
@@ -168,10 +176,11 @@ namespace pacman {
     };
 
     enum class Direction {
+        LEFT,
+        RIGHT,
         UP,
         DOWN,
-        LEFT,
-        RIGHT
+        NONE
     };
     inline std::map<Direction, vec2i> DirectionToVec2 = {
         {Direction::UP, {0, -1}},
@@ -179,20 +188,34 @@ namespace pacman {
         {Direction::LEFT, {-1, 0}},
         {Direction::RIGHT, {1, 0}}
     };
+    inline std::map<vec2i, Direction> vec2ToDirection = {
+        {{0, -1}, Direction::UP},
+        {{0, 1}, Direction::DOWN},
+        {{-1, 0}, Direction::LEFT},
+        {{1, 0}, Direction::RIGHT}
+    };
+
+    inline std::map<Direction, std::string> DirectionToString = {
+        {Direction::UP, "UP"},
+        {Direction::DOWN, "DOWN"},
+        {Direction::LEFT, "LEFT"},
+        {Direction::RIGHT, "RIGHT"},
+        {Direction::NONE, "NONE"}
+    };
 
     enum class EntityType {
         GHOST,
         PLAYER
     };
-    namespace Ghost {
-        enum class State {
+    namespace ghost {
+        enum class state {
             CHASE,
             SCATTER,
             FRIGHTENED,
             EATEN,
             DEAD,
         };
-        enum class Type {
+        enum class type {
             BLINKY,
             PINKY,
             INKY,

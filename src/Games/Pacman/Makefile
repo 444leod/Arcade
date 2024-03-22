@@ -14,6 +14,11 @@ SRC = ./Pacman.cpp \
 	./AEntity.cpp \
 	./Player.cpp \
 	./MapHandler.cpp \
+	./Ghost.cpp \
+	./ghosts/Blinky.cpp \
+	./ghosts/Pinky.cpp \
+	./ghosts/Inky.cpp \
+	./ghosts/Clyde.cpp \
 
 all: $(NAME)
 
