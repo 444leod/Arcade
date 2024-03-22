@@ -212,18 +212,6 @@ private:
     };
 };
 
-std::ostream& operator<<(std::ostream& os, const Vec2i& vec)
-{
-    os << "(" << vec.x << ", " << vec.y << ")";
-    return os;
-}
-
-std::ostream& operator<<(std::ostream& os, const Vec2f& vec)
-{
-    os << "(" << vec.x << ", " << vec.y << ")";
-    return os;
-}
-
 extern "C" arc::IGame* entrypoint()
 {
     return new MyGame;
