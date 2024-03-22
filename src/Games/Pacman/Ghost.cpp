@@ -21,23 +21,23 @@ Ghost::~Ghost()
 
 void Ghost::queueMove(Direction direction)
 {
-    if (_direction == vec2i(0, 0)) {
+    if (_direction == Vec2i(0, 0)) {
         _direction = pacman::DirectionToVec2[direction];
         return;
     }
     _moveQueue = {pacman::DirectionToVec2[direction]};
 }
 
-void Ghost::queueMove(vec2i move)
+void Ghost::queueMove(Vec2i move)
 {
-    if (_direction == vec2i(0, 0)) {
+    if (_direction == Vec2i(0, 0)) {
         _direction = move;
         return;
     }
     _moveQueue = {move};
 }
 
-void Ghost::setMoveQueue(std::vector<vec2i> moveQueue)
+void Ghost::setMoveQueue(std::vector<Vec2i> moveQueue)
 {
     _moveQueue = moveQueue;
 }
@@ -49,7 +49,7 @@ void Ghost::setMoveQueue(std::vector<vec2i> moveQueue)
 //     while (_elapsed >= 0.2) {
 //         _elapsed -= 0.2;
 //         if (_elapsed1 >= 1) {
-//             vec2i nextMove = 
+//             Vec2i nextMove = 
 //             if (map.isTileWalkable(_pos + nextMove)) {
 //                 _lastPos = _pos;
 //                 _pos += nextMove;
@@ -61,7 +61,7 @@ void Ghost::setMoveQueue(std::vector<vec2i> moveQueue)
 //         if (map.isTileWalkable(_pos + _direction)) {
 //             _lastPos = _pos;
 //             _pos += _direction;
-//             _posf = vec2f(_lastPos.x, _lastPos.y);
+//             _posf = Vec2f(_lastPos.x, _lastPos.y);
 //         } else {
 //             _lastPos = _pos;
 //         }

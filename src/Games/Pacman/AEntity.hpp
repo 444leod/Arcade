@@ -20,22 +20,22 @@ namespace pacman {
             AEntity() = default;
             ~AEntity() = default;
 
-            virtual vec2i getPos() const override;
-            virtual vec2f getPosf() const override;
-            virtual void setPos(vec2f pos) override;
-            virtual void setPos(vec2i pos) override;
+            virtual Vec2i getPos() const override;
+            virtual Vec2f getPosf() const override;
+            virtual void setPos(Vec2f pos) override;
+            virtual void setPos(Vec2i pos) override;
             virtual void setPos(float x, float y) override;
-            virtual void setPosf(vec2i pos) override;
+            virtual void setPosf(Vec2i pos) override;
 
-            virtual void setDirection(vec2i direction) override;
+            virtual void setDirection(Vec2i direction) override;
             virtual void setDirection(Direction direction) override;
-            virtual vec2i getDirection() const override;
+            virtual Vec2i getDirection() const override;
 
             virtual void move(float deltaTime, MapHandler& map) override;
             virtual void movef(float deltaTime, MapHandler& map);
 
-            virtual void setMoveQueue(std::vector<vec2i> moveQueue) override;
-            virtual void queueMove(vec2i move) override;
+            virtual void setMoveQueue(std::vector<Vec2i> moveQueue) override;
+            virtual void queueMove(Vec2i move) override;
             virtual void queueMove(Direction direction) override;
 
             virtual size_t getSpeed() const override;
@@ -48,11 +48,11 @@ namespace pacman {
 
         protected:
             std::string _name = "entity";
-            vec2i _pos = {0, 0};
-            vec2i _lastPos = {0, 0};
-            vec2f _posf = {0, 0};
-            vec2i _direction = {0, 0};
-            std::vector<vec2i> _moveQueue = {};
+            Vec2i _pos = {0, 0};
+            Vec2i _lastPos = {0, 0};
+            Vec2f _posf = {0, 0};
+            Vec2i _direction = {0, 0};
+            std::vector<Vec2i> _moveQueue = {};
             float _speed = 1;
             float _elapsed = 0;
             float _elapsedf = 0;

@@ -82,7 +82,7 @@ public:
 
         RandomNumberGenerator rng;
         for (auto &ghost : _ghosts) {
-            vec2i ghostPos;
+            Vec2i ghostPos;
             do {
                 ghostPos = {rng.generate() % _mapHandler.getMapSizeX(), rng.generate() % _mapHandler.getMapSizeY()};
             } while (_mapHandler.isTileWalkable(ghostPos) == false);
@@ -125,7 +125,7 @@ public:
     {
         _elapsed += deltaTime;
         _elapsed1 += deltaTime;
-        vec2i playerPos = _player->getPos();
+        Vec2i playerPos = _player->getPos();
 
         _player->move(deltaTime, _mapHandler);
         for (auto& ghost : _ghosts) {
@@ -146,7 +146,7 @@ public:
         }
 
         _player->movef(deltaTime, _mapHandler);
-        std::vector<vec2f> ghostPos;
+        std::vector<Vec2f> ghostPos;
         for (auto& ghost : _ghosts) {
             ghost->movef(deltaTime, _mapHandler);
             ghostPos.push_back(ghost->getPosf());
@@ -212,13 +212,13 @@ private:
     };
 };
 
-std::ostream& operator<<(std::ostream& os, const vec2i& vec)
+std::ostream& operator<<(std::ostream& os, const Vec2i& vec)
 {
     os << "(" << vec.x << ", " << vec.y << ")";
     return os;
 }
 
-std::ostream& operator<<(std::ostream& os, const vec2f& vec)
+std::ostream& operator<<(std::ostream& os, const Vec2f& vec)
 {
     os << "(" << vec.x << ", " << vec.y << ")";
     return os;

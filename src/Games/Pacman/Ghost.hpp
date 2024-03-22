@@ -20,8 +20,8 @@ namespace pacman {
                 // void move(float deltaTime, MapHandler& map) override;
 
                 void queueMove(Direction direction) override;
-                void queueMove(vec2i move) override;
-                void setMoveQueue(std::vector<vec2i> moveQueue) override;
+                void queueMove(Vec2i move) override;
+                void setMoveQueue(std::vector<Vec2i> moveQueue) override;
 
             protected:
             private:

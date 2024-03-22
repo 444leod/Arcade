@@ -9,6 +9,7 @@
 
 #include <map>
 #include <string>
+#include "Vec2.hpp"
 
 namespace pacman {
     enum class TileType {
@@ -26,154 +27,6 @@ namespace pacman {
         {TileType::FRUIT, "FRUIT"},
         {TileType::PLAYER, "PLAYER"}
     };
-    class vec2f {
-        public:
-            vec2f(float x, float y) : x(x), y(y) {}
-            vec2f() : x(0), y(0) {}
-            ~vec2f() = default;
-
-            float x;
-            float y;
-
-            vec2f operator+(const vec2f& other) const
-            {
-                return vec2f(x + other.x, y + other.y);
-            }
-
-            vec2f operator-(const vec2f& other) const
-            {
-                return vec2f(x - other.x, y - other.y);
-            }
-
-            vec2f operator*(const float& other) const
-            {
-                return vec2f(x * other, y * other);
-            }
-
-            vec2f operator/(const float& other) const
-            {
-                return vec2f(x / other, y / other);
-            }
-
-            bool operator==(const vec2f& other) const
-            {
-                return x == other.x && y == other.y;
-            }
-
-            bool operator!=(const vec2f& other) const
-            {
-                return x != other.x || y != other.y;
-            }
-
-            bool operator<(const vec2f& other) const
-            {
-                return x < other.x && y < other.y;
-            }
-
-            bool operator>(const vec2f& other) const
-            {
-                return x > other.x && y > other.y;
-            }
-
-            bool operator<=(const vec2f& other) const
-            {
-                return x <= other.x && y <= other.y;
-            }
-
-            bool operator>=(const vec2f& other) const
-            {
-                return x >= other.x && y >= other.y;
-            }
-
-            vec2f& operator+=(const vec2f& other)
-            {
-                x += other.x;
-                y += other.y;
-                return *this;
-            }
-
-            vec2f& operator-=(const vec2f& other)
-            {
-                x -= other.x;
-                y -= other.y;
-                return *this;
-            }
-
-    };
-
-    class vec2i {
-        public:
-            vec2i(int x, int y) : x(x), y(y) {}
-            vec2i() : x(0), y(0) {}
-            ~vec2i() = default;
-
-            int x;
-            int y;
-
-            vec2i operator+(const vec2i& other) const
-            {
-                return vec2i(x + other.x, y + other.y);
-            }
-
-            vec2i operator-(const vec2i& other) const
-            {
-                return vec2i(x - other.x, y - other.y);
-            }
-
-            vec2i operator*(const int& other) const
-            {
-                return vec2i(x * other, y * other);
-            }
-
-            vec2i operator/(const int& other) const
-            {
-                return vec2i(x / other, y / other);
-            }
-
-            bool operator==(const vec2i& other) const
-            {
-                return x == other.x && y == other.y;
-            }
-
-            bool operator!=(const vec2i& other) const
-            {
-                return x != other.x || y != other.y;
-            }
-
-            bool operator<(const vec2i& other) const
-            {
-                return x < other.x && y < other.y;
-            }
-
-            bool operator>(const vec2i& other) const
-            {
-                return x > other.x && y > other.y;
-            }
-
-            bool operator<=(const vec2i& other) const
-            {
-                return x <= other.x && y <= other.y;
-            }
-
-            bool operator>=(const vec2i& other) const
-            {
-                return x >= other.x && y >= other.y;
-            }
-
-            vec2i& operator+=(const vec2i& other)
-            {
-                x += other.x;
-                y += other.y;
-                return *this;
-            }
-
-            vec2i& operator-=(const vec2i& other)
-            {
-                x -= other.x;
-                y -= other.y;
-                return *this;
-            }
-    };
 
     enum class Direction {
         LEFT,
@@ -182,13 +35,13 @@ namespace pacman {
         DOWN,
         NONE
     };
-    inline std::map<Direction, vec2i> DirectionToVec2 = {
+    inline std::map<Direction, Vec2i> DirectionToVec2 = {
         {Direction::UP, {0, -1}},
         {Direction::DOWN, {0, 1}},
         {Direction::LEFT, {-1, 0}},
         {Direction::RIGHT, {1, 0}}
     };
-    inline std::map<vec2i, Direction> vec2ToDirection = {
+    inline std::map<Vec2i, Direction> Vec2ToDirection = {
         {{0, -1}, Direction::UP},
         {{0, 1}, Direction::DOWN},
         {{-1, 0}, Direction::LEFT},
