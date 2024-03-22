@@ -8,6 +8,7 @@
 #include "ILibrary.hpp"
 
 #include <map>
+#include <cmath>
 #include <deque>
 #include <thread>
 #include <ncurses.h>
@@ -221,6 +222,8 @@ private:
 //     std::map<std::string, NCursesMusic> _musics;
 // };
 
+#define COLOR_ORANGE 8
+
 class NCursesDisplay : public arc::IDisplay {
 public:
     NCursesDisplay()
@@ -243,6 +246,7 @@ public:
             init_color(COLOR_MAGENTA, 1000, 0, 1000);
             init_color(COLOR_CYAN, 0, 1000, 1000);
             init_color(COLOR_WHITE, 1000, 1000, 1000);
+            init_color(COLOR_ORANGE, 900, 450, 0); // RGB values range from 0 to 1000
 
             init_pair(1, COLOR_BLACK, COLOR_BLACK);
             init_pair(2, COLOR_RED, COLOR_BLACK);
@@ -252,6 +256,8 @@ public:
             init_pair(6, COLOR_MAGENTA, COLOR_BLACK);
             init_pair(7, COLOR_CYAN, COLOR_BLACK);
             init_pair(8, COLOR_WHITE, COLOR_WHITE);
+            init_pair(9, COLOR_ORANGE, COLOR_BLACK);
+
         }
 
         this->_title = "";
@@ -389,10 +395,12 @@ public:
     virtual void draw(const arc::ITexture& texture, float x, float y)
     {
         auto& spec = static_cast<const NCursesTexture&>(texture).characteristics();
+        int roundedX = static_cast<int>(std::round(x));
+        int roundedY = static_cast<int>(std::round(y));
 
         if (_canChangeColor)
             attron(COLOR_PAIR(getPairColor(spec.color)));
-        mvaddch(y, x, spec.character);
+        mvaddch(roundedY, roundedX, spec.character);
         if (_canChangeColor)
             attroff(COLOR_PAIR(getPairColor(spec.color)));
     }
@@ -455,7 +463,8 @@ private:
         {{0, 0, 255}, 5},
         {{255, 0, 255}, 6},
         {{0, 255, 255}, 7},
-        {{255, 255, 255}, 8}
+        {{255, 255, 255}, 8},
+        {{200, 100, 0}, 9}
     };
     bool _canChangeColor = false;
 };
