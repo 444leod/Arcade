@@ -17,7 +17,7 @@
 SnakeObject::SnakeObject()
 {
     _score = 0;
-    _speed = 0.2;
+    _speed = BASE_SPEED;
     _elapsed = 0;
     _alive = true;
     _readyToRotate = true;

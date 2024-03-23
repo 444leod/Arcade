@@ -28,7 +28,7 @@ namespace rng {
         };
 
 
-    std::function<int(int, int)> rand = [] (int lower_bound = 0, int upper_bound = 100) {
+    static std::function<int(int, int)> rand = [] (int lower_bound = 0, int upper_bound = 100) {
         RandomNumberGenerator rng_instance;
         return rng_instance.generate(lower_bound, upper_bound);
     };

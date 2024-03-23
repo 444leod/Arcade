@@ -184,11 +184,17 @@ private:
         spec.graphical = arc::TextureImage{TILESET_CAVE, arc::Rect<uint32_t>{62, 160, 16, 16}};
         lib.textures().load("arena_south_east_edge", spec);
 
-        //Super Candy
+        //Consumables
         spec.textual.character = 'X';
-        spec.textual.color = {255, 255, 0, 255};
-        spec.graphical = arc::TextureImage{SUPER_CANDY};
+        //Super Candy
+        spec.textual.color = {100, 100, 210, 255};
+        spec.graphical = arc::TextureImage{SUPER_CANDY_PATH};
         lib.textures().load("super_candy", spec);
+
+        //Tamato Berry
+        spec.textual.color = {239, 47, 47, 255};
+        spec.graphical = arc::TextureImage{TAMATO_BERRY_PATH};
+        lib.textures().load("tamato_berry", spec);
     }
 
     void draw_arena(arc::ILibrary& lib)

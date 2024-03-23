@@ -5,10 +5,12 @@
 ** SnakeObjectManager
 */
 
+#pragma once
+
 #include "SnakeLib/GameObject/AGameObjectManager.hpp"
+#include "RandomNumberGenerator.hpp"
 #include "Vec2.hpp"
 
-#pragma once
 
 class SnakeObjectManager : public AGameObjectManager {
     public:

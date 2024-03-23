@@ -5,9 +5,9 @@
 ** AGameObject
 */
 
-#include "SnakeLib/GameObject/IGameObject.hpp"
-
 #pragma once
+
+#include "SnakeLib/GameObject/IGameObject.hpp"
 
 class AGameObject : public IGameObject {
     public:
@@ -17,20 +17,22 @@ class AGameObject : public IGameObject {
 
         virtual std::pair<Vec2i, std::string> dumpTexture() const {return std::make_pair(_pos, _textureName);}
 
-        virtual IGameObject::Effects getEffects() const {return _effects;}
+        virtual bool getRespawn() const {return _respawn;}
 
         virtual void setPos(Vec2i pos) {_pos = pos;}
 
         virtual Vec2i getPos() const {return _pos;}
+
+        virtual IGameObject::Type getType() const {return _type;}
 
         virtual void applyEffect(SnakeObject &snake);
 
     protected:
         std::string _textureName;
         IGameObject::Effects _effects;
+        IGameObject::Type _type;
         Vec2i _pos;
-        bool _autoRespawn;
-        bool _destroyable;
+        bool _respawn;
 
     private:
 };
