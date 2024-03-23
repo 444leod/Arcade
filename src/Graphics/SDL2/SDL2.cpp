@@ -114,6 +114,10 @@ namespace arc
         {
             _spec = spec;
             _music = Mix_LoadMUS(spec.path.c_str());
+            if (spec.startOffset != -1)
+                Mix_SetMusicPosition(spec.startOffset);
+            if (spec.isPlaying)
+                this->play();
             return this->_music != nullptr;
         }
 
@@ -154,8 +158,12 @@ namespace arc
             auto specs = std::vector<std::pair<std::string, MusicSpecification>>{};
             specs.reserve(_musics.size());
 
-            for (const auto& [name, music] : this->_musics)
-                specs.push_back({name, music->specification()});
+            for (const auto& [name, music] : this->_musics) {
+                arc::MusicSpecification spec = (*music).specification();
+                spec.isPlaying = music->isPlaying();
+                (*music).stop();
+                specs.push_back({name, spec});
+            }
             return specs;
         }
 
