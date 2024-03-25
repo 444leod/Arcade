@@ -15,5 +15,7 @@ void AGameObject::applyEffect([[maybe_unused]] SnakeObject &snake)
     if (_effects.deltaGrowth > 0) {
         snake.grow(_pos.x, _pos.y, _effects.deltaGrowth);
         snake.setGrowToggle(false);
+    } else {
+        snake.continueMove();
     }
 }

@@ -40,6 +40,8 @@ class SnakeObject {
         void setGrowToggle(bool growthToggle) {_growthToggle = growthToggle;}
 
         void grow(int x, int y, std::size_t size);
+        
+        Vec2i continueMove(void);
 
     private:
         Vec2i move(std::vector<Vec2i> objectsPos);
