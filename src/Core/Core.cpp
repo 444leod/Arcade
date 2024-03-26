@@ -157,8 +157,10 @@ class Core;
 class CoreMenu : public arc::IGame
 {
     public:
-        CoreMenu(Core& core, const std::vector<std::shared_ptr<LibraryObject>>& libs) :
-            _core(core)
+        CoreMenu(Core& core,
+            const std::vector<std::shared_ptr<LibraryObject>>& libs,
+            void (Core::*callback)(std::shared_ptr<arc::IGame>))
+            : _core(core), _callback(callback)
         {
             for (auto l : libs)
                 if (l->type() == arc::SharedLibraryType::GAME)
@@ -198,7 +200,7 @@ class CoreMenu : public arc::IGame
                 this->_selection = (this->_selection + 1) % _libs.size();
                 break;
             case arc::Key::ENTER:
-                //this->_core.switch_game_lib(_libs.at(selection));
+                (this->_core.*this->_callback)(this->_libs.at(this->_selection)->get<arc::IGame>());
             default:
                 break;
             }
@@ -235,11 +237,20 @@ class CoreMenu : public arc::IGame
         int _selection = 0;
         Core& _core;
         std::vector<std::shared_ptr<LibraryObject>> _libs = {};
+        void (Core::*_callback)(std::shared_ptr<arc::IGame>) = nullptr;
 };
 
 class Core
 {
     public:
+
+        void switch_game_lib(std::shared_ptr<arc::IGame> game)
+        {
+            this->_game.reset();
+            this->_game = game;
+            this->_game->initialize(*_lib);
+        }
+
         Core(const std::string& path) : _loader(LibraryLoader("./lib"))
         {
             if (!this->_loader.contains(path))
@@ -247,50 +258,49 @@ class Core
             this->_lib = this->_loader.load(path)->get<arc::ILibrary>();
             if (!this->_loader.contains(arc::SharedLibraryType::GAME))
                 throw CoreException("No game library found.");
-            this->_game = std::make_shared<CoreMenu>(*this, _loader.libs());
+            this->_game = std::make_shared<CoreMenu>(*this, _loader.libs(), &Core::switch_game_lib);
         }
 
         ~Core()
         {
-
         }
 
-        void switch_graphic_lib(std::shared_ptr<arc::ILibrary>& lib)
+        void switch_graphic_lib()
         {
-            std::string title = lib->display().title();
-            uint32_t framerate = lib->display().framerate();
-            std::size_t tileSize = lib->display().tileSize();
-            std::size_t width = lib->display().width();
-            std::size_t height = lib->display().height();
+            std::string title = this->_lib->display().title();
+            uint32_t framerate = this->_lib->display().framerate();
+            std::size_t tileSize = this->_lib->display().tileSize();
+            std::size_t width = this->_lib->display().width();
+            std::size_t height = this->_lib->display().height();
 
-            auto textures = lib->textures().dump();
-            auto fonts = lib->fonts().dump();
-            // auto sounds = lib->sounds().dump();
-            // auto musics = lib->musics().dump();
+            auto textures = this->_lib->textures().dump();
+            auto fonts = this->_lib->fonts().dump();
+            auto sounds = this->_lib->sounds().dump();
+            auto musics = this->_lib->musics().dump();
 
             this->_lib.reset();
             this->_lib = this->_loader.nextLib()->get<arc::ILibrary>();
 
-            if (lib == nullptr)
+            if (_lib == nullptr)
                 throw std::runtime_error("Failed to load library");
 
-            lib->display().setTitle(title);
-            lib->display().setFramerate(framerate);
-            lib->display().setTileSize(tileSize);
-            lib->display().setWidth(width);
-            lib->display().setHeight(height);
+            this->_lib->display().setTitle(title);
+            this->_lib->display().setFramerate(framerate);
+            this->_lib->display().setTileSize(tileSize);
+            this->_lib->display().setWidth(width);
+            this->_lib->display().setHeight(height);
 
             for (const auto& texture : textures)
-                lib->textures().load(texture.first, texture.second);
+                this->_lib->textures().load(texture.first, texture.second);
 
             for (const auto& font : fonts)
-                lib->fonts().load(font.first, font.second);
+                this->_lib->fonts().load(font.first, font.second);
 
-            // for (const auto& sound : sounds)
-            //     lib->sounds().load(sound.first, sound.second);
+            for (const auto& sound : sounds)
+                this->_lib->sounds().load(sound.first, sound.second);
 
-            // for (const auto& music : musics)
-            //     lib->musics().load(music.first, music.second);
+            for (const auto& music : musics)
+                this->_lib->musics().load(music.first, music.second);
         }
 
         void run()
@@ -306,7 +316,7 @@ class Core
                 before = now;
 
                 if (lib_switch) {
-                    this->switch_graphic_lib(_lib);
+                    this->switch_graphic_lib();
                     lib_switch = false;
                     continue;
                 }
