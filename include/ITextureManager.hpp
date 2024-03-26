@@ -7,12 +7,46 @@
 
 #pragma once
 
-#include "Datatypes.hpp"
+#include "Color.hpp"
+#include "Rect.hpp"
 
 #include <string>
+#include <variant>
 #include <vector>
+#include <optional>
+#include <memory>
+#include <map>
 
 namespace arc {
+
+    /**
+     * @brief Represents the specification required to create a textual texture
+     */
+    struct TextureTextualSpecification {
+        char character;
+        Color color;
+    };
+
+    /**
+     * @brief Represents an image for a texture
+     */
+    struct TextureImage {
+        std::string path;
+        std::optional<Rect<uint32_t>> subrect = std::nullopt;
+    };
+
+    /**
+     * @brief Represents the specification required to create a graphical texture
+     */
+    using TextureGraphicalSpecification = std::variant<TextureImage, Color>;
+
+    /**
+     * @brief Represents the specification required to create a texture
+     */
+    struct TextureSpecification {
+        TextureTextualSpecification textual;
+        TextureGraphicalSpecification graphical;
+    };
 
     /**
      * @brief Represents a texture
@@ -52,13 +86,13 @@ namespace arc {
          * @param name the name of the texture
          * @return ITexture& the texture
          */
-        virtual ITexture& get(const std::string& name) = 0;
+        virtual std::shared_ptr<ITexture> get(const std::string& name) = 0;
 
         /**
          * @brief Retrieves all the textures specifications with their name
          *
          * @return std::vector<TextureSpecification> the specifications of all the textures
          */
-        virtual std::vector<std::pair<std::string, TextureSpecification>> dump() const = 0;
+        virtual std::map<std::string, TextureSpecification> dump() const = 0;
     };
 }
