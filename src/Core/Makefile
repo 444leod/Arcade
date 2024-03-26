@@ -7,7 +7,7 @@
 
 NAME = $(DIR)/arcade
 
-CPPFLAGS = -fPIC -iquote $(INC_DIR) -std=c++20 -Wall -Wextra -Werror
+CPPFLAGS = -fPIC -iquote $(INC_DIR) -std=c++20 -Wall -Wextra -Werror -g
 
 SRC = ./Core.cpp
 

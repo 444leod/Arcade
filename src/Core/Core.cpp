@@ -1,221 +1,350 @@
 /*
 ** EPITECH PROJECT, 2024
-** main.cpp
+** Arcade
 ** File description:
-** main.cpp
+** Core
 */
 
 #include "IGame.hpp"
-
+#include "ILibrary.hpp"
 #include <dlfcn.h>
-#include <memory>
-#include <chrono>
 #include <iostream>
+#include <vector>
+#include <filesystem>
 
-template<typename T>
-class SharedLibraryLoader {
-public:
-    SharedLibraryLoader(const std::string& path)
-    {
-        this->_path = path;
-        this->_handle = dlopen(path.c_str(), RTLD_LAZY);
-        if (this->_handle == nullptr) {
-            std::cout << dlerror() << std::endl;
-        }
-        std::cout << "Loading " << path << " (" << this->_handle << ")" << std::endl;
-    }
-
-    SharedLibraryLoader(SharedLibraryLoader<T>&& other)
-    {
-        if (this == &other)
-            return;
-
-        this->_path = std::move(other._path);
-        this->_handle = other._handle;
-        other._handle = nullptr;
-    }
-
-    SharedLibraryLoader<T>& operator=(SharedLibraryLoader<T>&& other)
-    {
-        if (this == &other)
-            return *this;
-
-        this->_path = std::move(other._path);
-        this->_handle = other._handle;
-        other._handle = nullptr;
-
-        return *this;
-    }
-
-    ~SharedLibraryLoader()
-    {
-        std::cout << "Unloading " << _path << std::endl;
-        if (this->_handle != nullptr)
-            dlclose(this->_handle);
-    }
-
-    std::unique_ptr<T> get()
-    {
-        if (this->_handle == nullptr)
-            return nullptr;
-
-        auto entrypoint = reinterpret_cast<T*(*)()>(dlsym(this->_handle, "entrypoint"));
-
-        if (entrypoint == nullptr)
-            return nullptr;
-
-        return std::unique_ptr<T>(entrypoint());
-    }
-
-private:
-    std::string _path;
-    void* _handle;
-};
-
-class Core {
-public:
-    Core()
-        : _sl_lib{_graphicLibraries[_currentGraphicLibrary]},
-          _sl_game{_gameLibraries[_currentGameLibrary]},
-          _lib(_sl_lib.get()),
-          _game(_sl_game.get()),
-          _switch_display_next_frame{false}
-    {
-        if (_lib == nullptr || _game == nullptr)
-            throw std::runtime_error("Failed to load library or game");
-    }
-
-    void switch_game_lib()
-    {
-        _game.reset(nullptr);
-
-        _currentGameLibrary = (_currentGameLibrary + 1) % _gameLibraries.size();
-        _sl_game = SharedLibraryLoader<arc::IGame>(_gameLibraries[_currentGameLibrary]);
-        _game = _sl_game.get();
-
-        if (_game == nullptr)
-            throw std::runtime_error("Failed to load game");
-    }
-
-    void switch_graphic_lib()
-    {
-        std::string title = _lib->display().title();
-        uint32_t framerate = _lib->display().framerate();
-        std::size_t tileSize = _lib->display().tileSize();
-        std::size_t width = _lib->display().width();
-        std::size_t height = _lib->display().height();
-
-        auto textures = _lib->textures().dump();
-        auto fonts = _lib->fonts().dump();
-        // auto sounds = _lib->sounds().dump();
-        // auto musics = _lib->musics().dump();
-
-        _lib.reset(nullptr);
-
-        _currentGraphicLibrary = (_currentGraphicLibrary + 1) % _graphicLibraries.size();
-        _sl_lib = SharedLibraryLoader<arc::ILibrary>(_graphicLibraries[_currentGraphicLibrary]);
-        _lib = _sl_lib.get();
-
-        if (_lib == nullptr)
-            throw std::runtime_error("Failed to load library");
-
-        _lib->display().setTitle(title);
-        _lib->display().setFramerate(framerate);
-        _lib->display().setTileSize(tileSize);
-        _lib->display().setWidth(width);
-        _lib->display().setHeight(height);
-
-        for (const auto& texture : textures)
-            _lib->textures().load(texture.first, texture.second);
-
-        for (const auto& font : fonts)
-            _lib->fonts().load(font.first, font.second);
-
-        // for (const auto& sound : sounds)
-        //     _lib->sounds().load(sound.first, sound.second);
-
-        // for (const auto& music : musics)
-        //     _lib->musics().load(music.first, music.second);
-    }
-
-    void run(int ac, char** av)
-    {
-        this->verify_args(ac, av);
-        _game->initialize(*_lib);
-
-        arc::Event event;
-        auto before = std::chrono::high_resolution_clock::now();
-
-        while (_lib->display().opened()) {
-            auto now = std::chrono::high_resolution_clock::now();
-
-            if (_switch_display_next_frame) {
-                _switch_display_next_frame = false;
-                switch_graphic_lib();
-            }
-            if (_switch_game_next_frame) {
-                _switch_game_next_frame = false;
-                switch_game_lib();
-                _game->initialize(*_lib);
-            }
-
-            float deltaTime = std::chrono::duration_cast<std::chrono::duration<float, std::milli>>(now - before).count() / 1000.0;
-            before = now;
-
-            _lib->display().update(deltaTime);
-            while (_lib->display().pollEvent(event)) {
-                if (event.type == arc::EventType::KEY_PRESSED && event.key == arc::Key::SPACE)
-                    _switch_display_next_frame = true;
-                if (event.type == arc::EventType::KEY_PRESSED && event.key == arc::Key::ENTER)
-                    _switch_game_next_frame = true;
-                if (event.type == arc::EventType::KEY_PRESSED)
-                    _game->onKeyPressed(*_lib, event.key);
-                if (event.type == arc::EventType::MOUSE_BUTTON_PRESSED)
-                    _game->onMouseButtonPressed(*_lib, event.mouse.button, event.mouse.x, event.mouse.y);
-            }
-            _game->update(*_lib, deltaTime);
-            _game->draw(*_lib);
-        }
-    }
-
-    void verify_args(int ac, [[maybe_unused]] char** av)
-    {
-        if (ac != 2)
-            throw std::runtime_error("Usage: ./arcade path_to_graphic_library");
-    }
-
-private:
-    std::vector<std::string> _graphicLibraries = {
-        "./lib/arcade_sfml.so",
-        "./lib/arcade_ncurses.so",
-        // "./lib_arcade_sdl.so",
-    };
-    size_t _currentGraphicLibrary = 0;
-    std::vector<std::string> _gameLibraries = {
-        "./lib/arcade_example.so",
-        "./lib/arcade_pacman.so",
-        "./lib/arcade_snake.so"
-    };
-    size_t _currentGameLibrary = 0;
-
-    SharedLibraryLoader<arc::ILibrary> _sl_lib;
-    SharedLibraryLoader<arc::IGame> _sl_game;
-
-    std::unique_ptr<arc::ILibrary> _lib;
-    std::unique_ptr<arc::IGame> _game;
-
-    bool _switch_display_next_frame;
-    bool _switch_game_next_frame;
-};
-
-int main(int ac, char** av)
+class CoreException : public std::exception
 {
-    try {
-        Core().run(ac, av);
-    } catch (const std::exception& e) {
-        std::cerr << e.what() << std::endl;
+    public:
+        CoreException(const std::string& msg) : _msg(msg) {}
+        ~CoreException() = default;
+        virtual const char *what() const noexcept { return _msg.c_str(); }
+    private:
+        std::string _msg;
+};
+
+class LibraryObject
+{
+    public:
+        LibraryObject(const std::string& path)
+        {
+            this->_path = path;
+            this->_handle = dlopen(path.c_str(), RTLD_LAZY);
+            if (this->_handle == nullptr)
+                return;
+
+            auto nameHandle = reinterpret_cast<const char *(*)()>(dlsym(this->_handle, "name"));
+            if (nameHandle == nullptr)
+                return;
+            this->_name = nameHandle();
+
+            auto typeHandle = reinterpret_cast<arc::SharedLibraryType (*)()>(dlsym(this->_handle, "type"));
+            if (typeHandle == nullptr)
+                return;
+            this->_type = typeHandle();
+
+            _loaded = true;
+        }
+
+        ~LibraryObject()
+        {
+            if (_handle != nullptr)
+                dlclose(_handle);
+        }
+
+        template<typename T>
+        std::unique_ptr<T> get()
+        {
+            auto h = reinterpret_cast<T *(*)()>(dlsym(_handle, "entrypoint"));
+            return std::unique_ptr<T>(h());
+        }
+
+        bool loaded() const { return _loaded; }
+        const std::string& path() const { return this->_path; }
+        const std::string& name() const { return this->_name; }
+        arc::SharedLibraryType type() const { return this->_type; }
+
+    private:
+        bool _loaded = false;
+        std::string _path = "";
+        std::string _name = "";
+        arc::SharedLibraryType _type = arc::SharedLibraryType::LIBRARY;
+        void *_handle = nullptr;
+};
+
+class LibraryLoader
+{
+    public:
+        LibraryLoader(const std::string& path)
+        {
+            if (!std::filesystem::exists(path))
+                return;
+
+            for (const auto& entry : std::filesystem::directory_iterator(path)) {
+                auto object = std::make_shared<LibraryObject>(entry.path().string());
+                if (object->loaded())
+                    this->_libs.push_back(object);
+            }
+        }
+
+        ~LibraryLoader()
+        {
+            if (this->_handle != nullptr)
+                dlclose(this->_handle);
+        }
+
+        const std::vector<std::shared_ptr<LibraryObject>>& libs() const { return this->_libs; }
+
+        bool contains(const std::string& lib, arc::SharedLibraryType type) const
+        {
+            for (auto l : this->_libs)
+                if (l->path() == lib && l->type() == type)
+                    return true;
+            return false;
+        }
+
+        bool contains(const std::string& lib) const
+        {
+            for (auto l : this->_libs)
+                if (l->path() == lib)
+                    return true;
+            return false;
+        }
+
+        bool contains(arc::SharedLibraryType type) const
+        {
+            for (auto l : this->_libs)
+                if (l->type() == type)
+                    return true;
+            return false;
+        }
+
+        std::shared_ptr<LibraryObject> nextLib()
+        {
+            this->_libIndex = (this->_libIndex + 1) % _libs.size();
+            while (this->_libs[this->_libIndex]->type() != arc::SharedLibraryType::LIBRARY)
+                this->_libIndex = (this->_libIndex + 1) % _libs.size();
+            return this->_libs[this->_libIndex];
+        }
+
+        std::shared_ptr<LibraryObject> nextGame()
+        {
+            this->_gameIndex = (this->_gameIndex + 1) % _libs.size();
+            while (this->_libs[this->_gameIndex]->type() != arc::SharedLibraryType::GAME)
+                this->_gameIndex = (this->_gameIndex + 1) % _libs.size();
+            return this->_libs[this->_gameIndex];
+        }
+
+        std::shared_ptr<LibraryObject> load(const std::string& path,
+            arc::SharedLibraryType type = arc::SharedLibraryType::LIBRARY)
+        {
+            if (this->_libIndex < 0) this->_libIndex = 0;
+            auto l = this->_libs[this->_libIndex];
+
+            while (l->path() != path)
+                l = type == arc::SharedLibraryType::LIBRARY ? this->nextLib() : this->nextGame();
+            return l;
+        }
+
+    private:
+        int _gameIndex = -1;
+        int _libIndex = -1;
+        void *_handle = nullptr;
+        std::vector<std::shared_ptr<LibraryObject>> _libs = {};
+};
+
+class Core;
+
+class CoreMenu : public arc::IGame
+{
+    public:
+        CoreMenu(Core& core, const std::vector<std::shared_ptr<LibraryObject>>& libs) :
+            _core(core)
+        {
+            for (auto l : libs)
+                if (l->type() == arc::SharedLibraryType::GAME)
+                    this->_libs.push_back(l);
+        }
+
+        ~CoreMenu() = default;
+
+        virtual std::string name() const
+        {
+            return "CoreMenu";
+        }
+
+        virtual void initialize(arc::ILibrary& lib)
+        {
+            lib.display().setTitle("Arcade");
+            lib.display().setFramerate(60);
+            lib.display().setTileSize(16);
+            lib.display().setWidth(25);
+            lib.display().setHeight(25);
+
+            arc::FontSpecification unsel = {{200, 200, 200, 200}, 16, "assets/regular.ttf"};
+            lib.fonts().load("unsel", unsel);
+
+            arc::FontSpecification sel = {{255, 100, 100, 255}, 16, "assets/regular.ttf"};
+            lib.fonts().load("sel", sel);
+        }
+
+        virtual void onKeyPressed([[maybe_unused]]arc::ILibrary& lib, arc::Key key)
+        {
+            switch (key)
+            {
+            case arc::Key::UP:
+                this->_selection = (this->_selection - 1) % _libs.size();
+                break;
+            case arc::Key::DOWN:
+                this->_selection = (this->_selection + 1) % _libs.size();
+                break;
+            case arc::Key::ENTER:
+                //this->_core.switch_game_lib(_libs.at(selection));
+            default:
+                break;
+            }
+        }
+
+        virtual void onMouseButtonPressed(arc::ILibrary& lib, arc::MouseButton button, int32_t x, int32_t y)
+        {
+            (void)lib;
+            (void)button;
+            (void)x;
+            (void)y;
+        }
+
+        virtual void update(arc::ILibrary& lib, float deltaTime)
+        {
+            (void)lib;
+            (void)deltaTime;
+        }
+
+        virtual void draw(arc::ILibrary& lib)
+        {
+            uint8_t index = 0;
+
+            lib.display().clear();
+            for (auto l : this->_libs) {
+                auto font = index == this->_selection ? "sel" : "unsel";
+                lib.display().print(l->name(), lib.fonts().get(font), 3, (index + 1) * 2);
+                index++;
+            }
+            lib.display().flush();
+        }
+
+    private:
+        int _selection = 0;
+        Core& _core;
+        std::vector<std::shared_ptr<LibraryObject>> _libs = {};
+};
+
+class Core
+{
+    public:
+        Core(const std::string& path) : _loader(LibraryLoader("./lib"))
+        {
+            if (!this->_loader.contains(path))
+                throw CoreException("Could not find " + path + ".");
+            this->_lib = this->_loader.load(path)->get<arc::ILibrary>();
+            if (!this->_loader.contains(arc::SharedLibraryType::GAME))
+                throw CoreException("No game library found.");
+            this->_game = std::make_shared<CoreMenu>(*this, _loader.libs());
+        }
+
+        ~Core()
+        {
+
+        }
+
+        void switch_graphic_lib(std::shared_ptr<arc::ILibrary>& lib)
+        {
+            std::string title = lib->display().title();
+            uint32_t framerate = lib->display().framerate();
+            std::size_t tileSize = lib->display().tileSize();
+            std::size_t width = lib->display().width();
+            std::size_t height = lib->display().height();
+
+            auto textures = lib->textures().dump();
+            auto fonts = lib->fonts().dump();
+            // auto sounds = lib->sounds().dump();
+            // auto musics = lib->musics().dump();
+
+            this->_lib.reset();
+            this->_lib = this->_loader.nextLib()->get<arc::ILibrary>();
+
+            if (lib == nullptr)
+                throw std::runtime_error("Failed to load library");
+
+            lib->display().setTitle(title);
+            lib->display().setFramerate(framerate);
+            lib->display().setTileSize(tileSize);
+            lib->display().setWidth(width);
+            lib->display().setHeight(height);
+
+            for (const auto& texture : textures)
+                lib->textures().load(texture.first, texture.second);
+
+            for (const auto& font : fonts)
+                lib->fonts().load(font.first, font.second);
+
+            // for (const auto& sound : sounds)
+            //     lib->sounds().load(sound.first, sound.second);
+
+            // for (const auto& music : musics)
+            //     lib->musics().load(music.first, music.second);
+        }
+
+        void run()
+        {
+            auto lib_switch = false;
+            auto before = std::chrono::high_resolution_clock::now();
+
+            _game->initialize(*_lib);
+            while (_lib->display().opened()) {
+                arc::Event event = {};
+                auto now = std::chrono::high_resolution_clock::now();
+                float deltaTime = std::chrono::duration_cast<std::chrono::duration<float, std::milli>>(now - before).count() / 1000.0;
+                before = now;
+
+                if (lib_switch) {
+                    this->switch_graphic_lib(_lib);
+                    lib_switch = false;
+                    continue;
+                }
+
+                _lib->display().update(deltaTime);
+                while (_lib->display().pollEvent(event)) {
+                    if (event.type == arc::EventType::KEY_PRESSED && event.key == arc::Key::SPACE)
+                        lib_switch = true;
+                    if (event.type == arc::EventType::KEY_PRESSED)
+                        _game->onKeyPressed(*_lib, event.key);
+                    if (event.type == arc::EventType::MOUSE_BUTTON_PRESSED)
+                        _game->onMouseButtonPressed(*_lib, event.mouse.button, event.mouse.x, event.mouse.y);
+                }
+                _game->update(*_lib, deltaTime);
+                _game->draw(*_lib);
+            }
+        }
+
+    private:
+        std::shared_ptr<arc::ILibrary> _lib = nullptr;
+        std::shared_ptr<arc::IGame> _game = nullptr;
+        LibraryLoader _loader;
+};
+
+int main(int ac, char **av, [[maybe_unused]] char **env)
+{
+    if (ac != 2) {
+        std::cerr << "Wrong argument count" << std::endl;
         return 84;
     }
 
+    try {
+        Core core(av[1]);
+        core.run();
+    }
+    catch (const std::exception& e) {
+        std::cerr << e.what() << std::endl;
+        return 84;
+    }
     return 0;
 }
