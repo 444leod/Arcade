@@ -154,3 +154,13 @@ extern "C" arc::IGame* entrypoint()
 {
     return new MyGame;
 }
+
+extern "C" const char *name()
+{
+    return "Example-Game";
+}
+
+extern "C" arc::SharedLibraryType type()
+{
+    return arc::SharedLibraryType::GAME;
+}

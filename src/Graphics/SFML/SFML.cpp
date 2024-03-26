@@ -607,3 +607,13 @@ extern "C" arc::ILibrary *entrypoint()
 {
     return new SFMLLibrary;
 }
+
+extern "C" const char *name()
+{
+    return "SFML";
+}
+
+extern "C" arc::SharedLibraryType type()
+{
+    return arc::SharedLibraryType::LIBRARY;
+}

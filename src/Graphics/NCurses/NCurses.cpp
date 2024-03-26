@@ -7,6 +7,7 @@
 
 #include "ILibrary.hpp"
 
+#include <iostream>
 #include <map>
 #include <deque>
 #include <thread>
@@ -277,7 +278,7 @@ public:
             init_pair(5, COLOR_BLUE, COLOR_BLACK);
             init_pair(6, COLOR_MAGENTA, COLOR_BLACK);
             init_pair(7, COLOR_CYAN, COLOR_BLACK);
-            init_pair(8, COLOR_WHITE, COLOR_WHITE);
+            init_pair(8, COLOR_WHITE, COLOR_BLACK);
         }
 
         this->_title = "";
@@ -310,13 +311,6 @@ public:
     virtual void setWidth(std::size_t width)
     {
         this->_width = width;
-    }
-
-    virtual size_t getPairColor(const arc::Color color) const
-    {
-        if (_colorPairs.find({color.red, color.green, color.blue}) != _colorPairs.end())
-            return _colorPairs.at({color.red, color.green, color.blue});
-        return 1;
     }
 
     virtual void setHeight(std::size_t height)
@@ -419,16 +413,21 @@ public:
         int roundedY = static_cast<int>(std::round(y));
 
         if (_canChangeColor)
-            attron(COLOR_PAIR(getPairColor(spec.color)));
+            attron(COLOR_PAIR(mapToNcurseColor(spec.color)));
         mvaddch(roundedY, roundedX, spec.character);
         if (_canChangeColor)
-            attroff(COLOR_PAIR(getPairColor(spec.color)));
+            attroff(COLOR_PAIR(mapToNcurseColor(spec.color)));
     }
 
     virtual void print(const std::string& string, std::shared_ptr<arc::IFont> font, float x, float y)
     {
         [[maybe_unused]] auto& spec = std::dynamic_pointer_cast<NCursesFont>(font)->specification();
+        if (_canChangeColor)
+            attron(COLOR_PAIR(mapToNcurseColor(spec.color)));
+        std::cerr << "Wrining in color: " << mapToNcurseColor(spec.color) << std::endl;
         mvprintw(y, x, "%s", string.c_str());
+        if (_canChangeColor)
+            attroff(COLOR_PAIR(mapToNcurseColor(spec.color)));
     }
 
     virtual arc::Rect<float> measure(const std::string& string, [[maybe_unused]] std::shared_ptr<arc::IFont> font, float x, float y)
@@ -442,6 +441,19 @@ public:
     }
 
 private:
+    int mapToNcurseColor(arc::Color color)
+    {
+        int c = 1;
+
+        if (color.red > 127)
+            c += 1;
+        if (color.green > 127)
+            c += 2;
+        if (color.blue > 127)
+            c += 4;
+        return c;
+    }
+
     bool _opened = true;
     std::string _title;
     uint32_t _framerate;
@@ -449,16 +461,6 @@ private:
     std::size_t _height;
     std::size_t _tileSize;
     std::deque<arc::Event> _events;
-    std::map<std::tuple<size_t, size_t, size_t>, int> _colorPairs = {
-        {{0, 0, 0}, 1},
-        {{255, 0, 0}, 2},
-        {{0, 255, 0}, 3},
-        {{255, 255, 0}, 4},
-        {{0, 0, 255}, 5},
-        {{255, 0, 255}, 6},
-        {{0, 255, 255}, 7},
-        {{255, 255, 255}, 8}
-    };
     bool _canChangeColor = false;
 };
 
@@ -487,4 +489,14 @@ private:
 extern "C" arc::ILibrary *entrypoint()
 {
     return new NCursesLibrary;
+}
+
+extern "C" const char *name()
+{
+    return "NCurses";
+}
+
+extern "C" arc::SharedLibraryType type()
+{
+    return arc::SharedLibraryType::LIBRARY;
 }
