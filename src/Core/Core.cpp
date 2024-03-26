@@ -6,7 +6,6 @@
 */
 
 #include "IGame.hpp"
-#include "ILibrary.hpp"
 #include <dlfcn.h>
 #include <iostream>
 #include <vector>
@@ -152,15 +151,10 @@ class LibraryLoader
         std::vector<std::shared_ptr<LibraryObject>> _libs = {};
 };
 
-class Core;
-
 class CoreMenu : public arc::IGame
 {
     public:
-        CoreMenu(Core& core,
-            const std::vector<std::shared_ptr<LibraryObject>>& libs,
-            void (Core::*callback)(std::shared_ptr<arc::IGame>))
-            : _core(core), _callback(callback)
+        CoreMenu(const std::vector<std::shared_ptr<LibraryObject>>& libs)
         {
             for (auto l : libs)
                 if (l->type() == arc::SharedLibraryType::GAME)
@@ -199,8 +193,6 @@ class CoreMenu : public arc::IGame
             case arc::Key::DOWN:
                 this->_selection = (this->_selection + 1) % _libs.size();
                 break;
-            case arc::Key::ENTER:
-                (this->_core.*this->_callback)(this->_libs.at(this->_selection)->get<arc::IGame>());
             default:
                 break;
             }
@@ -233,24 +225,19 @@ class CoreMenu : public arc::IGame
             lib.display().flush();
         }
 
+        std::shared_ptr<arc::IGame> getSelection()
+        {
+            return this->_libs.at(this->_selection)->get<arc::IGame>();
+        }
+
     private:
         int _selection = 0;
-        Core& _core;
         std::vector<std::shared_ptr<LibraryObject>> _libs = {};
-        void (Core::*_callback)(std::shared_ptr<arc::IGame>) = nullptr;
 };
 
 class Core
 {
     public:
-
-        void switch_game_lib(std::shared_ptr<arc::IGame> game)
-        {
-            this->_game.reset();
-            this->_game = game;
-            this->_game->initialize(*_lib);
-        }
-
         Core(const std::string& path) : _loader(LibraryLoader("./lib"))
         {
             if (!this->_loader.contains(path))
@@ -258,11 +245,26 @@ class Core
             this->_lib = this->_loader.load(path)->get<arc::ILibrary>();
             if (!this->_loader.contains(arc::SharedLibraryType::GAME))
                 throw CoreException("No game library found.");
-            this->_game = std::make_shared<CoreMenu>(*this, _loader.libs(), &Core::switch_game_lib);
+            this->_game = std::make_shared<CoreMenu>(_loader.libs());
         }
 
         ~Core()
         {
+        }
+
+        void switch_game_lib()
+        {
+            auto menu = std::dynamic_pointer_cast<CoreMenu>(this->_game);
+
+            if (menu != nullptr) {
+                this->_game.reset();
+                auto next = menu->getSelection();
+                this->_game = next;
+            } else {
+                this->_game.reset();
+                this->_game = std::make_shared<CoreMenu>(_loader.libs());
+            }
+            this->_game->initialize(*_lib);
         }
 
         void switch_graphic_lib()
@@ -306,6 +308,7 @@ class Core
         void run()
         {
             auto lib_switch = false;
+            auto game_switch = false;
             auto before = std::chrono::high_resolution_clock::now();
 
             _game->initialize(*_lib);
@@ -321,10 +324,18 @@ class Core
                     continue;
                 }
 
+                if (game_switch) {
+                    switch_game_lib();
+                    game_switch = false;
+                    continue;
+                }
+
                 _lib->display().update(deltaTime);
                 while (_lib->display().pollEvent(event)) {
                     if (event.type == arc::EventType::KEY_PRESSED && event.key == arc::Key::SPACE)
                         lib_switch = true;
+                    if (event.type == arc::EventType::KEY_PRESSED && event.key == arc::Key::ENTER)
+                        game_switch = true;
                     if (event.type == arc::EventType::KEY_PRESSED)
                         _game->onKeyPressed(*_lib, event.key);
                     if (event.type == arc::EventType::MOUSE_BUTTON_PRESSED)
