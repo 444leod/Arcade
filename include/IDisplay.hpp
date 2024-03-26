@@ -11,6 +11,43 @@
 #include "ITextureManager.hpp"
 
 namespace arc {
+    /**
+     * @brief Represents a key
+     */
+    enum class Key {
+        A = 0, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V,
+        W, X, Y, Z, UP, DOWN, LEFT, RIGHT, SPACE, ENTER, ESCAPE, UNKNOWN
+    };
+
+    /**
+     * @brief Represents a mouse button
+     */
+    enum class MouseButton {
+        LEFT = 0, RIGHT, MIDDLE, UNKNOWN
+    };
+
+    /**
+     * @brief Represents an even type
+     */
+    enum class EventType {
+        KEY_PRESSED = 0,
+        MOUSE_BUTTON_PRESSED
+    };
+
+    /**
+     * @brief Represents an event
+     */
+    struct Event {
+        EventType type;
+        union {
+            Key key;
+            struct {
+                MouseButton button;
+                int32_t x;
+                int32_t y;
+            } mouse;
+        };
+    };
 
     /**
      * @brief Represents a display. This could be a window or a terminal.
@@ -131,9 +168,9 @@ namespace arc {
          * @param x the column to draw the texture at
          * @param y the row to draw the texture at
          */
-        virtual void draw(const ITexture& texture, float x, float y) = 0;
+        virtual void draw(std::shared_ptr<ITexture> texture, float x, float y) = 0;
 
-        /**
+        /**td::shared_ptr<ITexture> g
          * @brief Draws a string to the display
          *
          * @param string the string to draw
@@ -141,7 +178,7 @@ namespace arc {
          * @param x the column to draw the texture at
          * @param y the row to draw the texture at
          */
-        virtual void print(const std::string& string, const arc::IFont& font, float x, float y) = 0;
+        virtual void print(const std::string& string, std::shared_ptr<IFont> font, float x, float y) = 0;
 
         /**
          * @brief Returns the size of a string when printed
@@ -150,7 +187,7 @@ namespace arc {
          * @param font the font to use
          * @return Rect the size of the string when printed
          */
-        virtual Rect<float> measure(const std::string& string, const arc::IFont& font, float x, float y) = 0;
+        virtual Rect<float> measure(const std::string& string, std::shared_ptr<IFont> font, float x, float y) = 0;
 
         /**
          * @brief Flushes what has been drawn to the display.
