@@ -424,7 +424,6 @@ public:
         [[maybe_unused]] auto& spec = std::dynamic_pointer_cast<NCursesFont>(font)->specification();
         if (_canChangeColor)
             attron(COLOR_PAIR(mapToNcurseColor(spec.color)));
-        std::cerr << "Wrining in color: " << mapToNcurseColor(spec.color) << std::endl;
         mvprintw(y, x, "%s", string.c_str());
         if (_canChangeColor)
             attroff(COLOR_PAIR(mapToNcurseColor(spec.color)));
