@@ -12,7 +12,7 @@ using pacman::ghosts::Inky;
 Inky::Inky()
 {
     _name = "inky";
-    _speed = 0.6f;
+    _speed = 1;
 }
 
 void Inky::initTextures(arc::ITextureManager& manager)
@@ -37,4 +37,11 @@ void Inky::initTextures(arc::ITextureManager& manager)
     spec.graphical = arc::TextureImage{"assets/pacman/entity-tileset.png", arc::Rect<uint32_t>{0, 120, 20, 20}};
     manager.load("inky_start", spec);
     _textures[pacman::Direction::NONE] = {"inky_start"};
+
+    spec.textual.character = 'D';
+    spec.textual.color = {0, 0, 0, 255};
+    spec.graphical = arc::TextureImage{"assets/pacman/entity-tileset.png", arc::Rect<uint32_t>{40, 160, 20, 20}};
+    manager.load("scaredghost_1_", spec);
+    spec.graphical = arc::TextureImage{"assets/pacman/entity-tileset.png", arc::Rect<uint32_t>{60, 160, 20, 20}};
+    manager.load("scaredghost_2_", spec);
 }

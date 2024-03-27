@@ -14,18 +14,23 @@
 namespace pacman {
     enum class TileType {
         VOID,
+        EMPTY,
         COIN,
-        WALL,
         FRUIT,
-        PLAYER
+        WALL,
+        PLAYER,
+        DOOR,
+        GHOST
     };
 
     inline std::map<TileType, std::string> TileTypeToString = {
         {TileType::VOID, "VOID"},
+        {TileType::EMPTY, "EMPTY"},
         {TileType::COIN, "COIN"},
         {TileType::WALL, "WALL"},
         {TileType::FRUIT, "FRUIT"},
-        {TileType::PLAYER, "PLAYER"}
+        {TileType::PLAYER, "PLAYER"},
+        {TileType::DOOR, "DOOR"}
     };
 
     enum class Direction {
@@ -42,10 +47,10 @@ namespace pacman {
         {Direction::RIGHT, {1, 0}}
     };
     inline std::map<Vec2i, Direction> Vec2ToDirection = {
-        {{0, -1}, Direction::UP},
-        {{0, 1}, Direction::DOWN},
-        {{-1, 0}, Direction::LEFT},
-        {{1, 0}, Direction::RIGHT}
+        {{0, -1},   Direction::UP},
+        {{0, 1},    Direction::DOWN},
+        {{-1, 0},   Direction::LEFT},
+        {{1, 0},    Direction::RIGHT}
     };
 
     inline std::map<Direction, std::string> DirectionToString = {
@@ -60,6 +65,14 @@ namespace pacman {
         GHOST,
         PLAYER
     };
+    namespace entity {
+        enum class status {
+            ALIVE,
+            DEAD,
+            HUNGRY,
+            SCARED
+        };
+    }
     namespace ghost {
         enum class state {
             CHASE,
@@ -85,5 +98,10 @@ namespace pacman {
         };
         class Player;
     }
-    class MapHandler;
+    class MapTexturer;
+    class Map;
+
+    inline std::ostream& operator<<(std::ostream& os, const Direction& direction) {
+        return os << static_cast<int>(direction);
+    }
 }

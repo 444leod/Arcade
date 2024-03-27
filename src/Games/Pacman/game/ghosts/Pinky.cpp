@@ -12,13 +12,13 @@ using pacman::ghosts::Pinky;
 Pinky::Pinky()
 {
     _name = "pinky";
-    _speed = 0.9f;
+    _speed = 1;
 }
 
 void Pinky::initTextures(arc::ITextureManager& manager)
 {
     arc::TextureSpecification spec;
-    spec.textual.character = 'B';
+    spec.textual.character = 'P';
     spec.textual.color = {255, 0, 255, 255};
     pacman::Direction dir = pacman::Direction::LEFT;
     for (int i = 0; i < 4; i++) {

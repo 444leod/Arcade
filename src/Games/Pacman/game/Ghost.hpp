@@ -16,12 +16,12 @@ namespace pacman {
             public:
                 Ghost();
                 ~Ghost();
-
-                // void move(float deltaTime, MapHandler& map) override;
-
                 void queueMove(Direction direction) override;
                 void queueMove(Vec2i move) override;
                 void setMoveQueue(std::vector<Vec2i> moveQueue) override;
+
+                void initTextures(arc::ITextureManager& manager) override;
+                std::string getTexture(uint16_t tick) override;
 
             protected:
             private:

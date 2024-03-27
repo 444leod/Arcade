@@ -2,19 +2,19 @@
 ** EPITECH PROJECT, 2024
 ** Arcade-Cleaned
 ** File description:
-** Inky
+** Blinky
 */
 
 #pragma once
 
-#include "../AEntity.hpp"
+#include "../Ghost.hpp"
 
 namespace pacman {
     namespace ghosts {
-        class Inky : public AEntity {
+        class Blinky : public Ghost {
             public:
-                Inky();
-                ~Inky() = default;
+                Blinky();
+                ~Blinky() = default;
 
                 void initTextures(arc::ITextureManager& manager) override;
         };

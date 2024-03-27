@@ -6,9 +6,9 @@
 */
 
 #include "IEntity.hpp"
-#include "AEntity.hpp"
-#include "MapHandler.hpp"
 #include "Vec2.hpp"
+#include "AEntity.hpp"
+#include "Map.hpp"
 
 using pacman::Direction;
 using pacman::player::State;
@@ -62,14 +62,20 @@ Vec2i AEntity::getDirection() const
     return _direction;
 }
 
-void AEntity::move(float deltaTime, [[maybe_unused]]pacman::MapHandler& map)
+void AEntity::move(float deltaTime, [[maybe_unused]]std::shared_ptr<pacman::Map> map)
 {
     _elapsed += (deltaTime * _speed);
     while (_elapsed >= 0.2) {
         _elapsed -= 0.2;
+        if (_nextPos != Vec2i(0, 0)) {
+            _lastPos = _pos;
+            _pos = _nextPos;
+            _nextPos = Vec2i(0, 0);
+            continue;
+        }
         if (_moveQueue.size()) {
             Vec2i nextMove = _moveQueue.front();
-            if (map.isTileWalkable(_pos + nextMove)) {
+            if (_walkableTiles[map->getCellType(_pos + nextMove)]) {
                 _lastPos = _pos;
                 _pos += nextMove;
                 _direction = nextMove;
@@ -77,17 +83,23 @@ void AEntity::move(float deltaTime, [[maybe_unused]]pacman::MapHandler& map)
                 return;
             }
         }
-        if (map.isTileWalkable(_pos + _direction)) {
+        if (_walkableTiles[map->getCellType(_pos + _direction)]) {
             _lastPos = _pos;
             _pos += _direction;
             _posf = Vec2f(_lastPos.x, _lastPos.y);
         } else {
             _lastPos = _pos;
         }
+        for (auto &teleporter : map->getTeleporters()) {
+            if (_pos == teleporter.first) {
+                _nextPos = teleporter.second;
+                return;
+            }
+        }
     }
 }
 
-void AEntity::movef(float deltaTime, [[maybe_unused]]pacman::MapHandler& map)
+void AEntity::movef(float deltaTime)
 {
     _elapsedf += (deltaTime * _speed);
     while (_elapsedf >= 0.02) {
@@ -115,9 +127,14 @@ void AEntity::queueMove(Direction direction)
     _moveQueue.push_back(pacman::DirectionToVec2[direction]);
 }
 
-size_t AEntity::getSpeed() const
+float AEntity::getSpeed() const
 {
     return _speed;
+}
+
+void AEntity::setSpeed(float speed)
+{
+    _speed = speed;
 }
 
 void AEntity::initTextures(arc::ITextureManager &manager)
@@ -165,4 +182,29 @@ std::string AEntity::getTexture(uint16_t tick)
     if (entityTexture.size() == 0)
         return "";
     return entityTexture[tick % entityTexture.size()];
+}
+
+pacman::entity::status AEntity::getStatus() const
+{
+    return _status;
+}
+
+void AEntity::setStatus(pacman::entity::status status)
+{
+    _status = status;
+}
+
+uint64_t AEntity::getId() const
+{
+    return _id;
+}
+
+bool AEntity::operator==(const IEntity &other) const
+{
+    return this->_id == other.getId();
+}
+
+void AEntity::updateWalkableTiles(pacman::TileType type, bool walkable)
+{
+    _walkableTiles[type] = walkable;
 }

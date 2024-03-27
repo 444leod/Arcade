@@ -7,11 +7,11 @@
 
 #pragma once
 
-#include "../AEntity.hpp"
+#include "../Ghost.hpp"
 
 namespace pacman {
     namespace ghosts {
-        class Pinky : public AEntity {
+        class Pinky : public Ghost {
             public:
                 Pinky();
                 ~Pinky() = default;
