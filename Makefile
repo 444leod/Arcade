@@ -28,7 +28,7 @@ clean:
 
 fclean: clean
 	@make -s -C src/Games/Pacman fclean 	LIB_DIR=$(LIB_DIR)
-	@make -s -C src/Games/Snake fclean 	LIB_DIR=$(LIB_DIR)
+	@make -s -C src/Games/Snake fclean 		LIB_DIR=$(LIB_DIR)
 	@make -s -C src/Games/Example fclean 	LIB_DIR=$(LIB_DIR)
 	@make -s -C src/Graphics/SFML fclean 	LIB_DIR=$(LIB_DIR)
 	@make -s -C src/Graphics/NCurses fclean LIB_DIR=$(LIB_DIR)
@@ -40,15 +40,28 @@ re: fclean all
 core:
 	@make -s -C src/Core 				DIR=$(DIR) INC_DIR=$(INC_DIR)
 
+core_re:
+	@make -s -C src/Core re 			DIR=$(DIR) INC_DIR=$(INC_DIR)
+
 games:
 	@make -s -C src/Games/Pacman 		LIB_DIR=$(LIB_DIR) INC_DIR=$(INC_DIR)
 	@make -s -C src/Games/Snake 		LIB_DIR=$(LIB_DIR) INC_DIR=$(INC_DIR)
 	@make -s -C src/Games/Example 		LIB_DIR=$(LIB_DIR) INC_DIR=$(INC_DIR)
 
+games_re:
+	@make -s -C src/Games/Pacman re 	LIB_DIR=$(LIB_DIR) INC_DIR=$(INC_DIR)
+	@make -s -C src/Games/Snake re 		LIB_DIR=$(LIB_DIR) INC_DIR=$(INC_DIR)
+	@make -s -C src/Games/Example re 	LIB_DIR=$(LIB_DIR) INC_DIR=$(INC_DIR)
+
 graphicals:
 	@make -s -C src/Graphics/NCurses 	LIB_DIR=$(LIB_DIR) INC_DIR=$(INC_DIR)
 	@make -s -C src/Graphics/SFML 		LIB_DIR=$(LIB_DIR) INC_DIR=$(INC_DIR)
 	@# @make -s -C src/Graphics/SDL2 	LIB_DIR=$(LIB_DIR) INC_DIR=$(INC_DIR)
+
+graphicals_re:
+	@make -s -C src/Graphics/NCurses re LIB_DIR=$(LIB_DIR) INC_DIR=$(INC_DIR)
+	@make -s -C src/Graphics/SFML re 	LIB_DIR=$(LIB_DIR) INC_DIR=$(INC_DIR)
+	@# @make -s -C src/Graphics/SDL2 re LIB_DIR=$(LIB_DIR) INC_DIR=$(INC_DIR)
 
 tests_run:
 	@exit 0

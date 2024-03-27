@@ -32,3 +32,7 @@
 *.app
 .vscode
 arcade
+pacman.txt
+ncurses.cpp
+txr.txt
+Commons

@@ -6,7 +6,7 @@
 */
 
 #include "IGame.hpp"
-#include "RandomNumberGenerator.hpp"
+// #include "RandomNumberGenerator.hpp"
 #include "Vec2.hpp"
 
 #include <iostream>
@@ -138,8 +138,8 @@ public:
 
 private:
     void resetGoal() {
-        _goalPos.x = rng::rand(1, 24);
-        _goalPos.y = rng::rand(1, 24);
+        _goalPos.x = std::rand() % (24 + 1) + 1;
+        _goalPos.y = std::rand() % (24 + 1) + 1;
     }
 
 private:
