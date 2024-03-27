@@ -7,13 +7,23 @@
 
 #pragma once
 
-#include "Datatypes.hpp"
+#include "Color.hpp"
 
 #include <string>
 #include <vector>
+#include <memory>
+#include <map>
 
 namespace arc {
 
+    /**
+     * @brief Represents the specification required to create a Font
+     */
+    struct FontSpecification {
+        arc::Color color;
+        std::size_t size;
+        std::string path;
+    };
 
     /**
      * @brief Represents a font
@@ -27,7 +37,7 @@ namespace arc {
          *
          * @return const FontSpecification& The specification of the font
          */
-        virtual const FontSpecification& specificiation() const = 0;
+        virtual const FontSpecification& specification() const = 0;
     };
 
     /**
@@ -53,13 +63,13 @@ namespace arc {
          * @param name the name of font
          * @return IFont& the font
          */
-        virtual IFont& get(const std::string &name) = 0;
+        virtual std::shared_ptr<IFont> get(const std::string &name) = 0;
 
         /**
          * @brief Retrieves all the fonts specifications with their name
          *
          * @return std::vector<TextureSpecification> the specifications of all the textures
          */
-        virtual std::vector<std::pair<std::string, FontSpecification>> dump() const = 0;
+        virtual std::map<std::string, FontSpecification> dump() const = 0;
     };
 }
