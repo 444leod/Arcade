@@ -8,6 +8,8 @@
 #pragma once
 
 #include "IDisplay.hpp"
+#include "ISoundManager.hpp"
+#include "IMusicManager.hpp"
 
 namespace arc {
 
@@ -45,5 +47,19 @@ namespace arc {
          * @return IFontManager& The font manager
          */
         virtual IFontManager& fonts() = 0;
+
+        /**
+         * @brief Returns the sound manager of the library
+         *
+         * @return ISoundManager& The sound manager
+         */
+        virtual ISoundManager& sounds() = 0;
+
+        /**
+         * @brief Returns the music manager of the library
+         *
+         * @return IMusicManager& The music manager
+         */
+        virtual IMusicManager& musics() = 0;
     };
 };
