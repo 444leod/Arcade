@@ -15,9 +15,7 @@
 #include <SDL2/SDL_ttf.h>
 #include <SDL2/SDL_mixer.h>
 
-namespace arc
-{
-    class SDLSound : public ISound {
+    class SDLSound : public arc::ISound {
     public:
         SDLSound() = default;
         ~SDLSound()
@@ -25,7 +23,7 @@ namespace arc
             Mix_FreeChunk(this->_sound);
         }
 
-        bool load(const SoundSpecification& spec)
+        bool load(const arc::SoundSpecification& spec)
         {
             _spec = spec;
             _sound = Mix_LoadWAV(spec.path.c_str());
@@ -42,15 +40,15 @@ namespace arc
 
         void stop() { Mix_HaltChannel(_channel); }
         bool isPlaying() { return Mix_Playing(_channel); }
-        virtual const SoundSpecification& specification() const { return this->_spec; }
+        virtual const arc::SoundSpecification& specification() const { return this->_spec; }
 
     private:
-        SoundSpecification _spec = {};
+        arc::SoundSpecification _spec = {};
         Mix_Chunk *_sound = nullptr;
         int _channel = -1;
     };
 
-    class SDLSoundManager : public ISoundManager {
+    class SDLSoundManager : public arc::ISoundManager {
     public:
         SDLSoundManager()
         {
@@ -62,7 +60,7 @@ namespace arc
             Mix_CloseAudio();
         }
 
-        virtual bool load(const std::string& name, const SoundSpecification& spec)
+        virtual bool load(const std::string& name, const arc::SoundSpecification& spec)
         {
             auto sound = std::make_shared<SDLSound>();
 
@@ -72,9 +70,9 @@ namespace arc
             return true;
         }
 
-        virtual std::vector<std::pair<std::string, SoundSpecification>> dump() const
+        virtual std::vector<std::pair<std::string, arc::SoundSpecification>> dump() const
         {
-            auto specs = std::vector<std::pair<std::string, SoundSpecification>>{};
+            auto specs = std::vector<std::pair<std::string, arc::SoundSpecification>>{};
             specs.reserve(_sounds.size());
 
             for (const auto& [name, sound] : this->_sounds)
@@ -102,7 +100,7 @@ namespace arc
         std::map<std::string, std::shared_ptr<SDLSound>> _sounds;
     };
 
-    class SDLMusic : public IMusic {
+    class SDLMusic : public arc::IMusic {
     public:
         SDLMusic() = default;
         ~SDLMusic()
@@ -110,7 +108,7 @@ namespace arc
             Mix_FreeMusic(this->_music);
         }
 
-        bool load(const MusicSpecification& spec)
+        bool load(const arc::MusicSpecification& spec)
         {
             _spec = spec;
             _music = Mix_LoadMUS(spec.path.c_str());
@@ -130,20 +128,20 @@ namespace arc
         void setVolume(float volume) { Mix_VolumeMusic(volume * 1.28); }
         bool isPlaying() const { return this->_playing; }
         void refreshState() { this->_playing = false; }
-        virtual const MusicSpecification& specification() const { return this->_spec; }
+        virtual const arc::MusicSpecification& specification() const { return this->_spec; }
 
     private:
         bool _playing = false;
         Mix_Music *_music = nullptr;
-        MusicSpecification _spec = {};
+        arc::MusicSpecification _spec = {};
     };
 
-    class SDLMusicManager : public IMusicManager {
+    class SDLMusicManager : public arc::IMusicManager {
     public:
         SDLMusicManager() = default;
         ~SDLMusicManager() = default;
 
-        virtual bool load(const std::string& name, const MusicSpecification& spec)
+        virtual bool load(const std::string& name, const arc::MusicSpecification& spec)
         {
             auto music = std::make_shared<SDLMusic>();
 
@@ -153,9 +151,9 @@ namespace arc
             return true;
         }
 
-        virtual std::vector<std::pair<std::string, MusicSpecification>> dump()
+        virtual std::vector<std::pair<std::string, arc::MusicSpecification>> dump()
         {
-            auto specs = std::vector<std::pair<std::string, MusicSpecification>>{};
+            auto specs = std::vector<std::pair<std::string, arc::MusicSpecification>>{};
             specs.reserve(_musics.size());
 
             for (const auto& [name, music] : this->_musics) {
@@ -204,7 +202,7 @@ namespace arc
         std::map<std::string, std::shared_ptr<SDLMusic>> _musics;
     };
 
-    class SDLTexture : public ITexture {
+    class SDLTexture : public arc::ITexture {
     public:
         SDLTexture() = default;
         ~SDLTexture()
@@ -212,12 +210,12 @@ namespace arc
             SDL_DestroyTexture(_texture);
         }
 
-        bool load(const TextureSpecification& spec,
+        bool load(const arc::TextureSpecification& spec,
             SDL_Texture *texture,
-            std::optional<Rect<uint32_t>> rect)
+            std::optional<arc::Rect<uint32_t>> rect)
         {
-            if (std::holds_alternative<Color>(spec.graphical))
-                _color = std::get<Color>(spec.graphical);
+            if (std::holds_alternative<arc::Color>(spec.graphical))
+                _color = std::get<arc::Color>(spec.graphical);
             this->_spec = spec;
             this->_texture = texture;
             if (rect.has_value()) {
@@ -232,29 +230,29 @@ namespace arc
             return true;
         }
 
-        virtual const TextureSpecification& specification() const { return this->_spec; }
+        virtual const arc::TextureSpecification& specification() const { return this->_spec; }
         SDL_Texture *raw() const { return this->_texture; }
-        Color color() const { return this->_color; }
+        arc::Color color() const { return this->_color; }
         const SDL_Rect *rect() const { return &this->_rect; }
 
     private:
-        Color _color = {};
+        arc::Color _color = {};
         SDL_Rect _rect = {0, 0, 0, 0};
         SDL_Texture *_texture = nullptr;
-        TextureSpecification _spec = {};
+        arc::TextureSpecification _spec = {};
     };
 
-    class SDLTextureManager : public ITextureManager {
+    class SDLTextureManager : public arc::ITextureManager {
     public:
         SDLTextureManager(SDL_Renderer *renderer) : _renderer(renderer) {}
         ~SDLTextureManager() = default;
 
-        virtual bool load(const std::string& name, const TextureSpecification& spec)
+        virtual bool load(const std::string& name, const arc::TextureSpecification& spec)
         {
             auto tex = std::make_shared<SDLTexture>();
 
-            if (std::holds_alternative<TextureImage>(spec.graphical)) {
-                auto graph = std::get<TextureImage>(spec.graphical);
+            if (std::holds_alternative<arc::TextureImage>(spec.graphical)) {
+                auto graph = std::get<arc::TextureImage>(spec.graphical);
                 auto img = IMG_LoadTexture(this->_renderer, graph.path.c_str());
                 if (!img)
                     return false;
@@ -270,16 +268,16 @@ namespace arc
             return true;
         }
 
-        virtual std::shared_ptr<ITexture> get(const std::string& name)
+        virtual std::shared_ptr<arc::ITexture> get(const std::string& name)
         {
             if (this->_textures.find(name) == this->_textures.end())
                 return nullptr;
             return this->_textures.at(name);
         }
 
-        virtual std::vector<std::pair<std::string, TextureSpecification>> dump() const
+        virtual std::vector<std::pair<std::string, arc::TextureSpecification>> dump() const
         {
-            auto specs = std::vector<std::pair<std::string, TextureSpecification>>{};
+            auto specs = std::vector<std::pair<std::string, arc::TextureSpecification>>{};
             specs.reserve(_textures.size());
 
             for (const auto& [name, texture] : this->_textures)
@@ -292,12 +290,12 @@ namespace arc
         std::map<std::string, std::shared_ptr<SDLTexture>> _textures = {};
     };
 
-    class SDLFont : public IFont {
+    class SDLFont : public arc::IFont {
     public:
         SDLFont() = default;
         ~SDLFont() = default;
 
-        bool load(const FontSpecification& spec)
+        bool load(const arc::FontSpecification& spec)
         {
             this->_spec = spec;
             this->_font = TTF_OpenFont(spec.path.c_str(), spec.size);
@@ -310,17 +308,17 @@ namespace arc
             return true;
         }
 
-        virtual const FontSpecification& specification() const { return _spec; }
+        virtual const arc::FontSpecification& specification() const { return _spec; }
         TTF_Font *font() { return this->_font; }
         SDL_Color color() { return this->_color; }
 
     private:
-        FontSpecification _spec = {};
+        arc::FontSpecification _spec = {};
         TTF_Font *_font = nullptr;
         SDL_Color _color = {0, 0, 0, 0};
     };
 
-    class SDLFontManager : public IFontManager {
+    class SDLFontManager : public arc::IFontManager {
     public:
         SDLFontManager()
         {
@@ -331,7 +329,7 @@ namespace arc
             TTF_Quit();
         }
 
-        virtual bool load(const std::string& name, const FontSpecification& spec)
+        virtual bool load(const std::string& name, const arc::FontSpecification& spec)
         {
             auto font = std::make_shared<SDLFont>();
 
@@ -341,16 +339,16 @@ namespace arc
             return true;
         }
 
-        virtual std::shared_ptr<IFont> get(const std::string &name)
+        virtual std::shared_ptr<arc::IFont> get(const std::string &name)
         {
             if (this->_fonts.find(name) == this->_fonts.end())
                 return nullptr;
             return this->_fonts.at(name);
         }
 
-        virtual std::vector<std::pair<std::string, FontSpecification>> dump() const
+        virtual std::vector<std::pair<std::string, arc::FontSpecification>> dump() const
         {
-            auto specs = std::vector<std::pair<std::string, FontSpecification>>{};
+            auto specs = std::vector<std::pair<std::string, arc::FontSpecification>>{};
             specs.reserve(_fonts.size());
 
             for (const auto& [name, font] : this->_fonts)
@@ -362,7 +360,7 @@ namespace arc
         std::map<std::string, std::shared_ptr<SDLFont>> _fonts;
     };
 
-    class SDLDisplay : public IDisplay {
+    class SDLDisplay : public arc::IDisplay {
     public:
         SDLDisplay(SDL_Window **window, SDL_Renderer **renderer)
         {
@@ -460,7 +458,7 @@ namespace arc
             this->_opened = false;
         }
 
-        virtual bool pollEvent([[maybe_unused]] Event& event)
+        virtual bool pollEvent(arc::Event& event)
         {
             if (this->_events.empty())
                 return false;
@@ -470,47 +468,47 @@ namespace arc
             return true;
         }
 
-        static Key MapSDLKey(SDL_Keycode key)
+        static arc::Key MapSDLKey(SDL_Keycode key)
         {
             if (key >= SDL_KeyCode::SDLK_a && key <= SDL_KeyCode::SDLK_z)
-                return (Key)((uint32_t)Key::A + key - SDL_KeyCode::SDLK_a);
+                return (arc::Key)((uint32_t)arc::Key::A + key - SDL_KeyCode::SDLK_a);
             if (key >= SDL_KeyCode::SDLK_RIGHT && key <= SDL_KeyCode::SDLK_UP)
-                return (Key)((uint32_t)Key::UP + key - SDL_KeyCode::SDLK_RIGHT);
+                return (arc::Key)((uint32_t)arc::Key::UP + key - SDL_KeyCode::SDLK_RIGHT);
 
             switch (key)
             {
             case SDL_KeyCode::SDLK_SPACE:
-                return Key::SPACE;
+                return arc::Key::SPACE;
             case SDL_KeyCode::SDLK_RETURN:
-                return Key::ENTER;
+                return arc::Key::ENTER;
             case SDL_KeyCode::SDLK_ESCAPE:
-                return Key::ESCAPE;
+                return arc::Key::ESCAPE;
             default:
-                return Key::UNKNOWN;
+                return arc::Key::UNKNOWN;
             }
-            return Key::UNKNOWN;
+            return arc::Key::UNKNOWN;
         }
 
-        static MouseButton MapSDLButton(uint8_t button)
+        static arc::MouseButton MapSDLButton(uint8_t button)
         {
             switch (button)
             {
             case SDL_BUTTON_LEFT:
-                return MouseButton::LEFT;
+                return arc::MouseButton::LEFT;
             case SDL_BUTTON_RIGHT:
-                return MouseButton::RIGHT;
+                return arc::MouseButton::RIGHT;
             case SDL_BUTTON_MIDDLE:
-                return MouseButton::MIDDLE;
+                return arc::MouseButton::MIDDLE;
             default:
                 break;
             }
-            return MouseButton::UNKNOWN;
+            return arc::MouseButton::UNKNOWN;
         }
 
         virtual void update([[maybe_unused]] float deltaTime)
         {
             SDL_Event sdlEvent = {};
-            Event arcEvent = {};
+            arc::Event arcEvent = {};
 
             while (SDL_PollEvent(&sdlEvent)) {
                 switch (sdlEvent.type)
@@ -519,12 +517,12 @@ namespace arc
                     this->_opened = false;
                     break;
                 case SDL_EventType::SDL_KEYDOWN:
-                    arcEvent.type = EventType::KEY_PRESSED;
+                    arcEvent.type = arc::EventType::KEY_PRESSED;
                     arcEvent.key = MapSDLKey(sdlEvent.key.keysym.sym);
                     _events.push_back(arcEvent);
                     break;
                 case SDL_EventType::SDL_MOUSEBUTTONDOWN:
-                    arcEvent.type = EventType::MOUSE_BUTTON_PRESSED;
+                    arcEvent.type = arc::EventType::MOUSE_BUTTON_PRESSED;
                     arcEvent.mouse = {
                         .button = MapSDLButton(sdlEvent.button.button),
                         .x = sdlEvent.button.x / (int)this->_tileSize,
@@ -538,13 +536,13 @@ namespace arc
             }
         }
 
-        virtual void clear(Color color = {0, 0, 0, 255})
+        virtual void clear(arc::Color color = {0, 0, 0, 255})
         {
             SDL_SetRenderDrawColor(this->_renderer, color.red, color.green, color.blue, color.alpha);
             SDL_RenderClear(this->_renderer);
         }
 
-        virtual void draw(const std::shared_ptr<ITexture> texture, float x, float y)
+        virtual void draw(std::shared_ptr<arc::ITexture> texture, float x, float y)
         {
             if (texture == nullptr)
                 return;
@@ -564,7 +562,7 @@ namespace arc
                 SDL_RenderCopy(this->_renderer, tex->raw(), tex->rect(), &rect);
         }
 
-        virtual void print(const std::string& string, std::shared_ptr<IFont> font, float x, float y)
+        virtual void print(const std::string& string, std::shared_ptr<arc::IFont> font, float x, float y)
         {
             if (font == nullptr)
                 return;
@@ -579,13 +577,13 @@ namespace arc
             SDL_FreeSurface(surf);
         }
 
-        virtual Rect<float> measure(const std::string& string, std::shared_ptr<IFont> font, float x, float y)
+        virtual arc::Rect<float> measure(const std::string& string, std::shared_ptr<arc::IFont> font, float x, float y)
         {
             if (font == nullptr)
-                return Rect<float>();
+                return arc::Rect<float>();
             auto attr = dynamic_cast<const SDLFont&>(*font);
             auto surf = TTF_RenderText_Solid(attr.font(), string.c_str(), attr.color());
-            Rect<float> rect = { x, y,
+            arc::Rect<float> rect = { x, y,
                 (float)surf->w  / this->_tileSize,
                 (float)surf->h  / this->_tileSize};
             SDL_FreeSurface(surf);
@@ -602,7 +600,7 @@ namespace arc
         SDL_Renderer *_renderer = nullptr;
 
         bool _opened = false;
-        std::deque<Event> _events;
+        std::deque<arc::Event> _events;
         std::string _title = "";
         uint32_t _framerate = 0;
         std::size_t _tileSize = 0;
@@ -610,7 +608,7 @@ namespace arc
         std::size_t _height = 0;
     };
 
-    class SDLLibrary : public ILibrary {
+    class SDLLibrary : public arc::ILibrary {
     public:
         SDLLibrary() :
             _display(SDLDisplay(&_window, &_renderer)),
@@ -626,11 +624,11 @@ namespace arc
 
         virtual std::string name() const { return " SDL"; }
 
-        virtual IDisplay& display() { return this->_display; }
-        virtual ITextureManager& textures() { return this->_textures; }
-        virtual IFontManager& fonts() { return this->_fonts; }
-        virtual IMusicManager& musics() { return this->_musics; }
-        virtual ISoundManager& sounds() { return this->_sounds; }
+        virtual arc::IDisplay& display() { return this->_display; }
+        virtual arc::ITextureManager& textures() { return this->_textures; }
+        virtual arc::IFontManager& fonts() { return this->_fonts; }
+        virtual arc::IMusicManager& musics() { return this->_musics; }
+        virtual arc::ISoundManager& sounds() { return this->_sounds; }
 
     private:
         SDLDisplay _display;
@@ -642,9 +640,8 @@ namespace arc
         SDL_Window *_window = nullptr;
         SDL_Renderer *_renderer = nullptr;
     };
-}
 
 extern "C" arc::ILibrary *entrypoint()
 {
-    return new arc::SDLLibrary();
+    return new SDLLibrary();
 }
