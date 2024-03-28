@@ -9,6 +9,7 @@
 #include "SnakeLib/SnakeObject/SnakeConstants.hpp"
 #include "GameObjects/SuperCandy.hpp"
 #include "GameObjects/SnakeObjectManager.hpp"
+#include "SharedLibraryType.hpp"
 
 #include <iostream>
 #include <cstdlib>
@@ -16,11 +17,6 @@
 
 class SnakeGame : public arc::IGame {
 public:
-    virtual std::string name() const
-    {
-        return "Snake";
-    }
-
     virtual void initialize(arc::ILibrary& lib)
     {
         lib.display().setTitle("Snake");
@@ -99,6 +95,11 @@ public:
 
         lib.display().print(score.str(), lib.fonts().get("Pokemon"), center, ARENA_HEIGHT + 2);
         lib.display().flush();
+    }
+
+    virtual uint64_t score() const
+    {
+        return _snake.getScore();
     }
 
 private:
@@ -230,4 +231,14 @@ private:
 extern "C" arc::IGame* entrypoint()
 {
     return new SnakeGame;
+}
+
+extern "C" arc::SharedLibraryType type()
+{
+    return arc::SharedLibraryType::GAME;
+}
+
+extern "C" const char *name()
+{
+    return "Snake";
 }
