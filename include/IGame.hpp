@@ -19,13 +19,6 @@ namespace arc {
         virtual ~IGame() = default;
 
         /**
-         * @brief Returns the name of the library
-         *
-         * @return std::string The name of the library
-         */
-        virtual std::string name() const = 0;
-
-        /**
          * @brief Called once when the game is created. It should be used to
          *        load the textures.
          * @param lib the current library
@@ -59,5 +52,12 @@ namespace arc {
          * @param lib the current library
          */
         virtual void draw(ILibrary& lib) = 0;
+
+        /**
+         * @brief This function is called to get current score of the game.
+         *        It should be used in the core to handle the highscore mechanism.
+         * @param lib the current library
+         */
+        virtual uint64_t score() const = 0;
     };
 }
