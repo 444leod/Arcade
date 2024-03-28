@@ -157,9 +157,9 @@
             specs.reserve(_musics.size());
 
             for (const auto& [name, music] : this->_musics) {
-                arc::MusicSpecification spec = (*music).specification();
+                arc::MusicSpecification spec = music->specification();
                 spec.isPlaying = music->isPlaying();
-                (*music).stop();
+                music->stop();
                 specs.push_back({name, spec});
             }
             return specs;
