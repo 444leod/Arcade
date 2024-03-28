@@ -7,6 +7,7 @@
 
 #include "SnakeLib/GameObject/AGameObjectManager.hpp"
 #include "SnakeLib/SnakeObject/SnakeConstants.hpp"
+#include "RandomNumberGenerator.hpp"
 #include <algorithm>
 
 std::vector<std::pair<Vec2i, std::string>> AGameObjectManager::dump() const
@@ -39,16 +40,16 @@ void AGameObjectManager::applyEffects(SnakeObject &snake) const
 Vec2i AGameObjectManager::getSpawnPos(std::vector<Vec2i> forbidenPositions) const
 {
     Vec2i pos {
-        rand() % ARENA_WIDTH + 1,
-        rand() % ARENA_HEIGHT + 1
+        rng::rand(1, ARENA_WIDTH ),
+        rng::rand(1, ARENA_HEIGHT)
     };
     for (auto &obj : _gameObjects) {
         forbidenPositions.push_back(obj->getPos());
     }
     while (std::find(forbidenPositions.begin(), forbidenPositions.end(), pos) != forbidenPositions.end()) {
         pos = Vec2i {
-            rand() % ARENA_WIDTH + 1,
-            rand() % ARENA_HEIGHT + 1
+            rng::rand(1, ARENA_WIDTH),
+            rng::rand(1, ARENA_HEIGHT)
         };
     }
     return pos;
