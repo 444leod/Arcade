@@ -17,11 +17,6 @@
 
 class SnakeGame : public arc::IGame {
 public:
-    virtual std::string name() const
-    {
-        return "Snake";
-    }
-
     virtual void initialize(arc::ILibrary& lib)
     {
         lib.display().setTitle("Snake");

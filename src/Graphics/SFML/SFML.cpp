@@ -587,9 +587,6 @@ public:
     SFMLLibrary() = default;
     virtual ~SFMLLibrary() = default;
 
-    virtual std::string name() const { return "SFML"; }
-    virtual std::string version() const { return "2.5.1"; }
-
     virtual arc::IDisplay& display() { return this->_display; }
     virtual arc::ITextureManager& textures() { return this->_textures; }
     virtual arc::IFontManager& fonts() { return this->_fonts; }

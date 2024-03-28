@@ -24,12 +24,6 @@
 
 class Pacman : public arc::IGame {
 public:
-    virtual std::string name() const
-    {
-        return "Pacman";
-    }
-
-
     virtual void initialize(arc::ILibrary& lib)
     {
         lib.display().setTitle("Arcade");
