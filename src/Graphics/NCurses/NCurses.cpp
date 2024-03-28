@@ -6,6 +6,7 @@
 */
 
 #include "ILibrary.hpp"
+#include "SharedLibraryType.hpp"
 
 #include <map>
 #include <deque>
@@ -487,4 +488,14 @@ private:
 extern "C" arc::ILibrary *entrypoint()
 {
     return new NCursesLibrary;
+}
+
+extern "C" arc::SharedLibraryType type()
+{
+    return arc::SharedLibraryType::LIBRARY;
+}
+
+extern "C" const char *name()
+{
+    return "NCurses";
 }

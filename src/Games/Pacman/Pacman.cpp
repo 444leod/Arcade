@@ -9,6 +9,7 @@
 #include "MapHandler.hpp"
 #include "Player.hpp"
 #include "IEntity.hpp"
+#include "SharedLibraryType.hpp"
 
 #include <iostream>
 #include <cstdlib>
@@ -21,11 +22,11 @@
 // using pacman::MapHandler;
 // using pacman::player::Player;
 
-class MyGame : public arc::IGame {
+class Pacman : public arc::IGame {
 public:
     virtual std::string name() const
     {
-        return "MyGame";
+        return "Pacman";
     }
 
 
@@ -144,9 +145,14 @@ public:
         lib.display().flush();
     }
 
+    virtual uint64_t score() const
+    {
+        return _score;
+    }
+
 private:
     float _elapsed = 0;
-    uint32_t _score = 0;
+    uint64_t _score = 0;
     uint32_t _steps = 0;
 
     MapHandler _mapHandler;
@@ -167,6 +173,15 @@ std::ostream& operator<<(std::ostream& os, const Vec2f& vec)
 
 extern "C" arc::IGame* entrypoint()
 {
-    return new MyGame;
+    return new Pacman;
 }
 
+extern "C" arc::SharedLibraryType type()
+{
+    return arc::SharedLibraryType::GAME;
+}
+
+extern "C" const char *name()
+{
+    return "Pacman";
+}
