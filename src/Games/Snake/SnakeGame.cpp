@@ -109,7 +109,7 @@ private:
 
         //Onix Head
         spec.textual.character = 'O';
-        spec.textual.color = {255, 0, 0, 255};
+        spec.textual.color = {0, 0, 0, 255};
         spec.graphical = arc::TextureImage{TILESET_ONIX, arc::Rect<uint32_t>{0, 0, 64, 64}};
         lib.textures().load("head_0_east", spec);
         spec.graphical = arc::TextureImage{TILESET_ONIX, arc::Rect<uint32_t>{0, 64, 64, 64}};
@@ -188,12 +188,12 @@ private:
         //Consumables
         spec.textual.character = 'X';
         //Super Candy
-        spec.textual.color = {100, 100, 210, 255};
+        spec.textual.color = {0, 0, 255, 255};
         spec.graphical = arc::TextureImage{SUPER_CANDY_PATH};
         lib.textures().load("super_candy", spec);
 
         //Tamato Berry
-        spec.textual.color = {239, 47, 47, 255};
+        spec.textual.color = {255, 0, 0, 255};
         spec.graphical = arc::TextureImage{TAMATO_BERRY_PATH};
         lib.textures().load("tamato_berry", spec);
     }
