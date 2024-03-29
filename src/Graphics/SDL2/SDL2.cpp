@@ -235,13 +235,17 @@ public:
     ~SDLTexture() = default;
 
     bool load(const arc::TextureSpecification &spec,
-              SDL_Texture *texture,
-              std::optional<arc::Rect<uint32_t>> rect)
+        std::string path, SDLRendering& rendering,
+        std::optional<arc::Rect<uint32_t>> rect)
     {
         if (std::holds_alternative<arc::Color>(spec.graphical))
             _color = std::get<arc::Color>(spec.graphical);
+
         this->_spec = spec;
-        this->_texture.reset(texture, SDL_DestroyTexture);
+        this->_texture.reset(
+            IMG_LoadTexture(rendering.renderer().get(), path.c_str()),
+            SDL_DestroyTexture);
+
         if (rect.has_value())
         {
             this->_rect.x = (int)rect.value().x;
@@ -282,16 +286,13 @@ public:
         if (std::holds_alternative<arc::TextureImage>(spec.graphical))
         {
             auto graph = std::get<arc::TextureImage>(spec.graphical);
-            auto img = IMG_LoadTexture(this->_sdl.renderer().get(), graph.path.c_str());
-            if (!img)
-                return false;
-            if (!tex->load(spec, img, graph.subrect))
+            if (!tex->load(spec, graph.path, this->_sdl, graph.subrect))
                 return false;
             this->_textures[name] = tex;
             return true;
         }
 
-        if (!tex->load(spec, nullptr, std::nullopt))
+        if (!tex->load(spec, "", this->_sdl, std::nullopt))
             return false;
         this->_textures[name] = tex;
         return true;
@@ -327,7 +328,7 @@ public:
     bool load(const arc::FontSpecification &spec)
     {
         this->_spec = spec;
-        this->_font = TTF_OpenFont(spec.path.c_str(), spec.size);
+        this->_font.reset(TTF_OpenFont(spec.path.c_str(), spec.size), TTF_CloseFont);
         this->_color = {
             .r = spec.color.red,
             .g = spec.color.green,
@@ -338,12 +339,12 @@ public:
     }
 
     virtual const arc::FontSpecification &specification() const { return _spec; }
-    TTF_Font *font() { return this->_font; }
+    std::shared_ptr<TTF_Font> font() { return this->_font; }
     SDL_Color color() { return this->_color; }
 
 private:
     arc::FontSpecification _spec = {};
-    TTF_Font *_font = nullptr;
+    std::shared_ptr<TTF_Font> _font = nullptr;
     SDL_Color _color = {0, 0, 0, 0};
 };
 
@@ -590,7 +591,7 @@ public:
         if (font == nullptr)
             return;
         auto attr = dynamic_cast<const SDLFont &>(*font);
-        auto surf = TTF_RenderText_Solid(attr.font(), string.c_str(), attr.color());
+        auto surf = TTF_RenderText_Solid(attr.font().get(), string.c_str(), attr.color());
         auto tex = SDL_CreateTextureFromSurface(this->_sdl.renderer().get(), surf);
         SDL_Rect rect = {
             (int)(x * (float)this->_tileSize),
@@ -605,7 +606,7 @@ public:
         if (font == nullptr)
             return arc::Rect<float>();
         auto attr = dynamic_cast<const SDLFont &>(*font);
-        auto surf = TTF_RenderText_Solid(attr.font(), string.c_str(), attr.color());
+        auto surf = TTF_RenderText_Solid(attr.font().get(), string.c_str(), attr.color());
         arc::Rect<float> rect = {x, y,
                                  (float)surf->w / this->_tileSize,
                                  (float)surf->h / this->_tileSize};
@@ -619,7 +620,7 @@ public:
     }
 
 private:
-    SDLRendering &_sdl;
+    SDLRendering& _sdl;
 
     bool _opened = false;
     std::deque<arc::Event> _events;
