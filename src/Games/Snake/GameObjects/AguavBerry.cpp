@@ -6,7 +6,6 @@
 */
 
 #include "AguavBerry.hpp"
-#include "SnakeLib/SnakeObject/SnakeConstants.hpp"
 
 AguavBerry::AguavBerry(Vec2i pos) : AGameObject(pos)
 {

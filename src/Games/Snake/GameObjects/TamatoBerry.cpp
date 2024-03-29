@@ -6,12 +6,11 @@
 */
 
 #include "TamatoBerry.hpp"
-#include "SnakeLib/SnakeObject/SnakeConstants.hpp"
 
 TamatoBerry::TamatoBerry(Vec2i pos) : AGameObject(pos)
 {
     _textureName = "tamato_berry";
-    _effects.deltaScore = 0;
+    _effects.deltaScore = -5;
     _effects.deltaSpeed = BASE_SPEED;
     _effects.deltaGrowth = 0;
     _effects.killPlayer = false;

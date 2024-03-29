@@ -67,5 +67,5 @@ Vec2i AGameObjectManager::getSpawnPos(std::vector<Vec2i> forbidenPositions) cons
             authorizedPos.push_back(pos);
         }
     }
-    return authorizedPos[rng::rand(0, authorizedPos.size() - 1)];
+    return authorizedPos[std::rand() % (authorizedPos.size() - 1)];
 }

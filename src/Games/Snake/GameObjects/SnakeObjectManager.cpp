@@ -6,10 +6,7 @@
 */
 
 #include "SnakeObjectManager.hpp"
-#include "SuperCandy.hpp"
-#include "TamatoBerry.hpp"
-#include "AguavBerry.hpp"
-#include "SnakeLib/SnakeObject/SnakeConstants.hpp"
+
 #include <memory>
 
 SnakeObjectManager::SnakeObjectManager() : AGameObjectManager()
@@ -43,9 +40,9 @@ void SnakeObjectManager::update(Vec2i objectCollided, SnakeObject& snake, [[mayb
                 obj->setPos(getSpawnPos(getForbidenPos(snake)));
             else
                 obj->setPos(Vec2i{-1, -1});
-            if (obj->getType() == IGameObject::Type::SUPER_CANDY && rng::rand(0, 9) == 0)
+            if (obj->getType() == IGameObject::Type::SUPER_CANDY && std::rand() % 9 == 0)
                 spawnTamato = true;
-            if (obj->getType() == IGameObject::Type::SUPER_CANDY && rng::rand(0, 2) == 0)
+            if (obj->getType() == IGameObject::Type::SUPER_CANDY && std::rand() % 9 == 0)
                 spawnAguav = true;
         }
     }

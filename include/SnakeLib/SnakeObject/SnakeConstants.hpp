@@ -11,7 +11,7 @@
 //game
 #define ARENA_WIDTH 21
 #define ARENA_HEIGHT 12
-#define BASE_SPEED 0.2
+#define BASE_SPEED 0.125
 
 //textures
 #define IMAGE_PATH "assets/snake/images/"

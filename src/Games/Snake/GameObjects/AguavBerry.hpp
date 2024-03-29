@@ -8,6 +8,7 @@
 #pragma once
 
 #include "SnakeLib/GameObject/AGameObject.hpp"
+#include "SnakeLib/SnakeObject/SnakeConstants.hpp"
 
 class AguavBerry : public AGameObject{
     public:

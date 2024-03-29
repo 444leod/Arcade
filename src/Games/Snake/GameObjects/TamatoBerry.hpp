@@ -8,8 +8,9 @@
 #pragma once
 
 #include "SnakeLib/GameObject/AGameObject.hpp"
+#include "SnakeLib/SnakeObject/SnakeConstants.hpp"
 
-class TamatoBerry : public AGameObject{
+class TamatoBerry : public AGameObject {
     public:
         TamatoBerry(Vec2i pos);
         
