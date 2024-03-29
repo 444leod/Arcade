@@ -19,16 +19,7 @@ TamatoBerry::TamatoBerry(Vec2i pos) : AGameObject(pos)
     _type = IGameObject::TAMATO_BERRY;
 }
 
-void TamatoBerry::applyEffect(SnakeObject &snake)
-{
-    snake.setAlive(!_effects.killPlayer);
+void TamatoBerry::applyEffect(SnakeObject &snake) {
+    AGameObject::applyEffect(snake);
     snake.setSpeed(_effects.deltaSpeed);
-    snake.setScore(snake.getScore() + _effects.deltaScore);
-    if (_effects.deltaGrowth > 0) {
-        snake.grow(_pos.x, _pos.y, _effects.deltaGrowth);
-        snake.setGrowToggle(false);
-    } else {
-        snake.continueMove();
-    }
-    _pos = Vec2i{-1, -1};
 }

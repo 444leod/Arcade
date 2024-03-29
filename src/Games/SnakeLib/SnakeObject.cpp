@@ -89,6 +89,12 @@ void SnakeObject::grow(int x, int y, std::size_t size)
         _body.insert(_body.begin(), Vec2i{x, y});
 }
 
+void SnakeObject::shrink(size_t size)
+{
+    for (size_t i = 0; i < size; i++)
+        _body.pop_back();
+}
+
 Vec2i SnakeObject::continueMove(void)
 {
     int old_x = _body[0].x;

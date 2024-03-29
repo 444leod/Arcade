@@ -40,7 +40,7 @@ void SnakeObjectManager::update(Vec2i objectCollided, SnakeObject& snake, [[mayb
                 obj->setPos(getSpawnPos(getForbidenPos(snake)));
             else
                 obj->setPos(Vec2i{-1, -1});
-            if (obj->getType() == IGameObject::Type::SUPER_CANDY && rng::rand(0, 2) == 1)
+            if (obj->getType() == IGameObject::Type::SUPER_CANDY && rng::rand(0, 9) == 0)
                 spawnTamato = true;
         }
     }
