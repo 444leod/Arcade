@@ -537,8 +537,6 @@ public:
         if (texture == nullptr)
             return;
 
-        auto tex = std::dynamic_pointer_cast<SFMLTexture>(texture);
-
         auto rect = sf::RectangleShape{sf::Vector2f{static_cast<float>(this->_tileSize), static_cast<float>(this->_tileSize)}};
         auto tex = std::dynamic_pointer_cast<SFMLTexture>(texture);
 

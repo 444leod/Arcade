@@ -1,8 +1,8 @@
 /*
 ** EPITECH PROJECT, 2024
-** NCurses.cpp
+** Arcade
 ** File description:
-** NCurses.cpp
+** NCurses graphic library
 */
 
 #include "ILibrary.hpp"
@@ -23,17 +23,12 @@ public:
     virtual bool load(const arc::TextureSpecification& spec)
     {
         this->_spec = spec;
+
+        return true;
     }
 
-    virtual const arc::TextureSpecification& specification() const
-    {
-        return this->_spec;
-    }
-
-    const arc::TextureTextualSpecification& characteristics() const
-    {
-        return this->_spec.textual;
-    }
+    virtual const arc::TextureSpecification& specification() const { return this->_spec; }
+    const arc::TextureTextualSpecification& characteristics() const { return this->_spec.textual; }
 
 private:
     arc::TextureSpecification _spec;
@@ -78,6 +73,7 @@ public:
     virtual bool init(const arc::FontSpecification& spec)
     {
         this->_spec = spec;
+
         return true;
     }
 
@@ -94,11 +90,11 @@ public:
 
     virtual bool load(const std::string& name, const arc::FontSpecification& spec)
     {
-        auto font = std::make_shared<NCursesFont>();
+        auto attribute = std::make_shared<NCursesFont>();
 
-        if (!font->init(spec))
+        if (!attribute->init(spec))
             return false;
-        this->_fonts[name] = font;
+        this->_fonts[name] = attribute;
         return true;
     }
 
@@ -129,13 +125,7 @@ public:
 
         return true;
     }
-    virtual bool init(const arc::SoundSpecification& spec)
-    {
-        this->_spec = spec;
-        return true;
-    }
 
-    virtual const arc::SoundSpecification& specification() const { return this->_spec; }
     virtual const arc::SoundSpecification& specification() const { return this->_spec; }
 
 private:
@@ -267,6 +257,7 @@ public:
         noecho();
         keypad(stdscr, TRUE);
         nodelay(stdscr, TRUE);
+        curs_set(0);
 
         start_color();
         if (can_change_color()) {
@@ -322,10 +313,10 @@ public:
         this->_width = width;
     }
 
-    virtual size_t getPairColor(arc::Color color)
+    virtual size_t getPairColor(const arc::Color color) const
     {
         if (_colorPairs.find({color.red, color.green, color.blue}) != _colorPairs.end())
-            return _colorPairs[{color.red, color.green, color.blue}];
+            return _colorPairs.at({color.red, color.green, color.blue});
         return 1;
     }
 
@@ -369,11 +360,18 @@ public:
         _opened = false;
     }
 
-    static arc::Key MapNCursesKey(char key)
+    static arc::Key MapNCursesKey(int key)
     {
         if (key >= 'a' && key <= 'z') return static_cast<arc::Key>(key - 'a');
         if (key >= 'A' && key <= 'Z') return static_cast<arc::Key>(key - 'A');
-        if (key == ' ') return arc::Key::SPACE;
+        if (key == ' ')         return arc::Key::SPACE;
+        if (key == '\033')      return arc::Key::ESCAPE;
+        if (key == '\n')        return arc::Key::ENTER;
+        if (key >= '0' && key <= '9') return static_cast<arc::Key>(key - '0' + 26);
+        if (key == KEY_DOWN)    return arc::Key::DOWN;
+        if (key == KEY_UP)      return arc::Key::UP;
+        if (key == KEY_LEFT)    return arc::Key::LEFT;
+        if (key == KEY_RIGHT)   return arc::Key::RIGHT;
         return arc::Key::UNKNOWN;
     }
 
@@ -382,11 +380,11 @@ public:
         // TODO: ch could be a MOUSE button
         int ch = getch();
         if (ch != ERR) {
-            if (ch == 27) {
+            arc::Key key = NCursesDisplay::MapNCursesKey(ch);
+            if (key == arc::Key::ESCAPE) {
                 this->close();
                 return;
             }
-            arc::Key key = NCursesDisplay::MapNCursesKey(ch);
             arc::Event e;
             e.type = arc::EventType::KEY_PRESSED;
             e.key = key;

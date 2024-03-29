@@ -99,13 +99,12 @@
             return true;
         }
 
-        virtual std::vector<std::pair<std::string, arc::SoundSpecification>> dump() const
+        virtual std::map<std::string, arc::SoundSpecification> dump() const
         {
-            auto specs = std::vector<std::pair<std::string, arc::SoundSpecification>>{};
-            specs.reserve(_sounds.size());
+            auto specs = std::map<std::string, arc::SoundSpecification>{};
 
             for (const auto& [name, sound] : this->_sounds)
-                specs.push_back({name, sound->specification()});
+                specs[name] = sound->specification();
             return specs;
         }
 
@@ -180,16 +179,15 @@
             return true;
         }
 
-        virtual std::vector<std::pair<std::string, arc::MusicSpecification>> dump()
+        virtual std::map<std::string, arc::MusicSpecification> dump() const
         {
-            auto specs = std::vector<std::pair<std::string, arc::MusicSpecification>>{};
-            specs.reserve(_musics.size());
+            auto specs = std::map<std::string, arc::MusicSpecification>{};
 
             for (const auto& [name, music] : this->_musics) {
                 arc::MusicSpecification spec = music->specification();
                 spec.isPlaying = music->isPlaying();
                 music->stop();
-                specs.push_back({name, spec});
+                specs[name] = spec;
             }
             return specs;
         }
@@ -304,13 +302,12 @@
             return this->_textures.at(name);
         }
 
-        virtual std::vector<std::pair<std::string, arc::TextureSpecification>> dump() const
+        virtual std::map<std::string, arc::TextureSpecification> dump() const
         {
-            auto specs = std::vector<std::pair<std::string, arc::TextureSpecification>>{};
-            specs.reserve(_textures.size());
+            auto specs = std::map<std::string, arc::TextureSpecification>{};
 
             for (const auto& [name, texture] : this->_textures)
-                specs.push_back({name, texture->specification()});
+                specs[name] = texture->specification();
             return specs;
         }
 
@@ -375,13 +372,12 @@
             return this->_fonts.at(name);
         }
 
-        virtual std::vector<std::pair<std::string, arc::FontSpecification>> dump() const
+        virtual std::map<std::string, arc::FontSpecification> dump() const
         {
-            auto specs = std::vector<std::pair<std::string, arc::FontSpecification>>{};
-            specs.reserve(_fonts.size());
+            auto specs = std::map<std::string, arc::FontSpecification>{};
 
             for (const auto& [name, font] : this->_fonts)
-                specs.push_back({name, font->specification()});
+                specs[name] = font->specification();
             return specs;
         }
 
