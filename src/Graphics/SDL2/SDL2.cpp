@@ -20,29 +20,33 @@
         public:
             SDLRendering() = default;
 
-            SDLRendering(uint16_t width, uint16_t height)
+            SDLRendering(const std::string& title, uint16_t width, uint16_t height)
             {
-                SDL_CreateWindowAndRenderer(width, height, 0,
-                    &this->_window, &this->_renderer);
+                this->init(title, width, height);
             }
 
             ~SDLRendering()
             {
-                SDL_DestroyRenderer(this->_renderer);
-                SDL_DestroyWindow(this->_window);
             }
 
-            void init(uint16_t width, uint16_t height) {
-                SDL_CreateWindowAndRenderer(width, height, 0,
-                    &this->_window, &this->_renderer);
+            void init(const std::string& title, uint16_t width, uint16_t height)
+            {
+                auto win =  SDL_CreateWindow(title.c_str(),
+                    SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
+                    width, height, 0);
+                this->_window.reset(win, SDL_DestroyWindow);
+
+                auto ren = SDL_CreateRenderer(this->_window.get(), -1, 0);
+                this->_renderer.reset(ren, SDL_DestroyRenderer);
             }
 
-            SDL_Renderer *renderer() const { return this->_renderer; }
-            SDL_Window *window() const { return this->_window; }
+            std::shared_ptr<SDL_Renderer> renderer() const { return this->_renderer; }
+
+            std::shared_ptr<SDL_Window> window() const { return this->_window; }
 
         private:
-            SDL_Renderer *_renderer = nullptr;
-            SDL_Window *_window = nullptr;
+            std::shared_ptr<SDL_Renderer> _renderer = nullptr;
+            std::shared_ptr<SDL_Window> _window = nullptr;
     };
 
     class SDLSound : public arc::ISound {
@@ -281,7 +285,7 @@
 
             if (std::holds_alternative<arc::TextureImage>(spec.graphical)) {
                 auto graph = std::get<arc::TextureImage>(spec.graphical);
-                auto img = IMG_LoadTexture(this->_sdl.renderer(), graph.path.c_str());
+                auto img = IMG_LoadTexture(this->_sdl.renderer().get(), graph.path.c_str());
                 if (!img)
                     return false;
                 if (!tex->load(spec, img, graph.subrect))
@@ -397,7 +401,7 @@
             this->_framerate = 0;
             this->_title = "Arcade";
             this->_opened = true;
-            _sdl.init(
+            _sdl.init(this->_title,
                 this->_width * this->_tileSize,
                 this->_height * this->_tileSize);
         }
@@ -406,7 +410,7 @@
         virtual void setTitle(const std::string& title)
         {
             this->_title = title;
-            SDL_SetWindowTitle(this->_sdl.window(), title.c_str());
+            SDL_SetWindowTitle(this->_sdl.window().get(), title.c_str());
         }
 
         virtual void setFramerate(uint32_t framerate)
@@ -418,7 +422,7 @@
         {
             this->_tileSize = size;
             SDL_SetWindowSize(
-                this->_sdl.window(),
+                this->_sdl.window().get(),
                 this->_width * this->_tileSize,
                 this->_height * this->_tileSize
             );
@@ -428,7 +432,7 @@
         {
             this->_width = width;
             SDL_SetWindowSize(
-                this->_sdl.window(),
+                this->_sdl.window().get(),
                 this->_width * this->_tileSize,
                 this->_height * this->_tileSize
             );
@@ -438,7 +442,7 @@
         {
             this->_height = height;
             SDL_SetWindowSize(
-                this->_sdl.window(),
+                this->_sdl.window().get(),
                 this->_width * this->_tileSize,
                 this->_height * this->_tileSize
             );
@@ -559,8 +563,8 @@
 
         virtual void clear(arc::Color color = {0, 0, 0, 255})
         {
-            SDL_SetRenderDrawColor(this->_sdl.renderer(), color.red, color.green, color.blue, color.alpha);
-            SDL_RenderClear(this->_sdl.renderer());
+            SDL_SetRenderDrawColor(this->_sdl.renderer().get(), color.red, color.green, color.blue, color.alpha);
+            SDL_RenderClear(this->_sdl.renderer().get());
         }
 
         virtual void draw(std::shared_ptr<arc::ITexture> texture, float x, float y)
@@ -575,12 +579,12 @@
             rect.h = (int)this->_tileSize;
             if (!tex->raw()) {
                 auto c = tex->color();
-                SDL_SetRenderDrawColor(this->_sdl.renderer(), c.red, c.green, c.blue, c.alpha);
-                SDL_RenderFillRect(this->_sdl.renderer(), &rect);
-                SDL_RenderDrawRect(this->_sdl.renderer(), &rect);
+                SDL_SetRenderDrawColor(this->_sdl.renderer().get(), c.red, c.green, c.blue, c.alpha);
+                SDL_RenderFillRect(this->_sdl.renderer().get(), &rect);
+                SDL_RenderDrawRect(this->_sdl.renderer().get(), &rect);
             }
             else
-                SDL_RenderCopy(this->_sdl.renderer(), tex->raw(), tex->rect(), &rect);
+                SDL_RenderCopy(this->_sdl.renderer().get(), tex->raw(), tex->rect(), &rect);
         }
 
         virtual void print(const std::string& string, std::shared_ptr<arc::IFont> font, float x, float y)
@@ -589,12 +593,12 @@
                 return;
             auto attr = dynamic_cast<const SDLFont&>(*font);
             auto surf = TTF_RenderText_Solid(attr.font(), string.c_str(), attr.color());
-            auto tex = SDL_CreateTextureFromSurface(this->_sdl.renderer(), surf);
+            auto tex = SDL_CreateTextureFromSurface(this->_sdl.renderer().get(), surf);
             SDL_Rect rect = {
                 (int)(x * (float)this->_tileSize),
                 (int)(y * (float)this->_tileSize),
                 surf->w, surf->h };
-            SDL_RenderCopy(this->_sdl.renderer(), tex, NULL, &rect);
+            SDL_RenderCopy(this->_sdl.renderer().get(), tex, NULL, &rect);
             SDL_FreeSurface(surf);
         }
 
@@ -613,7 +617,7 @@
 
         virtual void flush()
         {
-            SDL_RenderPresent(this->_sdl.renderer());
+            SDL_RenderPresent(this->_sdl.renderer().get());
         }
 
     private:
