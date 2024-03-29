@@ -196,6 +196,11 @@ private:
         spec.textual.color = {255, 0, 0, 255};
         spec.graphical = arc::TextureImage{TAMATO_BERRY_PATH};
         lib.textures().load("tamato_berry", spec);
+
+        //Aguav Berry
+        spec.textual.color = {0, 255, 0, 255};
+        spec.graphical = arc::TextureImage{AGUAV_BERRY_PATH};
+        lib.textures().load("aguav_berry", spec);
     }
 
     void draw_arena(arc::ILibrary& lib)

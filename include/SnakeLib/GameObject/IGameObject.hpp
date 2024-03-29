@@ -21,7 +21,8 @@ class IGameObject {
 
         enum Type {
             SUPER_CANDY,
-            TAMATO_BERRY
+            TAMATO_BERRY,
+            AGUAV_BERRY,
         };
 
         virtual ~IGameObject() = default;

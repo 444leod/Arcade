@@ -19,6 +19,7 @@
 #define TILESET_CAVE "assets/snake/images/cave_tileset.png"
 #define SUPER_CANDY_PATH "assets/snake/images/super_candy.png"
 #define TAMATO_BERRY_PATH "assets/snake/images/tamato_berry.png"
+#define AGUAV_BERRY_PATH "assets/snake/images/aguav_berry.png"
 
 //fonts
 #define FONT_POKEMON "assets/snake/fonts/Pokemon.ttf"
