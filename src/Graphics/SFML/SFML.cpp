@@ -119,7 +119,7 @@ public:
         this->_spec = spec;
         if (!this->_font.loadFromFile(spec.path))
             return false;
-        this->_color =  sf::Color(spec.color.red, spec.color.blue, spec.color.blue, spec.color.alpha);
+        this->_color =  sf::Color(spec.color.red, spec.color.green, spec.color.blue, spec.color.alpha);
         this->_size = spec.size;
         return true;
     }

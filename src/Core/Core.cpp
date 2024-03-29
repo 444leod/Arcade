@@ -176,11 +176,14 @@ class CoreMenu : public arc::IGame
             lib.display().setWidth(25);
             lib.display().setHeight(25);
 
-            arc::FontSpecification unsel = {{200, 200, 200, 200}, 16, "assets/regular.ttf"};
-            lib.fonts().load("unsel", unsel);
+            arc::FontSpecification normal = {{200, 200, 200, 200}, 16, "assets/regular.ttf"};
+            lib.fonts().load("normal", normal);
 
-            arc::FontSpecification sel = {{255, 100, 100, 255}, 16, "assets/regular.ttf"};
-            lib.fonts().load("sel", sel);
+            arc::FontSpecification game = {{255, 100, 100, 255}, 16, "assets/regular.ttf"};
+            lib.fonts().load("game", game);
+
+            arc::FontSpecification library = {{100, 255, 100, 255}, 16, "assets/regular.ttf"};
+            lib.fonts().load("library", library);
         }
 
         virtual void onKeyPressed([[maybe_unused]]arc::ILibrary& lib, arc::Key key)
@@ -188,10 +191,10 @@ class CoreMenu : public arc::IGame
             switch (key)
             {
             case arc::Key::UP:
-                this->_selection = (this->_selection - 1) % _libs.size();
+                this->_selection = (this->_selection + 1) % _libs.size();
                 break;
             case arc::Key::DOWN:
-                this->_selection = (this->_selection + 1) % _libs.size();
+                this->_selection = this->_selection ? (this->_selection - 1) % _libs.size() : _libs.size() - 1;
                 break;
             default:
                 break;
@@ -214,14 +217,26 @@ class CoreMenu : public arc::IGame
 
         virtual void draw(arc::ILibrary& lib)
         {
-            uint8_t index = 0;
-
             lib.display().clear();
-            for (auto l : this->_libs) {
-                auto font = index == this->_selection ? "sel" : "unsel";
-                lib.display().print(l->name(), lib.fonts().get(font), 3, (index + 1) * 2);
-                index++;
+
+            for (int i = this->_selection - 1; i <= this->_selection + 1; i++) {
+                auto l = i < 0 ? _libs.back() : _libs.at(i % _libs.size());
+                auto font = i == this->_selection ? "game" : "normal";
+                auto size = lib.display().measure(l->name(), lib.fonts().get(font), 0, 0).width;
+                auto x = (lib.display().width() - size) / 2;
+                auto y = (this->_selection - i + 1) * 2;
+                lib.display().print(l->name(), lib.fonts().get(font), x, y + 1);
             }
+
+            for (int i = this->_selection - 1; i <= this->_selection + 1; i++) {
+                auto l = i < 0 ? _libs.back() : _libs.at(i % _libs.size());
+                auto font = i == this->_selection ? "library" : "normal";
+                auto size = lib.display().measure(l->name(), lib.fonts().get(font), 0, 0).width;
+                auto x = (lib.display().width() - size) / 2;
+                auto y = (this->_selection - i + 1) * 2;
+                lib.display().print(l->name(), lib.fonts().get(font), x, y + 10);
+            }
+
             lib.display().flush();
         }
 
