@@ -15,6 +15,35 @@
 #include <SDL2/SDL_ttf.h>
 #include <SDL2/SDL_mixer.h>
 
+    class SDLRendering {
+        public:
+            SDLRendering() = default;
+
+            SDLRendering(uint16_t width, uint16_t height)
+            {
+                SDL_CreateWindowAndRenderer(width, height, 0,
+                    &this->_window, &this->_renderer);
+            }
+
+            ~SDLRendering()
+            {
+                SDL_DestroyRenderer(this->_renderer);
+                SDL_DestroyWindow(this->_window);
+            }
+
+            void init(uint16_t width, uint16_t height) {
+                SDL_CreateWindowAndRenderer(width, height, 0,
+                    &this->_window, &this->_renderer);
+            }
+
+            SDL_Renderer *renderer() const { return this->_renderer; }
+            SDL_Window *window() const { return this->_window; }
+
+        private:
+            SDL_Renderer *_renderer = nullptr;
+            SDL_Window *_window = nullptr;
+    };
+
     class SDLSound : public arc::ISound {
     public:
         SDLSound() = default;
@@ -244,7 +273,7 @@
 
     class SDLTextureManager : public arc::ITextureManager {
     public:
-        SDLTextureManager(SDL_Renderer *renderer) : _renderer(renderer) {}
+        SDLTextureManager(SDLRendering& rendering) : _sdl(rendering) {}
         ~SDLTextureManager() = default;
 
         virtual bool load(const std::string& name, const arc::TextureSpecification& spec)
@@ -253,7 +282,7 @@
 
             if (std::holds_alternative<arc::TextureImage>(spec.graphical)) {
                 auto graph = std::get<arc::TextureImage>(spec.graphical);
-                auto img = IMG_LoadTexture(this->_renderer, graph.path.c_str());
+                auto img = IMG_LoadTexture(this->_sdl.renderer(), graph.path.c_str());
                 if (!img)
                     return false;
                 if (!tex->load(spec, img, graph.subrect))
@@ -286,7 +315,7 @@
         }
 
     private:
-        SDL_Renderer *_renderer = nullptr;
+        SDLRendering& _sdl;
         std::map<std::string, std::shared_ptr<SDLTexture>> _textures = {};
     };
 
@@ -362,30 +391,25 @@
 
     class SDLDisplay : public arc::IDisplay {
     public:
-        SDLDisplay(SDL_Window **window, SDL_Renderer **renderer)
+        SDLDisplay(SDLRendering& rendering) : _sdl(rendering)
         {
+            SDL_Init(SDL_INIT_EVERYTHING);
             this->_tileSize = 16;
             this->_width = 80;
             this->_height = 60;
             this->_framerate = 0;
             this->_title = "Arcade";
             this->_opened = true;
-            SDL_Init(SDL_INIT_VIDEO);
-            SDL_CreateWindowAndRenderer(
+            _sdl.init(
                 this->_width * this->_tileSize,
-                this->_height * this->_tileSize,
-                0, window, renderer
-            );
-            this->_window = *window;
-            this->_renderer = *renderer;
-            SDL_SetWindowTitle(this->_window, this->_title.c_str());
+                this->_height * this->_tileSize);
         }
         ~SDLDisplay() = default;
 
         virtual void setTitle(const std::string& title)
         {
             this->_title = title;
-            SDL_SetWindowTitle(this->_window, title.c_str());
+            SDL_SetWindowTitle(this->_sdl.window(), title.c_str());
         }
 
         virtual void setFramerate(uint32_t framerate)
@@ -397,7 +421,7 @@
         {
             this->_tileSize = size;
             SDL_SetWindowSize(
-                this->_window,
+                this->_sdl.window(),
                 this->_width * this->_tileSize,
                 this->_height * this->_tileSize
             );
@@ -407,7 +431,7 @@
         {
             this->_width = width;
             SDL_SetWindowSize(
-                this->_window,
+                this->_sdl.window(),
                 this->_width * this->_tileSize,
                 this->_height * this->_tileSize
             );
@@ -417,7 +441,7 @@
         {
             this->_height = height;
             SDL_SetWindowSize(
-                this->_window,
+                this->_sdl.window(),
                 this->_width * this->_tileSize,
                 this->_height * this->_tileSize
             );
@@ -538,8 +562,8 @@
 
         virtual void clear(arc::Color color = {0, 0, 0, 255})
         {
-            SDL_SetRenderDrawColor(this->_renderer, color.red, color.green, color.blue, color.alpha);
-            SDL_RenderClear(this->_renderer);
+            SDL_SetRenderDrawColor(this->_sdl.renderer(), color.red, color.green, color.blue, color.alpha);
+            SDL_RenderClear(this->_sdl.renderer());
         }
 
         virtual void draw(std::shared_ptr<arc::ITexture> texture, float x, float y)
@@ -554,12 +578,12 @@
             rect.h = (int)this->_tileSize;
             if (!tex->raw()) {
                 auto c = tex->color();
-                SDL_SetRenderDrawColor(this->_renderer, c.red, c.green, c.blue, c.alpha);
-                SDL_RenderFillRect(this->_renderer, &rect);
-                SDL_RenderDrawRect(this->_renderer, &rect);
+                SDL_SetRenderDrawColor(this->_sdl.renderer(), c.red, c.green, c.blue, c.alpha);
+                SDL_RenderFillRect(this->_sdl.renderer(), &rect);
+                SDL_RenderDrawRect(this->_sdl.renderer(), &rect);
             }
             else
-                SDL_RenderCopy(this->_renderer, tex->raw(), tex->rect(), &rect);
+                SDL_RenderCopy(this->_sdl.renderer(), tex->raw(), tex->rect(), &rect);
         }
 
         virtual void print(const std::string& string, std::shared_ptr<arc::IFont> font, float x, float y)
@@ -568,12 +592,12 @@
                 return;
             auto attr = dynamic_cast<const SDLFont&>(*font);
             auto surf = TTF_RenderText_Solid(attr.font(), string.c_str(), attr.color());
-            auto tex = SDL_CreateTextureFromSurface(this->_renderer, surf);
+            auto tex = SDL_CreateTextureFromSurface(this->_sdl.renderer(), surf);
             SDL_Rect rect = {
                 (int)(x * (float)this->_tileSize),
                 (int)(y * (float)this->_tileSize),
                 surf->w, surf->h };
-            SDL_RenderCopy(this->_renderer, tex, NULL, &rect);
+            SDL_RenderCopy(this->_sdl.renderer(), tex, NULL, &rect);
             SDL_FreeSurface(surf);
         }
 
@@ -592,12 +616,11 @@
 
         virtual void flush()
         {
-            SDL_RenderPresent(this->_renderer);
+            SDL_RenderPresent(this->_sdl.renderer());
         }
 
     private:
-        SDL_Window *_window = nullptr;
-        SDL_Renderer *_renderer = nullptr;
+        SDLRendering& _sdl;
 
         bool _opened = false;
         std::deque<arc::Event> _events;
@@ -611,14 +634,12 @@
     class SDLLibrary : public arc::ILibrary {
     public:
         SDLLibrary() :
-            _display(SDLDisplay(&_window, &_renderer)),
-            _textures(SDLTextureManager(_renderer))
+            _display(SDLDisplay(this->_rendering)),
+            _textures(SDLTextureManager(this->_rendering))
         {
         }
         ~SDLLibrary()
         {
-            SDL_DestroyRenderer(this->_renderer);
-            SDL_DestroyWindow(this->_window);
             SDL_Quit();
         }
 
@@ -631,14 +652,12 @@
         virtual arc::ISoundManager& sounds() { return this->_sounds; }
 
     private:
+        SDLRendering _rendering;
         SDLDisplay _display;
         SDLTextureManager _textures;
         SDLFontManager _fonts;
         SDLMusicManager _musics;
         SDLSoundManager _sounds;
-
-        SDL_Window *_window = nullptr;
-        SDL_Renderer *_renderer = nullptr;
     };
 
 extern "C" arc::ILibrary *entrypoint()
