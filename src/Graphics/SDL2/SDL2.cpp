@@ -6,6 +6,7 @@
 */
 
 #include "ILibrary.hpp"
+#include "SharedLibraryType.hpp"
 
 #include <iostream>
 #include <map>
@@ -659,4 +660,14 @@
 extern "C" arc::ILibrary *entrypoint()
 {
     return new SDLLibrary();
+}
+
+extern "C" const char *name()
+{
+    return "SDL2";
+}
+
+extern "C" arc::SharedLibraryType type()
+{
+    return arc::SharedLibraryType::LIBRARY;
 }
