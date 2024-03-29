@@ -15,6 +15,7 @@
 #include <vector>
 #include <optional>
 #include <memory>
+#include <map>
 
 namespace arc {
 
@@ -92,6 +93,6 @@ namespace arc {
          *
          * @return std::vector<TextureSpecification> the specifications of all the textures
          */
-        virtual std::vector<std::pair<std::string, TextureSpecification>> dump() const = 0;
+        virtual std::map<std::string, TextureSpecification> dump() const = 0;
     };
 }

@@ -9,6 +9,8 @@
 
 #include <string>
 #include <vector>
+#include <memory>
+#include <map>
 
 namespace arc {
 
@@ -59,7 +61,7 @@ namespace arc {
          *
          * @return std::vector<MusicSpecification> the specifications of all the musics
          */
-        virtual std::vector<std::pair<std::string, MusicSpecification>> dump() = 0;
+        virtual std::map<std::string, MusicSpecification> dump() const = 0 ;
 
         /**
          * @brief Plays a music

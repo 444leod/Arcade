@@ -170,7 +170,7 @@ namespace arc {
          */
         virtual void draw(std::shared_ptr<ITexture> texture, float x, float y) = 0;
 
-        /**
+        /**td::shared_ptr<ITexture> g
          * @brief Draws a string to the display
          *
          * @param string the string to draw

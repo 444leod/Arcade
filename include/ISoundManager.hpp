@@ -9,6 +9,8 @@
 
 #include <string>
 #include <vector>
+#include <memory>
+#include <map>
 
 namespace arc {
 
@@ -49,14 +51,14 @@ namespace arc {
          * @return true if the sound has been loaded
          * @return false if the sound failed to load
          */
-        virtual bool load(const std::string& name, const SoundSpecification& specification) = 0;
+        virtual bool load(const std::string& name, const arc::SoundSpecification& specification) = 0;
 
         /**
          * @brief Retrieves all the sounds specifications with their name
          *
          * @return std::vector<SoundSpecification> the specifications of all the sounds
          */
-        virtual std::vector<std::pair<std::string, SoundSpecification>> dump() const = 0;
+        virtual std::map<std::string, SoundSpecification> dump() const = 0;
 
         /**
          * @brief Plays a sound

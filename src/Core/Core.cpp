@@ -192,7 +192,6 @@ private:
     };
     size_t _currentGraphicLibrary = 0;
     std::vector<std::string> _gameLibraries = {
-        "./lib/arcade_example.so",
         "./lib/arcade_pacman.so",
         "./lib/arcade_snake.so"
     };
