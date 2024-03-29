@@ -355,10 +355,7 @@ public:
     {
         TTF_Init();
     }
-    ~SDLFontManager()
-    {
-        TTF_Quit();
-    }
+    ~SDLFontManager() = default;
 
     virtual bool load(const std::string &name, const arc::FontSpecification &spec)
     {
@@ -406,7 +403,12 @@ public:
                   this->_width * this->_tileSize,
                   this->_height * this->_tileSize);
     }
-    ~SDLDisplay() = default;
+    ~SDLDisplay()
+    {
+        SDL_VideoQuit();
+        SDL_AudioQuit();
+        SDL_Quit();
+    }
 
     virtual void setTitle(const std::string &title)
     {
@@ -640,7 +642,6 @@ public:
     }
     ~SDLLibrary()
     {
-        SDL_Quit();
     }
 
     virtual std::string name() const { return " SDL"; }
