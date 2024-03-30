@@ -6,6 +6,7 @@
 */
 
 #include "ILibrary.hpp"
+#include "SharedLibraryType.hpp"
 
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio.hpp>
@@ -586,9 +587,6 @@ public:
     SFMLLibrary() = default;
     virtual ~SFMLLibrary() = default;
 
-    virtual std::string name() const { return "SFML"; }
-    virtual std::string version() const { return "2.5.1"; }
-
     virtual arc::IDisplay& display() { return this->_display; }
     virtual arc::ITextureManager& textures() { return this->_textures; }
     virtual arc::IFontManager& fonts() { return this->_fonts; }
@@ -606,4 +604,14 @@ private:
 extern "C" arc::ILibrary *entrypoint()
 {
     return new SFMLLibrary;
+}
+
+extern "C" arc::SharedLibraryType type()
+{
+    return arc::SharedLibraryType::LIBRARY;
+}
+
+extern "C" const char *name()
+{
+    return "SFML";
 }

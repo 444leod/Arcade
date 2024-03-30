@@ -13,6 +13,7 @@
 #include "./pause/Pause.hpp"
 #include "./win/Win.hpp"
 #include "./game-over/GameOver.hpp"
+#include "SharedLibraryType.hpp"
 
 #include <iostream>
 #include <cstdlib>
@@ -24,11 +25,6 @@
 
 class Pacman : public arc::IGame {
 public:
-    virtual std::string name() const
-    {
-        return "Pacman";
-    }
-
     virtual void initialize(arc::ILibrary& lib)
     {
         lib.display().setTitle("Arcade");
@@ -79,12 +75,17 @@ public:
         lib.display().flush();
     }
 
+    virtual uint64_t score() const
+    {
+        return _score;
+    }
+
 private:
     std::map<IGameState::State, std::shared_ptr<IGameState>> _states;
     IGameState::State _currentState = IGameState::State::GAME;
     IGameState::State _oldState = IGameState::State::GAME;
 
-    uint16_t _score = 0;
+    uint64_t _score = 0;
     uint16_t _height = 24;
     uint16_t _width = 19;
 };
@@ -92,4 +93,14 @@ private:
 extern "C" arc::IGame* entrypoint()
 {
     return new Pacman;
+}
+
+extern "C" arc::SharedLibraryType type()
+{
+    return arc::SharedLibraryType::GAME;
+}
+
+extern "C" const char *name()
+{
+    return "Pacman";
 }

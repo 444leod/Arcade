@@ -6,6 +6,7 @@
 */
 
 #include "ILibrary.hpp"
+#include "SharedLibraryType.hpp"
 
 #include <map>
 #include <cmath>
@@ -472,9 +473,6 @@ public:
     NCursesLibrary() = default;
     virtual ~NCursesLibrary() = default;
 
-    virtual std::string name() const { return "NCurses"; }
-    virtual std::string version() const { return "1.0.0"; }
-
     virtual arc::IDisplay& display() { return this->_display; }
     virtual arc::ITextureManager& textures() { return this->_textures; }
     virtual arc::IFontManager& fonts() { return this->_fonts; }
@@ -492,4 +490,14 @@ private:
 extern "C" arc::ILibrary *entrypoint()
 {
     return new NCursesLibrary;
+}
+
+extern "C" arc::SharedLibraryType type()
+{
+    return arc::SharedLibraryType::LIBRARY;
+}
+
+extern "C" const char *name()
+{
+    return "NCurses";
 }
