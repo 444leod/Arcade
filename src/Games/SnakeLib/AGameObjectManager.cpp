@@ -7,7 +7,6 @@
 
 #include "SnakeLib/GameObject/AGameObjectManager.hpp"
 #include "SnakeLib/SnakeObject/SnakeConstants.hpp"
-#include "RandomNumberGenerator.hpp"
 #include <algorithm>
 
 AGameObjectManager::AGameObjectManager()

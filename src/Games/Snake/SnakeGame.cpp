@@ -11,6 +11,7 @@
 #include "GameObjects/SnakeObjectManager.hpp"
 #include "SharedLibraryType.hpp"
 
+#include <ctime>
 #include <iostream>
 #include <cstdlib>
 #include <sstream>
@@ -37,9 +38,14 @@ public:
         lib.fonts().load("Pokemon", text);
 
         // Sounds
-        // arc::SoundSpecification sound;
-        // sound.path = "woosh.wav";
-        // lib.sounds().load("woosh", sound);
+        arc::SoundSpecification sound;
+        sound.path = "assets/snake/sounds/woosh.wav";
+        lib.sounds().load("woosh", sound);
+        sound.path = "assets/snake/sounds/crunch.wav";
+        lib.sounds().load("crunch", sound);
+
+        // Set the random
+        std::srand(std::time(nullptr));
     }
 
     virtual void onKeyPressed([[maybe_unused]] arc::ILibrary& lib, arc::Key key)
@@ -52,9 +58,8 @@ public:
             case arc::Key::D: playSound = _snake.setDirection({1, 0}); break;
             default: break;
         }
-        (void)playSound;
-        // if (playSound)
-            // lib.display().playSound(lib.sounds().get("woosh"), 50.0f);
+        if (playSound)
+            lib.sounds().play("woosh", 30.0f);
     }
 
     virtual void onMouseButtonPressed(
@@ -70,6 +75,8 @@ public:
     {
         Vec2i objectCollided = _snake.update(_snakeManager.getPos(), deltaTime);
         _snakeManager.update(objectCollided, _snake, deltaTime);
+        if (objectCollided != Vec2i{-1, -1})
+            lib.sounds().play("crunch", 100.0f);
     }
 
     virtual void draw(arc::ILibrary& lib)

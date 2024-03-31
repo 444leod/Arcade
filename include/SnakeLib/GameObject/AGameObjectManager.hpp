@@ -12,7 +12,6 @@
 
 #include "SnakeLib/GameObject/IGameObjectManager.hpp"
 #include "SnakeLib/SnakeObject/SnakeConstants.hpp"
-#include "RandomNumberGenerator.hpp"
 
 class AGameObjectManager : public IGameObjectManager{
     public:
