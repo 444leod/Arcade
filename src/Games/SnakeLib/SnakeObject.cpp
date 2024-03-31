@@ -17,7 +17,7 @@
 SnakeObject::SnakeObject()
 {
     _score = 0;
-    _speed = 0.2;
+    _speed = BASE_SPEED;
     _elapsed = 0;
     _alive = true;
     _readyToRotate = true;
@@ -83,22 +83,22 @@ std::vector<Vec2i> SnakeObject::getPositions() const
     return res;
 }
 
-// Privates Member Functions
+void SnakeObject::grow(int x, int y, std::size_t size)
+{
+    for (size_t i = 0; i < size; i++)
+        _body.insert(_body.begin(), Vec2i{x, y});
+}
 
-Vec2i SnakeObject::move([[maybe_unused]] std::vector<Vec2i> objectsPos)
+void SnakeObject::shrink(size_t size)
+{
+    for (size_t i = 0; i < size; i++)
+        _body.pop_back();
+}
+
+Vec2i SnakeObject::continueMove(void)
 {
     int old_x = _body[0].x;
     int old_y = _body[0].y;
-
-    _oldDirection = _direction;
-    _readyToRotate = true;
-
-    for (auto &pos : objectsPos) {
-        if (_body[0].x + _direction.first == pos.x && _body[0].y + _direction.second == pos.y) {
-            _growthToggle = false;
-            return pos;
-        }
-    }
 
     if (_growthToggle == false) {
         _growthToggle = true;
@@ -124,10 +124,22 @@ Vec2i SnakeObject::move([[maybe_unused]] std::vector<Vec2i> objectsPos)
     return {-1, -1};
 }
 
-void SnakeObject::grow(int x, int y, std::size_t size)
+// Privates Member Functions
+
+Vec2i SnakeObject::move([[maybe_unused]] std::vector<Vec2i> objectsPos)
 {
-    for (size_t i = 0; i < size; i++)
-        _body.insert(_body.begin(), Vec2i{x, y});
+
+    _oldDirection = _direction;
+    _readyToRotate = true;
+
+    for (auto &pos : objectsPos) {
+        if (_body[0].x + _direction.first == pos.x && _body[0].y + _direction.second == pos.y) {
+            _growthToggle = false;
+            return pos;
+        }
+    }
+
+    return continueMove();
 }
 
 bool SnakeObject::checkCollision(int oldX, int oldY)

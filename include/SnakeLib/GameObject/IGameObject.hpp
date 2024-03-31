@@ -5,10 +5,10 @@
 ** IGameObject
 */
 
+#pragma once
+
 #include <string>
 #include "SnakeLib/SnakeObject/SnakeObject.hpp"
-
-#pragma once
 
 class IGameObject {
     public:
@@ -19,15 +19,23 @@ class IGameObject {
             bool killPlayer;
         };
 
+        enum Type {
+            SUPER_CANDY,
+            TAMATO_BERRY,
+            AGUAV_BERRY,
+        };
+
         virtual ~IGameObject() = default;
 
         virtual std::pair<Vec2i, std::string> dumpTexture() const = 0;
 
-        virtual IGameObject::Effects getEffects() const = 0;
+        virtual bool getRespawn() const = 0;
 
         virtual void setPos(Vec2i pos) = 0;
 
         virtual Vec2i getPos() const = 0;
+
+        virtual Type getType() const = 0;
 
         virtual void applyEffect(SnakeObject &snake) = 0;
 

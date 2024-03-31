@@ -5,10 +5,15 @@
 ** SnakeObjectManager
 */
 
+#pragma once
+
 #include "SnakeLib/GameObject/AGameObjectManager.hpp"
 #include "Vec2.hpp"
-
-#pragma once
+#include "SuperCandy.hpp"
+#include "TamatoBerry.hpp"
+#include "AguavBerry.hpp"
+#include "SnakeLib/SnakeObject/SnakeConstants.hpp"
+#include <random>
 
 class SnakeObjectManager : public AGameObjectManager {
     public:

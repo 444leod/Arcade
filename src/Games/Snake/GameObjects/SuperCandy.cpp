@@ -16,4 +16,6 @@ SuperCandy::SuperCandy(Vec2i pos) : AGameObject(pos)
     _effects.deltaSpeed = 0.95;
     _effects.deltaGrowth = 1;
     _effects.killPlayer = false;
+    _respawn = true;
+    _type = IGameObject::SUPER_CANDY;
 }

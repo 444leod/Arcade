@@ -5,16 +5,17 @@
 ** AGameObjectManager
 */
 
+#pragma once
+
 #include <vector>
 #include <memory>
 
 #include "SnakeLib/GameObject/IGameObjectManager.hpp"
-
-#pragma once
+#include "SnakeLib/SnakeObject/SnakeConstants.hpp"
 
 class AGameObjectManager : public IGameObjectManager{
     public:
-        AGameObjectManager() {};
+        AGameObjectManager();
 
         ~AGameObjectManager() {};
 
@@ -23,12 +24,16 @@ class AGameObjectManager : public IGameObjectManager{
         virtual std::vector<std::pair<Vec2i, std::string>> dump() const;
 
         virtual std::vector<Vec2i> getPos() const;
+
+        virtual std::vector<Vec2i> getForbidenPos(SnakeObject &snake) const;
         
         virtual void applyEffects(SnakeObject &snake) const;
 
     protected:
+        std::vector<Vec2i> _basePositions;
+
         virtual Vec2i getSpawnPos(std::vector<Vec2i> forbidenPositions) const;
 
-        std::vector<std::shared_ptr<IGameObject>> _gameObjects;
+        std::vector<std::unique_ptr<IGameObject>> _gameObjects;
     private:
 };
