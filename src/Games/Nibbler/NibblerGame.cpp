@@ -9,6 +9,7 @@
 #include "SnakeLib/SnakeObject/SnakeConstants.hpp"
 #include "Vec2.hpp"
 #include "SharedLibraryType.hpp"
+#include "CSVParser.hpp"
 
 #include <ctime>
 #include <iostream>
@@ -19,11 +20,16 @@ class NibblerGame : public arc::IGame {
 public:
     virtual void initialize(arc::ILibrary& lib)
     {
+        CSVParser<int> parser("assets/nibbler/map.csv");
+        parser.parse();
+        _map = parser.getData();
+
+
         lib.display().setTitle("Nibbler");
         lib.display().setFramerate(60);
-        lib.display().setTileSize(64);
-        lib.display().setWidth(ARENA_WIDTH + 2);
-        lib.display().setHeight(ARENA_HEIGHT + 1 + 2);
+        lib.display().setTileSize(32);
+        lib.display().setWidth(_map[0].size());
+        lib.display().setHeight(_map.size() + 1);
 
         // Textures
         initTextures(lib);
@@ -97,7 +103,7 @@ public:
         auto textWidth = lib.display().measure(score.str(), lib.fonts().get("Pokemon"), 0, 0).width;
         auto center = (width - textWidth) / 2;
 
-        lib.display().print(score.str(), lib.fonts().get("Pokemon"), center, ARENA_HEIGHT + 2);
+        lib.display().print(score.str(), lib.fonts().get("Pokemon"), center, _map.size());
         lib.display().flush();
     }
 
@@ -168,27 +174,10 @@ private:
         spec.textual.character = ' ';
         spec.graphical = arc::TextureImage{TILESET_CAVE, arc::Rect<uint32_t>{16, 176, 16, 16}};
         lib.textures().load("arena_0", spec);
-        spec.graphical = arc::TextureImage{TILESET_CAVE, arc::Rect<uint32_t>{16, 160, 16, 16}};
-        lib.textures().load("arena_north_edge", spec);
 
         spec.textual.character = '+';
-        spec.graphical = arc::TextureImage{TILESET_CAVE, arc::Rect<uint32_t>{16, 176, 16, 16}};
-        lib.textures().load("arena_north_edge_solid", spec);
-        spec.graphical = arc::TextureImage{TILESET_CAVE, arc::Rect<uint32_t>{16, 192, 16, 16}};
-        lib.textures().load("arena_south_edge", spec);
-        spec.graphical = arc::TextureImage{TILESET_CAVE, arc::Rect<uint32_t>{0, 176, 16, 16}};
-        lib.textures().load("arena_west_edge", spec);
-        spec.graphical = arc::TextureImage{TILESET_CAVE, arc::Rect<uint32_t>{32, 176, 16, 16}};
-        lib.textures().load("arena_east_edge", spec);
-
-        spec.graphical = arc::TextureImage{TILESET_CAVE, arc::Rect<uint32_t>{48, 192, 16, 16}};
-        lib.textures().load("arena_north_west_edge", spec);
-        spec.graphical = arc::TextureImage{TILESET_CAVE, arc::Rect<uint32_t>{64, 192, 16, 16}};
-        lib.textures().load("arena_north_east_edge", spec);
-        spec.graphical = arc::TextureImage{TILESET_CAVE, arc::Rect<uint32_t>{48, 160, 16, 16}};
-        lib.textures().load("arena_south_west_edge", spec);
-        spec.graphical = arc::TextureImage{TILESET_CAVE, arc::Rect<uint32_t>{62, 160, 16, 16}};
-        lib.textures().load("arena_south_east_edge", spec);
+        spec.graphical = arc::TextureImage{TILESET_CAVE, arc::Rect<uint32_t>{3*16, 6*16, 16, 16}};
+        lib.textures().load("rock", spec);
 
         //Consumables
         spec.textual.character = 'X';
@@ -196,51 +185,19 @@ private:
         spec.textual.color = {0, 0, 255, 255};
         spec.graphical = arc::TextureImage{SUPER_CANDY_PATH};
         lib.textures().load("super_candy", spec);
-
-        //Tamato Berry
-        spec.textual.color = {255, 0, 0, 255};
-        spec.graphical = arc::TextureImage{TAMATO_BERRY_PATH};
-        lib.textures().load("tamato_berry", spec);
-
-        //Aguav Berry
-        spec.textual.color = {0, 255, 0, 255};
-        spec.graphical = arc::TextureImage{AGUAV_BERRY_PATH};
-        lib.textures().load("aguav_berry", spec);
     }
 
     void draw_arena(arc::ILibrary& lib)
     {
-        // Edges
-        lib.display().draw(lib.textures().get("arena_north_edge_solid"), 0, 0);
-        lib.display().draw(lib.textures().get("arena_north_edge_solid"), ARENA_WIDTH + 1, 0);
-        for (int x = 1; x < ARENA_WIDTH + 1; x++) {
-            lib.display().draw(lib.textures().get("arena_north_edge_solid"), x, 0);
-            lib.display().draw(lib.textures().get("arena_north_edge"), x, 1);
-            lib.display().draw(lib.textures().get("arena_south_edge"), x, ARENA_HEIGHT + 1);
+        for (uint64_t i = 0; _map.size() + 1 > i; i++) {
+            for (uint64_t j = 0; _map[0].size() > j; j++) {
+                lib.display().draw(lib.textures().get("arena_0"), j, i);
+            }
         }
-        for (int y = 2; y < ARENA_HEIGHT + 1; y++) {
-            lib.display().draw(lib.textures().get("arena_west_edge"), 0, y);
-            lib.display().draw(lib.textures().get("arena_east_edge"), ARENA_WIDTH + 1, y);
-        }
-
-        // Corners
-        lib.display().draw(lib.textures().get("arena_north_west_edge"), 0, 1);
-        lib.display().draw(lib.textures().get("arena_north_east_edge"), ARENA_WIDTH + 1, 1);
-        lib.display().draw(lib.textures().get("arena_south_west_edge"), 0, ARENA_HEIGHT + 1);
-        lib.display().draw(lib.textures().get("arena_south_east_edge"), ARENA_WIDTH + 1, ARENA_HEIGHT + 1);
-
-        // Inside arena
-        for (int y = 2; y < ARENA_HEIGHT + 1; y++)
-            for (int x = 1; x < ARENA_WIDTH + 1; x++)
-                lib.display().draw(lib.textures().get("arena_0"), x, y);
-        
-        // Menu background
-        for (int x = 0; x < ARENA_WIDTH + 2; x++)
-            lib.display().draw(lib.textures().get("arena_0"), x, ARENA_HEIGHT + 2);
     }
 
 private:
-   
+   std::vector<std::vector<int>> _map;
 };
 
 extern "C" arc::IGame* entrypoint()
