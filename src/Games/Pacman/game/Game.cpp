@@ -11,7 +11,7 @@ void Game::initialize(arc::ILibrary &lib)
 {
     onEnter(IGameState::State::GAME);
     _map->initTextures(lib.textures());
-    // Fonts
+
     arc::FontSpecification text {
         .color = arc::Color {200, 200, 200, 255},
         .size = 16,
@@ -169,7 +169,6 @@ void Game::onEnter(IGameState::State lastState)
         ghost->setStatus(pacman::entity::status::ALIVE);
         ghost->setSpeed(_speedMultiplier);
         ghost->updateWalkableTiles(pacman::TileType::DOOR, false);
-        std::cout << "Ghost pos: " << ghostPos.x << ", " << ghostPos.y << std::endl;
     }
     _player->setStatus(pacman::entity::status::ALIVE);
     _player->setDirection(pacman::Direction::NONE);
@@ -255,8 +254,10 @@ void Game::updateStatuses()
     if (_player->getStatus() == pacman::entity::status::HUNGRY && _ticks - _hungerTick >= 100) {
         _player->setStatus(pacman::entity::status::ALIVE);
         for (auto& ghost : _ghosts) {
-            ghost->setStatus(pacman::entity::status::ALIVE);
-            ghost->setSpeed(_speedMultiplier);
+            if (ghost->getStatus() == pacman::entity::status::SCARED) {
+                ghost->setStatus(pacman::entity::status::ALIVE);
+                ghost->setSpeed(_speedMultiplier);
+            }
         }
     }
     for (auto &ghost : _ghosts) {

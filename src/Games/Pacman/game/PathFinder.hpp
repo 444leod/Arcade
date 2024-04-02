@@ -28,7 +28,6 @@ class Node {
         Vec2i pos;
         std::shared_ptr<Node> parent;
 
-        //overload == operator
         bool operator==(const Node &other) const;
 };
 

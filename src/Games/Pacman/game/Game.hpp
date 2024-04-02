@@ -13,7 +13,6 @@
 #include "ghosts/Pinky.hpp"
 #include "ghosts/Inky.hpp"
 #include "ghosts/Clyde.hpp"
-// #include "RandomNumberGenerator.hpp"
 #include "PathFinder.hpp"
 #include "Map.hpp"
 #include "Player.hpp"
