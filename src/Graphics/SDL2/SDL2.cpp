@@ -9,6 +9,7 @@
 #include "SharedLibraryType.hpp"
 
 #include <iostream>
+#include <chrono>
 #include <map>
 #include <deque>
 #include <SDL2/SDL.h>
@@ -139,6 +140,8 @@ public:
             Mix_SetMusicPosition(spec.startOffset);
         if (spec.isPlaying)
             this->play();
+        this->_start = std::chrono::system_clock::now() - std::chrono::milliseconds(static_cast<int>(spec.startOffset * 1000));
+        std::cout << "Started: " << this->getOffset() << std::endl;
         return this->_music != nullptr;
     }
 
@@ -146,6 +149,13 @@ public:
     {
         Mix_PlayMusic(this->_music.get(), 0);
         this->_playing = true;
+        this->_start = std::chrono::system_clock::now();
+        std::cout << "Restarted: " << this->getOffset() << std::endl;
+    }
+
+    float getOffset() const
+    {
+        return std::chrono::duration<float>(std::chrono::system_clock::now() - this->_start).count();
     }
 
     void stop() { Mix_HaltMusic(); }
@@ -158,6 +168,7 @@ private:
     bool _playing = false;
     std::shared_ptr<Mix_Music> _music = nullptr;
     arc::MusicSpecification _spec = {};
+    std::chrono::time_point<std::chrono::system_clock> _start;
 };
 
 class SDLMusicManager : public arc::IMusicManager
@@ -183,6 +194,8 @@ public:
         for (const auto &[name, music] : this->_musics)
         {
             arc::MusicSpecification spec = music->specification();
+            spec.startOffset = music->getOffset();
+            std::cout << spec.startOffset << std::endl;
             spec.isPlaying = music->isPlaying();
             music->stop();
             specs[name] = spec;
