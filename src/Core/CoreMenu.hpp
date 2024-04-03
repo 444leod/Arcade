@@ -23,6 +23,7 @@ public:
     virtual void draw(arc::ILibrary &lib);
     virtual uint64_t score() const { return 0; }
     std::shared_ptr<arc::IGame> game();
+    const std::string& gameName() const { return this->_games.at(this->_game)->name(); }
     std::shared_ptr<arc::ILibrary> lib();
 
 protected:

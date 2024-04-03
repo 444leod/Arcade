@@ -79,7 +79,7 @@ void CoreMenu::draw(arc::ILibrary &lib)
         auto size = lib.display().measure(l->name(), lib.fonts().get(font), 0, 0).width;
         auto x = (lib.display().width() - size) / 2;
         auto y = (this->_game - i + 1) * 2;
-        lib.display().print(l->name(), lib.fonts().get(font), x, y + 1);
+        lib.display().print(l->name(), lib.fonts().get(font), x, y + 3);
     }
 
     for (int i = this->_lib - 1; i <= this->_lib + 1; i++)
