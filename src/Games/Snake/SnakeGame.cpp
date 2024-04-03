@@ -9,18 +9,15 @@
 #include "SnakeLib/SnakeObject/SnakeConstants.hpp"
 #include "GameObjects/SuperCandy.hpp"
 #include "GameObjects/SnakeObjectManager.hpp"
+#include "SharedLibraryType.hpp"
 
+#include <ctime>
 #include <iostream>
 #include <cstdlib>
 #include <sstream>
 
 class SnakeGame : public arc::IGame {
 public:
-    virtual std::string name() const
-    {
-        return "Snake";
-    }
-
     virtual void initialize(arc::ILibrary& lib)
     {
         lib.display().setTitle("Snake");
@@ -41,9 +38,14 @@ public:
         lib.fonts().load("Pokemon", text);
 
         // Sounds
-        // arc::SoundSpecification sound;
-        // sound.path = "woosh.wav";
-        // lib.sounds().load("woosh", sound);
+        arc::SoundSpecification sound;
+        sound.path = "assets/snake/sounds/woosh.wav";
+        lib.sounds().load("woosh", sound);
+        sound.path = "assets/snake/sounds/crunch.wav";
+        lib.sounds().load("crunch", sound);
+
+        // Set the random
+        std::srand(std::time(nullptr));
     }
 
     virtual void onKeyPressed([[maybe_unused]] arc::ILibrary& lib, arc::Key key)
@@ -56,9 +58,8 @@ public:
             case arc::Key::D: playSound = _snake.setDirection({1, 0}); break;
             default: break;
         }
-        (void)playSound;
-        // if (playSound)
-            // lib.display().playSound(lib.sounds().get("woosh"), 50.0f);
+        if (playSound)
+            lib.sounds().play("woosh", 30.0f);
     }
 
     virtual void onMouseButtonPressed(
@@ -74,6 +75,8 @@ public:
     {
         Vec2i objectCollided = _snake.update(_snakeManager.getPos(), deltaTime);
         _snakeManager.update(objectCollided, _snake, deltaTime);
+        if (objectCollided != Vec2i{-1, -1})
+            lib.sounds().play("crunch", 100.0f);
     }
 
     virtual void draw(arc::ILibrary& lib)
@@ -101,6 +104,11 @@ public:
         lib.display().flush();
     }
 
+    virtual uint64_t score() const
+    {
+        return _snake.getScore();
+    }
+
 private:
     void initTextures(arc::ILibrary& lib)
     {
@@ -108,7 +116,7 @@ private:
 
         //Onix Head
         spec.textual.character = 'O';
-        spec.textual.color = {255, 0, 0, 255};
+        spec.textual.color = {0, 0, 0, 255};
         spec.graphical = arc::TextureImage{TILESET_ONIX, arc::Rect<uint32_t>{0, 0, 64, 64}};
         lib.textures().load("head_0_east", spec);
         spec.graphical = arc::TextureImage{TILESET_ONIX, arc::Rect<uint32_t>{0, 64, 64, 64}};
@@ -184,11 +192,22 @@ private:
         spec.graphical = arc::TextureImage{TILESET_CAVE, arc::Rect<uint32_t>{62, 160, 16, 16}};
         lib.textures().load("arena_south_east_edge", spec);
 
-        //Super Candy
+        //Consumables
         spec.textual.character = 'X';
-        spec.textual.color = {255, 255, 0, 255};
-        spec.graphical = arc::TextureImage{SUPER_CANDY};
+        //Super Candy
+        spec.textual.color = {0, 0, 255, 255};
+        spec.graphical = arc::TextureImage{SUPER_CANDY_PATH};
         lib.textures().load("super_candy", spec);
+
+        //Tamato Berry
+        spec.textual.color = {255, 0, 0, 255};
+        spec.graphical = arc::TextureImage{TAMATO_BERRY_PATH};
+        lib.textures().load("tamato_berry", spec);
+
+        //Aguav Berry
+        spec.textual.color = {0, 255, 0, 255};
+        spec.graphical = arc::TextureImage{AGUAV_BERRY_PATH};
+        lib.textures().load("aguav_berry", spec);
     }
 
     void draw_arena(arc::ILibrary& lib)
@@ -232,12 +251,12 @@ extern "C" arc::IGame* entrypoint()
     return new SnakeGame;
 }
 
-extern "C" const char *name()
-{
-    return "Snake";
-}
-
 extern "C" arc::SharedLibraryType type()
 {
     return arc::SharedLibraryType::GAME;
+}
+
+extern "C" const char *name()
+{
+    return "Snake";
 }

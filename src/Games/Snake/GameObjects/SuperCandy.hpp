@@ -5,9 +5,9 @@
 ** SuperCandy
 */
 
-#include "SnakeLib/GameObject/AGameObject.hpp"
-
 #pragma once
+
+#include "SnakeLib/GameObject/AGameObject.hpp"
 
 class SuperCandy : public AGameObject {
     public:

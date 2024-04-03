@@ -22,13 +22,6 @@ namespace arc {
         virtual ~ILibrary() = default;
 
         /**
-         * @brief Returns the name of the library
-         *
-         * @return std::string The name of the library
-         */
-        virtual std::string name() const = 0;
-
-        /**
          * @brief Returns the display of the library
          *
          * @return IDisplay& The display

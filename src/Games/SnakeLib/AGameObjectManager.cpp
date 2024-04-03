@@ -7,8 +7,15 @@
 
 #include "SnakeLib/GameObject/AGameObjectManager.hpp"
 #include "SnakeLib/SnakeObject/SnakeConstants.hpp"
-#include "RandomNumberGenerator.hpp"
 #include <algorithm>
+
+AGameObjectManager::AGameObjectManager()
+{
+    for (int x = 1; x < ARENA_WIDTH + 1; x++)
+        for (int y = 1; y < ARENA_HEIGHT + 1; y++) {
+            _basePositions.push_back(Vec2i{x, y});
+        }
+}
 
 std::vector<std::pair<Vec2i, std::string>> AGameObjectManager::dump() const
 {
@@ -30,6 +37,19 @@ std::vector<Vec2i> AGameObjectManager::getPos() const
     return res;
 }
 
+std::vector<Vec2i> AGameObjectManager::getForbidenPos(SnakeObject &snake) const
+{
+    std::vector<Vec2i> res;
+
+    for (auto &obj : _gameObjects) {
+        res.push_back(obj->getPos());
+    }
+    for (auto &pos : snake.getPositions()) {
+        res.push_back(pos);
+    }
+    return res;
+}
+
 void AGameObjectManager::applyEffects(SnakeObject &snake) const
 {
     for (auto &obj : _gameObjects) {
@@ -39,18 +59,12 @@ void AGameObjectManager::applyEffects(SnakeObject &snake) const
 
 Vec2i AGameObjectManager::getSpawnPos(std::vector<Vec2i> forbidenPositions) const
 {
-    Vec2i pos {
-        rng::rand(1, ARENA_WIDTH ),
-        rng::rand(1, ARENA_HEIGHT)
-    };
-    for (auto &obj : _gameObjects) {
-        forbidenPositions.push_back(obj->getPos());
+    std::vector<Vec2i> authorizedPos;
+
+    for (auto &pos : _basePositions) {
+        if (std::find(forbidenPositions.begin(), forbidenPositions.end(), pos) == forbidenPositions.end()) {
+            authorizedPos.push_back(pos);
+        }
     }
-    while (std::find(forbidenPositions.begin(), forbidenPositions.end(), pos) != forbidenPositions.end()) {
-        pos = Vec2i {
-            rng::rand(1, ARENA_WIDTH),
-            rng::rand(1, ARENA_HEIGHT)
-        };
-    }
-    return pos;
+    return authorizedPos[std::rand() % (authorizedPos.size() - 1)];
 }

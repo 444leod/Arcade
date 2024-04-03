@@ -13,6 +13,8 @@ SHARED_FLAGS = -shared
 SRC =	./SnakeGame.cpp \
 		./GameObjects/SnakeObjectManager.cpp \
 		./GameObjects/SuperCandy.cpp \
+		./GameObjects/AguavBerry.cpp \
+		./GameObjects/TamatoBerry.cpp \
 		./../SnakeLib/AGameObject.cpp \
 		./../SnakeLib/AGameObjectManager.cpp \
 		./../SnakeLib/SnakeObject.cpp

@@ -6,19 +6,23 @@
 */
 
 #include "ILibrary.hpp"
+#include "SharedLibraryType.hpp"
 
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio.hpp>
 #include <deque>
 #include <memory>
-#include <cmath>
 
 class SFMLTexture : public arc::ITexture {
 public:
     SFMLTexture() = default;
     virtual ~SFMLTexture() = default;
 
-    void load(const arc::TextureSpecification& spec, const std::shared_ptr<sf::Texture>& texture, std::optional<arc::Rect<uint32_t>> rect)
+    void load(
+        const arc::TextureSpecification& spec,
+        const std::shared_ptr<sf::Texture>& texture,
+        std::optional<arc::Rect<uint32_t>> rect
+    )
     {
         this->_spec = spec;
         this->_texture = texture;
@@ -91,6 +95,8 @@ public:
 
     virtual std::shared_ptr<arc::ITexture> get(const std::string& name)
     {
+        if (this->_textures.find(name) == this->_textures.end())
+            return nullptr;
         return this->_textures.at(name);
     }
 
@@ -153,6 +159,8 @@ public:
 
     virtual std::shared_ptr<arc::IFont> get(const std::string &name)
     {
+        if (this->_fonts.find(name) == this->_fonts.end())
+            return nullptr;
         return this->_fonts.at(name);
     }
 
@@ -526,6 +534,9 @@ public:
 
     virtual void draw(std::shared_ptr<arc::ITexture> texture, float x, float y)
     {
+        if (texture == nullptr)
+            return;
+
         auto rect = sf::RectangleShape{sf::Vector2f{static_cast<float>(this->_tileSize), static_cast<float>(this->_tileSize)}};
         auto tex = std::dynamic_pointer_cast<SFMLTexture>(texture);
 
@@ -586,9 +597,6 @@ public:
     SFMLLibrary() = default;
     virtual ~SFMLLibrary() = default;
 
-    virtual std::string name() const { return "SFML"; }
-    virtual std::string version() const { return "2.5.1"; }
-
     virtual arc::IDisplay& display() { return this->_display; }
     virtual arc::ITextureManager& textures() { return this->_textures; }
     virtual arc::IFontManager& fonts() { return this->_fonts; }
@@ -608,12 +616,12 @@ extern "C" arc::ILibrary *entrypoint()
     return new SFMLLibrary;
 }
 
-extern "C" const char *name()
-{
-    return "SFML";
-}
-
 extern "C" arc::SharedLibraryType type()
 {
     return arc::SharedLibraryType::LIBRARY;
+}
+
+extern "C" const char *name()
+{
+    return "SFML";
 }
