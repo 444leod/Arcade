@@ -23,6 +23,7 @@ class IGameObject {
             SUPER_CANDY,
             TAMATO_BERRY,
             AGUAV_BERRY,
+            ROCK
         };
 
         virtual ~IGameObject() = default;

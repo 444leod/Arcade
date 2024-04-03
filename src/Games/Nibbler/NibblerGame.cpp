@@ -10,6 +10,7 @@
 #include "Vec2.hpp"
 #include "SharedLibraryType.hpp"
 #include "CSVParser.hpp"
+#include "GameObjects/NibblerObjectManager.hpp"
 
 #include <ctime>
 #include <iostream>
@@ -20,11 +21,13 @@ class NibblerGame : public arc::IGame {
 public:
     virtual void initialize(arc::ILibrary& lib)
     {
+        // Map
         CSVParser<int> parser("assets/nibbler/map.csv");
         parser.parse();
         _map = parser.getData();
+        _nibblerManager.initMapObjects(_map);
 
-
+        // Display
         lib.display().setTitle("Nibbler");
         lib.display().setFramerate(60);
         lib.display().setTileSize(32);
@@ -95,9 +98,9 @@ public:
         //         lib.display().draw(lib.textures().get(part.second), part.first.x, part.first.y);
         //     }
         // }
-        // for (auto &part : _snakeManager.dump()) {
-        //         lib.display().draw(lib.textures().get(part.second), part.first.x, part.first.y);
-        //     }
+        for (auto &part : _nibblerManager.dump()) {
+                lib.display().draw(lib.textures().get(part.second), part.first.x, part.first.y);
+            }
 
         auto width = lib.display().width();
         auto textWidth = lib.display().measure(score.str(), lib.fonts().get("Pokemon"), 0, 0).width;
@@ -198,6 +201,7 @@ private:
 
 private:
    std::vector<std::vector<int>> _map;
+   NibblerObjectManager _nibblerManager;
 };
 
 extern "C" arc::IGame* entrypoint()

@@ -10,7 +10,12 @@ NAME = $(LIB_DIR)/arcade_nibbler.so
 CPPFLAGS = -fPIC -iquote $(INC_DIR) -std=c++20 -Wall -Wextra -Werror
 SHARED_FLAGS = -shared
 
-SRC =	./NibblerGame.cpp
+SRC =	./NibblerGame.cpp \
+		./GameObjects/NibblerObjectManager.cpp \
+		./GameObjects/Rock.cpp \
+		./../SnakeLib/AGameObject.cpp \
+		./../SnakeLib/AGameObjectManager.cpp \
+		./../SnakeLib/SnakeObject.cpp
 
 all: $(NAME)
 
