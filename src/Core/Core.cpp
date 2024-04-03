@@ -39,6 +39,10 @@ class Core
 
         ~Core()
         {
+            if (_game)
+                dlclose(_game.get());
+            if (_lib)
+                dlclose(_lib.get());
         }
 
         void switch_game_lib()
@@ -47,7 +51,7 @@ class Core
 
             if (menu != nullptr) {
                 this->_game.reset();
-                auto next = menu->getSelection();
+                auto next = menu->game();
                 this->_game = next;
             } else {
                 this->_game.reset();

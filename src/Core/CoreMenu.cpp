@@ -11,6 +11,8 @@ CoreMenu::CoreMenu(const std::vector<std::shared_ptr<LibraryObject>> &libs)
 {
     for (auto l : libs)
         if (l->type() == arc::SharedLibraryType::GAME)
+            this->_games.push_back(l);
+        else if (l->type() == arc::SharedLibraryType::LIBRARY)
             this->_libs.push_back(l);
 }
 
@@ -44,10 +46,16 @@ void CoreMenu::onKeyPressed([[maybe_unused]] arc::ILibrary &lib, arc::Key key)
     switch (key)
     {
     case arc::Key::UP:
-        this->_selection = (this->_selection + 1) % _libs.size();
+        this->_game = (this->_game + 1) % _games.size();
         break;
     case arc::Key::DOWN:
-        this->_selection = this->_selection ? (this->_selection - 1) % _libs.size() : _libs.size() - 1;
+        this->_game = this->_game ? (this->_game - 1) % _games.size() : _games.size() - 1;
+        break;
+    case arc::Key::LEFT:
+        this->_lib = (this->_lib + 1) % _libs.size();
+        break;
+    case arc::Key::RIGHT:
+        this->_lib = this->_lib ? (this->_lib - 1) % _libs.size() : _libs.size() - 1;
         break;
     default:
         break;
@@ -72,30 +80,35 @@ void CoreMenu::draw(arc::ILibrary &lib)
 {
     lib.display().clear();
 
-    for (int i = this->_selection - 1; i <= this->_selection + 1; i++)
+    for (int i = this->_game - 1; i <= this->_game + 1; i++)
     {
-        auto l = i < 0 ? _libs.back() : _libs.at(i % _libs.size());
-        auto font = i == this->_selection ? "game" : "normal";
+        auto l = i < 0 ? _games.back() : _games.at(i % _games.size());
+        auto font = i == this->_game ? "game" : "normal";
         auto size = lib.display().measure(l->name(), lib.fonts().get(font), 0, 0).width;
         auto x = (lib.display().width() - size) / 2;
-        auto y = (this->_selection - i + 1) * 2;
+        auto y = (this->_game - i + 1) * 2;
         lib.display().print(l->name(), lib.fonts().get(font), x, y + 1);
     }
 
-    for (int i = this->_selection - 1; i <= this->_selection + 1; i++)
+    for (int i = this->_lib - 1; i <= this->_lib + 1; i++)
     {
         auto l = i < 0 ? _libs.back() : _libs.at(i % _libs.size());
-        auto font = i == this->_selection ? "library" : "normal";
+        auto font = i == this->_lib ? "library" : "normal";
         auto size = lib.display().measure(l->name(), lib.fonts().get(font), 0, 0).width;
         auto x = (lib.display().width() - size) / 2;
-        auto y = (this->_selection - i + 1) * 2;
+        auto y = (this->_lib - i + 1) * 2;
         lib.display().print(l->name(), lib.fonts().get(font), x, y + 10);
     }
 
     lib.display().flush();
 }
 
-std::shared_ptr<arc::IGame> CoreMenu::getSelection()
+std::shared_ptr<arc::IGame> CoreMenu::game()
 {
-    return this->_libs.at(this->_selection)->get<arc::IGame>();
+    return this->_games.at(this->_game)->get<arc::IGame>();
+}
+
+std::shared_ptr<arc::ILibrary> CoreMenu::lib()
+{
+    return this->_libs.at(this->_lib)->get<arc::ILibrary>();
 }
