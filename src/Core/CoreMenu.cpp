@@ -18,11 +18,6 @@ CoreMenu::CoreMenu(const std::vector<std::shared_ptr<LibraryObject>> &libs)
 
 CoreMenu::~CoreMenu() = default;
 
-std::string CoreMenu::name() const
-{
-    return "CoreMenu";
-}
-
 void CoreMenu::initialize(arc::ILibrary &lib)
 {
     lib.display().setTitle("Arcade");

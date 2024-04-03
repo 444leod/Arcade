@@ -17,11 +17,11 @@ public:
     ~CoreMenu();
 
     virtual void initialize(arc::ILibrary &lib);
-    virtual std::string name() const;
     virtual void onKeyPressed([[maybe_unused]] arc::ILibrary &lib, arc::Key key);
     virtual void onMouseButtonPressed(arc::ILibrary &lib, arc::MouseButton button, int32_t x, int32_t y);
     virtual void update(arc::ILibrary &lib, float deltaTime);
     virtual void draw(arc::ILibrary &lib);
+    virtual uint64_t score() const { return 0; }
     std::shared_ptr<arc::IGame> game();
     std::shared_ptr<arc::ILibrary> lib();
 
