@@ -78,14 +78,28 @@ class Core
                 throw CoreException("No game library found.");
             this->_menu = std::make_shared<CoreMenu>(_loader.libs());
             this->_game = std::static_pointer_cast<arc::IGame>(this->_menu);
+
+            std::ifstream rstream(".scores");
+            if (!rstream.is_open())
+                return;
+            std::string tmp = "";
+            while (std::getline(rstream, tmp)) {
+                if (tmp.empty()) break;
+                arc::Score score;
+                tmp >> score;
+                this->_scores[score.game] = score;
+            }
+            rstream.close();
         }
 
         ~Core()
         {
-            if (_game)
-                dlclose(_game.get());
-            if (_lib)
-                dlclose(_lib.get());
+            if (this->_game != this->_menu)
+                this->saveScore();
+            if (this->_game)
+                dlclose(this->_game.get());
+            if (this->_lib)
+                dlclose(this->_lib.get());
         }
 
         void switch_game_lib()
@@ -97,7 +111,7 @@ class Core
                 auto next = menu->game();
                 this->_game = next;
             } else {
-                saveScore();
+                this->saveScore();
                 this->_game.reset();
                 this->_game = _menu;
             }
@@ -148,7 +162,7 @@ class Core
             auto game_switch = false;
             auto before = std::chrono::high_resolution_clock::now();
 
-            _game->initialize(*_lib);
+            this->_game->initialize(*_lib);
             while (_lib->display().opened()) {
                 arc::Event event = {};
                 auto now = std::chrono::high_resolution_clock::now();
@@ -162,62 +176,45 @@ class Core
                 }
 
                 if (game_switch) {
-                    switch_game_lib();
+                    this->switch_game_lib();
                     game_switch = false;
                     continue;
                 }
 
-                _lib->display().update(deltaTime);
+                this->_lib->display().update(deltaTime);
                 while (_lib->display().pollEvent(event)) {
                     if (event.type == arc::EventType::KEY_PRESSED && event.key == arc::Key::SPACE)
                         lib_switch = true;
                     if (event.type == arc::EventType::KEY_PRESSED && event.key == arc::Key::ENTER)
                         game_switch = true;
                     if (event.type == arc::EventType::KEY_PRESSED)
-                        _game->onKeyPressed(*_lib, event.key);
+                        this->_game->onKeyPressed(*_lib, event.key);
                     if (event.type == arc::EventType::MOUSE_BUTTON_PRESSED)
-                        _game->onMouseButtonPressed(*_lib, event.mouse.button, event.mouse.x, event.mouse.y);
+                        this->_game->onMouseButtonPressed(*_lib, event.mouse.button, event.mouse.x, event.mouse.y);
                 }
-                _game->update(*_lib, deltaTime);
-                _game->draw(*_lib);
+                this->_game->update(*_lib, deltaTime);
+                this->_game->draw(*_lib);
             }
         }
 
     private:
         void saveScore()
         {
-            std::map<std::string, uint64_t> map = {};
-            std::ofstream wstream;
-            std::ifstream rstream(".scores");
-            std::string tmp;
+            std::ofstream stream(".scores");
 
-            if (rstream.is_open()) {
-                while (std::getline(rstream, tmp)) {
-                    if (tmp.empty()) break;
-                    arc::Score score;
-                    tmp >> score;
-                    map[score.game] = score.hs;
-                }
-                rstream.close();
-            } else
-                std::perror("rstream");
-
-            wstream.open(".scores");
-            if (wstream.is_open()) {
-                if (map[this->_menu->gameName()] < this->_game->score())
-                    map[this->_menu->gameName()] = this->_game->score();
-                for (auto entry : map) {
-                    arc::Score score = {entry.first, entry.second};
-                    wstream << score;
-                }
-                wstream.close();
-            } else
-                std::perror("wstream");
+            if (!stream.is_open())
+                return;
+            if (!this->_scores.contains(this->_menu->gameName()) || this->_scores[this->_menu->gameName()].hs < this->_game->score())
+                this->_scores[this->_menu->gameName()] = { this->_menu->gameName(), this->_game->score() };
+            for (auto entry : this->_scores)
+                stream << entry.second;
+            stream.close();
         }
 
         std::shared_ptr<arc::ILibrary> _lib = nullptr;
         std::shared_ptr<arc::IGame> _game = nullptr;
         std::shared_ptr<CoreMenu> _menu = nullptr;
+        std::map<std::string, arc::Score> _scores = {};
         LibraryLoader _loader;
 };
 
