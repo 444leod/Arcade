@@ -255,8 +255,8 @@ class Core
     public:
         Core(const std::string& path) : _loader(LibraryLoader("./lib"))
         {
-            if (!this->_loader.contains(path))
-                throw CoreException("Could not find " + path + ".");
+            if (!this->_loader.contains(path, arc::SharedLibraryType::LIBRARY))
+                throw CoreException("File " + path + " is not a valid graphical library.");
             this->_lib = this->_loader.load(path)->get<arc::ILibrary>();
             if (!this->_loader.contains(arc::SharedLibraryType::GAME))
                 throw CoreException("No game library found.");
