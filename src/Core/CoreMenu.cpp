@@ -51,11 +51,8 @@ void CoreMenu::onKeyPressed([[maybe_unused]] arc::ILibrary &lib, arc::Key key)
     case arc::Key::DOWN:
         this->_game = this->_game ? (this->_game - 1) % _games.size() : _games.size() - 1;
         break;
-    case arc::Key::LEFT:
+    case arc::Key::SPACE:
         this->_lib = (this->_lib + 1) % _libs.size();
-        break;
-    case arc::Key::RIGHT:
-        this->_lib = this->_lib ? (this->_lib - 1) % _libs.size() : _libs.size() - 1;
         break;
     default:
         break;
