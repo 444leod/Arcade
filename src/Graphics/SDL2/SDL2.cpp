@@ -507,11 +507,17 @@ public:
     {
         if (key >= SDL_KeyCode::SDLK_a && key <= SDL_KeyCode::SDLK_z)
             return static_cast<arc::Key>(static_cast<uint32_t>(arc::Key::A) + key - SDL_KeyCode::SDLK_a);
-        if (key >= SDL_KeyCode::SDLK_RIGHT && key <= SDL_KeyCode::SDLK_UP)
-            return static_cast<arc::Key>(static_cast<uint32_t>(arc::Key::UP) + key - SDL_KeyCode::SDLK_RIGHT);
 
         switch (key)
         {
+        case SDLK_UP:
+            return arc::Key::UP;
+        case SDLK_DOWN:
+            return arc::Key::DOWN;
+        case SDLK_RIGHT:
+            return arc::Key::RIGHT;
+        case SDLK_LEFT:
+            return arc::Key::LEFT;
         case SDL_KeyCode::SDLK_SPACE:
             return arc::Key::SPACE;
         case SDL_KeyCode::SDLK_RETURN:
