@@ -34,7 +34,8 @@ class Core
             this->_lib = lib->get<arc::ILibrary>();
             if (!this->_loader.contains(arc::SharedLibraryType::GAME))
                 throw CoreException("No game library found.");
-            this->_game = std::make_shared<CoreMenu>(_loader.libs());
+            this->_menu = std::make_shared<CoreMenu>(_loader.libs());
+            this->_game = std::static_pointer_cast<arc::IGame>(this->_menu);
         }
 
         ~Core()
@@ -55,7 +56,7 @@ class Core
                 this->_game = next;
             } else {
                 this->_game.reset();
-                this->_game = std::make_shared<CoreMenu>(_loader.libs());
+                this->_game = _menu;
             }
             this->_game->initialize(*_lib);
         }
@@ -142,6 +143,7 @@ class Core
     private:
         std::shared_ptr<arc::ILibrary> _lib = nullptr;
         std::shared_ptr<arc::IGame> _game = nullptr;
+        std::shared_ptr<CoreMenu> _menu = nullptr;
         LibraryLoader _loader;
 };
 
