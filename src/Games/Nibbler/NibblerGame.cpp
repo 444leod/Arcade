@@ -30,7 +30,7 @@ public:
         // Display
         lib.display().setTitle("Nibbler");
         lib.display().setFramerate(60);
-        lib.display().setTileSize(32);
+        lib.display().setTileSize(40);
         lib.display().setWidth(_map[0].size());
         lib.display().setHeight(_map.size() + 1);
 
@@ -55,16 +55,16 @@ public:
 
     virtual void onKeyPressed([[maybe_unused]] arc::ILibrary& lib, arc::Key key)
     {
-        // bool playSound = false;
+        bool playSound = false;
         switch (key) {
-            // case arc::Key::Z: playSound = _snake.setDirection({0, -1}); break;
-            // case arc::Key::Q: playSound = _snake.setDirection({-1, 0}); break;
-            // case arc::Key::S: playSound = _snake.setDirection({0, 1}); break;
-            // case arc::Key::D: playSound = _snake.setDirection({1, 0}); break;
+            case arc::Key::Z: playSound = _nibbler.setDirection({0, -1}); break;
+            case arc::Key::Q: playSound = _nibbler.setDirection({-1, 0}); break;
+            case arc::Key::S: playSound = _nibbler.setDirection({0, 1}); break;
+            case arc::Key::D: playSound = _nibbler.setDirection({1, 0}); break;
             default: break;
         }
-        // if (playSound)
-        //     lib.sounds().play("woosh", 30.0f);
+        if (playSound)
+            lib.sounds().play("woosh", 30.0f);
     }
 
     virtual void onMouseButtonPressed(
@@ -78,26 +78,25 @@ public:
 
     virtual void update([[maybe_unused]] arc::ILibrary& lib, [[maybe_unused]] float deltaTime)
     {
-        // Vec2i objectCollided = _snake.update(_snakeManager.getPos(), deltaTime);
-        // _snakeManager.update(objectCollided, _snake, deltaTime);
-        // if (objectCollided != Vec2i{-1, -1})
-        //     lib.sounds().play("crunch", 100.0f);
+        Vec2i objectCollided = _nibbler.update(_nibblerManager.getPos(), deltaTime);
+        _nibblerManager.update(objectCollided, _nibbler, deltaTime);
+        if (objectCollided != Vec2i{-1, -1})
+            lib.sounds().play("crunch", 100.0f);
     }
 
     virtual void draw(arc::ILibrary& lib)
     {
         std::stringstream score;
 
-        score << "Score: " << 0;
-        // score << "Score: " << _snake.getScore();
+        score << "Score: " << _nibbler.getScore();
 
         lib.display().clear(arc::Color{0, 0, 255, 0});
         draw_arena(lib);
-        // if (_snake.getAlive()) {
-        //     for (auto &part : _snake.dump()) {
-        //         lib.display().draw(lib.textures().get(part.second), part.first.x, part.first.y);
-        //     }
-        // }
+        if (_nibbler.getAlive()) {
+            for (auto &part : _nibbler.dump()) {
+                lib.display().draw(lib.textures().get(part.second), part.first.x, part.first.y);
+            }
+        }
         for (auto &part : _nibblerManager.dump()) {
                 lib.display().draw(lib.textures().get(part.second), part.first.x, part.first.y);
             }
@@ -112,8 +111,7 @@ public:
 
     virtual uint64_t score() const
     {
-        // return _snake.getScore();
-        return 0;
+        return _nibbler.getScore();
     }
 
 private:
@@ -202,6 +200,7 @@ private:
 private:
    std::vector<std::vector<int>> _map;
    NibblerObjectManager _nibblerManager;
+//    NibblerObject _nibbler;
 };
 
 extern "C" arc::IGame* entrypoint()

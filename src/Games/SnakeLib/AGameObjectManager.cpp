@@ -37,7 +37,7 @@ std::vector<Vec2i> AGameObjectManager::getPos() const
     return res;
 }
 
-std::vector<Vec2i> AGameObjectManager::getForbidenPos(SnakeObject &snake) const
+std::vector<Vec2i> AGameObjectManager::getForbidenPos(ASnakeObject &snake) const
 {
     std::vector<Vec2i> res;
 
@@ -50,7 +50,7 @@ std::vector<Vec2i> AGameObjectManager::getForbidenPos(SnakeObject &snake) const
     return res;
 }
 
-void AGameObjectManager::applyEffects(SnakeObject &snake) const
+void AGameObjectManager::applyEffects(ASnakeObject &snake) const
 {
     for (auto &obj : _gameObjects) {
         obj->applyEffect(snake);

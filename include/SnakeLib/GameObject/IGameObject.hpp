@@ -8,7 +8,7 @@
 #pragma once
 
 #include <string>
-#include "SnakeLib/SnakeObject/SnakeObject.hpp"
+#include "SnakeLib/SnakeObject/ASnakeObject.hpp"
 
 class IGameObject {
     public:
@@ -17,6 +17,7 @@ class IGameObject {
             float deltaSpeed;
             int deltaGrowth;
             bool killPlayer;
+            bool blocking = false;
         };
 
         enum Type {
@@ -38,7 +39,9 @@ class IGameObject {
 
         virtual Type getType() const = 0;
 
-        virtual void applyEffect(SnakeObject &snake) = 0;
+        virtual bool getBlocking() const = 0;
+
+        virtual void applyEffect(ASnakeObject &snake) = 0;
 
     protected:
     private:

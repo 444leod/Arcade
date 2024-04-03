@@ -2,33 +2,24 @@
 ** EPITECH PROJECT, 2024
 ** Arcade
 ** File description:
-** SnakeObject
+** ASnakeObject
 */
 
 #include <vector>
 #include <string>
-#include <map>
 
-#include "SnakeLib/SnakeObject/SnakeObject.hpp"
+#include "SnakeLib/SnakeObject/ASnakeObject.hpp"
 #include "SnakeLib/SnakeObject/SnakeConstants.hpp"
+
+#include <iostream>
 
 // Public Member Functions
 
-SnakeObject::SnakeObject()
+ASnakeObject::ASnakeObject()
 {
-    _score = 0;
-    _speed = BASE_SPEED;
-    _elapsed = 0;
-    _alive = true;
-    _readyToRotate = true;
-    _growthToggle = true;
-    _direction = std::make_pair(1, 0);
-    _oldDirection = std::make_pair(1, 0);
-    for (int i = 0; i < 4; i++)
-        _body.push_back(Vec2i {(ARENA_WIDTH + 1) / 2 - i, (ARENA_HEIGHT + 1) / 2});
 }
 
-bool SnakeObject::setDirection(std::pair<int, int> direction)
+bool ASnakeObject::setDirection(std::pair<int, int> direction)
 {
     if ((_direction.first == -direction.first && _direction.second == -direction.second) ||
         (_direction.first == direction.first && _direction.second == direction.second) ||
@@ -41,7 +32,7 @@ bool SnakeObject::setDirection(std::pair<int, int> direction)
     return true;
 }
 
-Vec2i SnakeObject::update([[maybe_unused]] std::vector<Vec2i> objectsPos, float deltaTime)
+Vec2i ASnakeObject::update([[maybe_unused]] std::vector<Vec2i> objectsPos, float deltaTime)
 {
     _elapsed += deltaTime;
     while (_elapsed > _speed) {
@@ -56,7 +47,7 @@ Vec2i SnakeObject::update([[maybe_unused]] std::vector<Vec2i> objectsPos, float 
     return {-1, -1};
 }
 
-std::vector<std::pair<Vec2i, std::string>> SnakeObject::dump() const
+std::vector<std::pair<Vec2i, std::string>> ASnakeObject::dump() const
 {
     std::vector<std::pair<Vec2i, std::string>> res;
     std::size_t len = _body.size();
@@ -73,7 +64,7 @@ std::vector<std::pair<Vec2i, std::string>> SnakeObject::dump() const
     return res;
 }
 
-std::vector<Vec2i> SnakeObject::getPositions() const
+std::vector<Vec2i> ASnakeObject::getPositions() const
 {
     std::vector<Vec2i> res;
 
@@ -83,19 +74,19 @@ std::vector<Vec2i> SnakeObject::getPositions() const
     return res;
 }
 
-void SnakeObject::grow(int x, int y, std::size_t size)
+void ASnakeObject::grow(int x, int y, std::size_t size)
 {
     for (size_t i = 0; i < size; i++)
         _body.insert(_body.begin(), Vec2i{x, y});
 }
 
-void SnakeObject::shrink(size_t size)
+void ASnakeObject::shrink(size_t size)
 {
     for (size_t i = 0; i < size; i++)
         _body.pop_back();
 }
 
-Vec2i SnakeObject::continueMove(void)
+Vec2i ASnakeObject::continueMove(void)
 {
     int old_x = _body[0].x;
     int old_y = _body[0].y;
@@ -126,7 +117,7 @@ Vec2i SnakeObject::continueMove(void)
 
 // Privates Member Functions
 
-Vec2i SnakeObject::move([[maybe_unused]] std::vector<Vec2i> objectsPos)
+Vec2i ASnakeObject::move([[maybe_unused]] std::vector<Vec2i> objectsPos)
 {
 
     _oldDirection = _direction;
@@ -142,7 +133,7 @@ Vec2i SnakeObject::move([[maybe_unused]] std::vector<Vec2i> objectsPos)
     return continueMove();
 }
 
-bool SnakeObject::checkCollision(int oldX, int oldY)
+bool ASnakeObject::checkCollision(int oldX, int oldY)
 {
     if (_body[0].x == oldX && _body[0].y == oldY)
         return true;
@@ -153,7 +144,7 @@ bool SnakeObject::checkCollision(int oldX, int oldY)
     return false;
 }
 
-std::pair<Vec2i, std::string> SnakeObject::getDumpHead() const
+std::pair<Vec2i, std::string> ASnakeObject::getDumpHead() const
 {
     return std::make_pair(_body[0], _headTextures.at(std::make_tuple(
         _oldDirection.first,
@@ -161,7 +152,7 @@ std::pair<Vec2i, std::string> SnakeObject::getDumpHead() const
     )));
 }
 
-std::pair<Vec2i, std::string> SnakeObject::getDumpTail(std::size_t len) const
+std::pair<Vec2i, std::string> ASnakeObject::getDumpTail(std::size_t len) const
 {
     return std::make_pair(_body[len - 1], _tailTextures.at(std::make_tuple(
             _body[len - 1].x - _body[len - 2].x,
@@ -169,7 +160,7 @@ std::pair<Vec2i, std::string> SnakeObject::getDumpTail(std::size_t len) const
     )));
 }
 
-std::pair<Vec2i, std::string> SnakeObject::getDumpBody(std::size_t i) const
+std::pair<Vec2i, std::string> ASnakeObject::getDumpBody(std::size_t i) const
 {
     return std::make_pair(_body[i], _bodyTextures.at(std::make_tuple(
         _body[i].x - _body[i - 1].x,

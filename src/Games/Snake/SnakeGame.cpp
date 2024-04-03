@@ -10,6 +10,7 @@
 #include "GameObjects/SuperCandy.hpp"
 #include "GameObjects/SnakeObjectManager.hpp"
 #include "SharedLibraryType.hpp"
+#include "GameObjects/Snake.hpp"
 
 #include <ctime>
 #include <iostream>
@@ -82,7 +83,6 @@ public:
     virtual void draw(arc::ILibrary& lib)
     {
         std::stringstream score;
-
         score << "Score: " << _snake.getScore();
 
         lib.display().clear(arc::Color{0, 0, 255, 0});
@@ -242,7 +242,7 @@ private:
     }
 
 private:
-    SnakeObject _snake = SnakeObject();
+    ASnakeObject _snake = Snake();
     SnakeObjectManager _snakeManager = SnakeObjectManager();
 };
 

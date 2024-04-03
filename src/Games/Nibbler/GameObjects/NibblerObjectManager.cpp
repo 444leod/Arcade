@@ -36,8 +36,10 @@ void NibblerObjectManager::update(Vec2i objectCollided, SnakeObject& snake, [[ma
             obj->applyEffect(snake);
             if (obj->getRespawn() == true)
                 obj->setPos(getSpawnPos(getForbidenPos(snake)));
-            else
+            if (obj->getBlocking() == false) {
+                std::cout << "set pos -1 -1" << std::endl;
                 obj->setPos(Vec2i{-1, -1});
+            }
         }
     }
 }

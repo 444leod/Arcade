@@ -14,6 +14,7 @@ Rock::Rock(Vec2i pos) : AGameObject(pos)
     _effects.deltaSpeed = 1;
     _effects.deltaGrowth = 0;
     _effects.killPlayer = false;
+    _effects.blocking = true;
     _respawn = false;
-    _type = IGameObject::Type::AGUAV_BERRY;
+    _type = IGameObject::Type::ROCK;
 }
