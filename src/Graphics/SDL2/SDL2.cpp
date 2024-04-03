@@ -258,10 +258,10 @@ public:
 
         if (rect.has_value())
         {
-            this->_rect.x = (int)rect.value().x;
-            this->_rect.y = (int)rect.value().y;
-            this->_rect.w = (int)rect.value().width;
-            this->_rect.h = (int)rect.value().height;
+            this->_rect.x = static_cast<int>(rect.value().x);
+            this->_rect.y = static_cast<int>(rect.value().y);
+            this->_rect.w = static_cast<int>(rect.value().width);
+            this->_rect.h = static_cast<int>(rect.value().height);
         }
         else
         {
@@ -506,9 +506,9 @@ public:
     static arc::Key MapSDLKey(SDL_Keycode key)
     {
         if (key >= SDL_KeyCode::SDLK_a && key <= SDL_KeyCode::SDLK_z)
-            return (arc::Key)((uint32_t)arc::Key::A + key - SDL_KeyCode::SDLK_a);
+            return static_cast<arc::Key>(static_cast<uint32_t>(arc::Key::A) + key - SDL_KeyCode::SDLK_a);
         if (key >= SDL_KeyCode::SDLK_RIGHT && key <= SDL_KeyCode::SDLK_UP)
-            return (arc::Key)((uint32_t)arc::Key::UP + key - SDL_KeyCode::SDLK_RIGHT);
+            return static_cast<arc::Key>(static_cast<uint32_t>(arc::Key::UP) + key - SDL_KeyCode::SDLK_RIGHT);
 
         switch (key)
         {
@@ -561,8 +561,8 @@ public:
                 arcEvent.type = arc::EventType::MOUSE_BUTTON_PRESSED;
                 arcEvent.mouse = {
                     .button = MapSDLButton(sdlEvent.button.button),
-                    .x = sdlEvent.button.x / (int)this->_tileSize,
-                    .y = sdlEvent.button.y / (int)this->_tileSize};
+                    .x = sdlEvent.button.x / static_cast<int>(this->_tileSize),
+                    .y = sdlEvent.button.y / static_cast<int>(this->_tileSize)};
                 _events.push_back(arcEvent);
                 break;
             default:
@@ -583,10 +583,10 @@ public:
             return;
         auto tex = std::dynamic_pointer_cast<SDLTexture>(texture);
         auto rect = SDL_Rect{};
-        rect.x = (int)x * this->_tileSize;
-        rect.y = (int)y * this->_tileSize;
-        rect.w = (int)this->_tileSize;
-        rect.h = (int)this->_tileSize;
+        rect.x = static_cast<int>(x * this->_tileSize);
+        rect.y = static_cast<int>(y * this->_tileSize);
+        rect.w = static_cast<int>(this->_tileSize);
+        rect.h = static_cast<int>(this->_tileSize);
         if (!tex->raw())
         {
             auto c = tex->color();
@@ -606,8 +606,8 @@ public:
         auto surf = TTF_RenderText_Solid(attr.font().get(), string.c_str(), attr.color());
         auto tex = SDL_CreateTextureFromSurface(this->_sdl.renderer().get(), surf);
         SDL_Rect rect = {
-            (int)(x * (float)this->_tileSize),
-            (int)(y * (float)this->_tileSize),
+            static_cast<int>(x * static_cast<int>(this->_tileSize)),
+            static_cast<int>(y * static_cast<int>(this->_tileSize)),
             surf->w, surf->h};
         SDL_RenderCopy(this->_sdl.renderer().get(), tex, NULL, &rect);
         SDL_FreeSurface(surf);
@@ -620,8 +620,8 @@ public:
         auto attr = dynamic_cast<const SDLFont &>(*font);
         auto surf = TTF_RenderText_Solid(attr.font().get(), string.c_str(), attr.color());
         arc::Rect<float> rect = {x, y,
-                                 (float)surf->w / this->_tileSize,
-                                 (float)surf->h / this->_tileSize};
+                                static_cast<float>(surf->w / this->_tileSize),
+                                static_cast<float>(surf->h / this->_tileSize)};
         SDL_FreeSurface(surf);
         return rect;
     }
