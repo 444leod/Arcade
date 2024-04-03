@@ -52,7 +52,10 @@ void NibblerObjectManager::initMapObjects(std::vector<std::vector<int>> map)
                     _gameObjects.push_back(std::make_unique<Rock>(Vec2i{x, y}));
                     break;
                 case 1: std::cout << "1"; break;
-                case 2: std::cout << "2"; break;
+                case 2:
+                    std::cout << "2";
+                    _gameObjects.push_back(std::make_unique<SuperCandy>(Vec2i{x, y}));
+                    break;
                 default: std::cout << "?"; break;
             }
         }

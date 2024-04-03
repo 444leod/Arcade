@@ -11,6 +11,7 @@
 #include "Vec2.hpp"
 #include "SnakeLib/SnakeObject/SnakeConstants.hpp"
 #include "Rock.hpp"
+#include "SuperCandy.hpp"
 
 #include <random>
 
