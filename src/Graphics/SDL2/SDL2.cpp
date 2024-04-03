@@ -141,7 +141,6 @@ public:
         if (spec.isPlaying)
             this->play();
         this->_start = std::chrono::system_clock::now() - std::chrono::milliseconds(static_cast<int>(spec.startOffset * 1000));
-        std::cout << "Started: " << this->getOffset() << std::endl;
         return this->_music != nullptr;
     }
 
@@ -150,7 +149,6 @@ public:
         Mix_PlayMusic(this->_music.get(), 0);
         this->_playing = true;
         this->_start = std::chrono::system_clock::now();
-        std::cout << "Restarted: " << this->getOffset() << std::endl;
     }
 
     float getOffset() const
@@ -195,7 +193,6 @@ public:
         {
             arc::MusicSpecification spec = music->specification();
             spec.startOffset = music->getOffset();
-            std::cout << spec.startOffset << std::endl;
             spec.isPlaying = music->isPlaying();
             music->stop();
             specs[name] = spec;
