@@ -28,7 +28,10 @@ class Core
         {
             if (!this->_loader.contains(path, arc::SharedLibraryType::LIBRARY))
                 throw CoreException("File " + path + " is not a valid graphical library.");
-            this->_lib = this->_loader.load(path)->get<arc::ILibrary>();
+            auto lib = this->_loader.load(path);
+            if (!lib)
+                throw CoreException("Could not open " + path + ".");
+            this->_lib = lib->get<arc::ILibrary>();
             if (!this->_loader.contains(arc::SharedLibraryType::GAME))
                 throw CoreException("No game library found.");
             this->_game = std::make_shared<CoreMenu>(_loader.libs());

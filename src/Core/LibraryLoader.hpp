@@ -53,6 +53,8 @@ class LibraryLoader {
 
     protected:
     private:
+        bool path_cmp(const std::string &a, const std::string& b) const;
+    private:
         int _gameIndex = -1;
         int _libIndex = -1;
         void *_handle = nullptr;

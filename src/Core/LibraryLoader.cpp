@@ -9,8 +9,8 @@
 
 LibraryObject::LibraryObject(const std::string &path)
 {
-    this->_path = path;
-    this->_handle = dlopen(path.c_str(), RTLD_LAZY);
+    this->_path = path.starts_with("./") ? path : "./" + path;
+    this->_handle = dlopen(this->_path.c_str(), RTLD_LAZY);
     if (this->_handle == nullptr)
         return;
 
@@ -55,7 +55,7 @@ LibraryLoader::~LibraryLoader()
 bool LibraryLoader::contains(const std::string &lib, arc::SharedLibraryType type) const
 {
     for (auto l : this->_libs)
-        if (l->path() == lib && l->type() == type)
+        if (path_cmp(lib, l->path()) && l->type() == type)
             return true;
     return false;
 }
@@ -63,7 +63,7 @@ bool LibraryLoader::contains(const std::string &lib, arc::SharedLibraryType type
 bool LibraryLoader::contains(const std::string &lib) const
 {
     for (auto l : this->_libs)
-        if (l->path() == lib)
+        if (path_cmp(lib, l->path()))
             return true;
     return false;
 }
@@ -98,7 +98,14 @@ std::shared_ptr<LibraryObject> LibraryLoader::load(const std::string &path, arc:
         this->_libIndex = 0;
     auto l = this->_libs[this->_libIndex];
 
-    while (l->path() != path)
+    while (!path_cmp(l->path(), path))
         l = type == arc::SharedLibraryType::LIBRARY ? this->nextLib() : this->nextGame();
     return l;
+}
+
+bool LibraryLoader::path_cmp(const std::string &a, const std::string& b) const
+{
+    std::string _a = a.starts_with("./") ? a : "./" + a;
+    std::string _b = b.starts_with("./") ? b : "./" + b;
+    return _a == _b;
 }
