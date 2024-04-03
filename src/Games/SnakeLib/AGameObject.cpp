@@ -7,7 +7,7 @@
 
 #include "SnakeLib/GameObject/AGameObject.hpp"
 
-void AGameObject::applyEffect([[maybe_unused]] SnakeObject &snake)
+void AGameObject::applyEffect(SnakeObject &snake)
 {
     snake.setAlive(!_effects.killPlayer);
     snake.setSpeed(snake.getSpeed() * _effects.deltaSpeed);
@@ -15,5 +15,10 @@ void AGameObject::applyEffect([[maybe_unused]] SnakeObject &snake)
     if (_effects.deltaGrowth > 0) {
         snake.grow(_pos.x, _pos.y, _effects.deltaGrowth);
         snake.setGrowToggle(false);
+    } else if (_effects.deltaGrowth < 0) {
+        snake.shrink(-_effects.deltaGrowth);
+        snake.continueMove();
+    } else {
+        snake.continueMove();
     }
 }

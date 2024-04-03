@@ -187,8 +187,8 @@ public:
 private:
     std::vector<std::string> _graphicLibraries = {
         "./lib/arcade_sfml.so",
-        "./lib/arcade_ncurses.so",
-        // "./lib_arcade_sdl.so",
+        "./lib/arcade_sdl2.so",
+        "./lib/arcade_ncurses.so"
     };
     size_t _currentGraphicLibrary = 0;
     std::vector<std::string> _gameLibraries = {

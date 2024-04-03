@@ -5,12 +5,12 @@
 ** IGameObjectManager
 */
 
+#pragma once
+
 #include <vector>
 #include <string>
 
 #include "SnakeLib/GameObject/IGameObject.hpp"
-
-#pragma once
 
 class IGameObjectManager {
     public:
@@ -22,6 +22,8 @@ class IGameObjectManager {
 
         virtual std::vector<Vec2i> getPos() const = 0;
         
+        virtual std::vector<Vec2i> getForbidenPos(SnakeObject &snake) const = 0;
+
         virtual void applyEffects(SnakeObject &snake) const = 0;
 
     protected:
