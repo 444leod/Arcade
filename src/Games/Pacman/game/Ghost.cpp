@@ -88,3 +88,8 @@ std::string Ghost::getTexture(uint16_t tick)
         return "";
     return entityTexture[tick % entityTexture.size()];
 }
+
+std::vector<pacman::Direction> Ghost::getAvailableDirections()
+{
+    return {pacman::Direction::UP, pacman::Direction::DOWN, pacman::Direction::LEFT, pacman::Direction::RIGHT};
+}

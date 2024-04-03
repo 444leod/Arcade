@@ -48,10 +48,10 @@ void Win::draw(arc::ILibrary &lib)
     }
 }
 
-void Win::onEnter([[maybe_unused]]IGameState::State lastState)
+void Win::onEnter([[maybe_unused]]IGameState::State lastState, [[maybe_unused]]arc::ILibrary& lib)
 {
 }
 
-void Win::onExit([[maybe_unused]]IGameState::State nextState)
+void Win::onExit([[maybe_unused]]IGameState::State nextState, [[maybe_unused]]arc::ILibrary& lib)
 {
 }

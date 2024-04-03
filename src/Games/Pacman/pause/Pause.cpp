@@ -40,10 +40,10 @@ void Pause::draw(arc::ILibrary &lib)
     lib.display().print("Pause", font, center, 1);
 }
 
-void Pause::onEnter([[maybe_unused]]IGameState::State lastState)
+void Pause::onEnter([[maybe_unused]]IGameState::State lastState, [[maybe_unused]]arc::ILibrary& lib)
 {
 }
 
-void Pause::onExit([[maybe_unused]]IGameState::State nextState)
+void Pause::onExit([[maybe_unused]]IGameState::State nextState, [[maybe_unused]]arc::ILibrary& lib)
 {
 }

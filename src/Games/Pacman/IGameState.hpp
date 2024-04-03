@@ -26,8 +26,8 @@ class IGameState {
         virtual void onMouseButtonPressed(arc::ILibrary& lib, arc::MouseButton button, int32_t x, int32_t y) = 0;
         virtual void update(arc::ILibrary& lib, float deltaTime) = 0;
         virtual void draw(arc::ILibrary& lib) = 0;
-        virtual void onEnter(IGameState::State lastState) = 0;
-        virtual void onExit(IGameState::State nextState) = 0;
+        virtual void onEnter(IGameState::State lastState, arc::ILibrary& lib) = 0;
+        virtual void onExit(IGameState::State nextState, arc::ILibrary& lib) = 0;
 
     protected:
     private:

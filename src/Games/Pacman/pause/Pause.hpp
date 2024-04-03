@@ -19,8 +19,8 @@ class Pause : public IGameState {
         virtual void onMouseButtonPressed(arc::ILibrary& lib, arc::MouseButton button, int32_t x, int32_t y) override;
         virtual void update(arc::ILibrary& lib, float deltaTime) override;
         virtual void draw(arc::ILibrary& lib) override;
-        virtual void onEnter(IGameState::State lastState) override;
-        virtual void onExit(IGameState::State nextState) override;
+        virtual void onEnter(IGameState::State lastState, arc::ILibrary& lib) override;
+        virtual void onExit(IGameState::State nextState, arc::ILibrary& lib) override;
 
     protected:
     private:

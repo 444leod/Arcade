@@ -23,6 +23,8 @@ namespace pacman {
                 void initTextures(arc::ITextureManager& manager) override;
                 std::string getTexture(uint16_t tick) override;
 
+                virtual std::vector<pacman::Direction> getAvailableDirections();
+
             protected:
             private:
                 uint16_t _elapsed1 = 0;

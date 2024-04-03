@@ -38,6 +38,13 @@ public:
             {IGameState::State::WIN,    std::make_shared<Win>(_currentState)},
             {IGameState::State::LOSE,   std::make_shared<GameOver>(_currentState)}
         };
+        arc::MusicSpecification musicSpec;
+        musicSpec.path = "assets/pacman-theme.wav";
+        musicSpec.loop = true;
+        musicSpec.isPlaying = true;
+        musicSpec.startOffset = 0;
+        lib.musics().load("pacman-theme", musicSpec);
+
         for (auto& state : _states) {
             state.second->initialize(lib);
         }
@@ -61,8 +68,8 @@ public:
     virtual void update(arc::ILibrary& lib, float deltaTime)
     {
         if (_currentState != _oldState) {
-            _states[_oldState]->onExit(_currentState);
-            _states[_currentState]->onEnter(_oldState);
+            _states[_oldState]->onExit(_currentState, lib);
+            _states[_currentState]->onEnter(_oldState, lib);
             _oldState = _currentState;
         }
         _states[_currentState]->update(lib, deltaTime);

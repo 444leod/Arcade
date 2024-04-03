@@ -47,3 +47,8 @@ void Blinky::initTextures(arc::ITextureManager& manager)
     spec.graphical = arc::TextureImage{"assets/pacman/entity-tileset.png", arc::Rect<uint32_t>{20, 160, 20, 20}};
     manager.load("scaredghost_2", spec);
 }
+
+std::vector<pacman::Direction> Blinky::getAvailableDirections()
+{
+    return {pacman::Direction::UP, pacman::Direction::LEFT, pacman::Direction::RIGHT};
+}

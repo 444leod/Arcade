@@ -53,10 +53,10 @@ void GameOver::draw(arc::ILibrary &lib)
     }
 }
 
-void GameOver::onEnter([[maybe_unused]]IGameState::State lastState)
+void GameOver::onEnter([[maybe_unused]]IGameState::State lastState, [[maybe_unused]] arc::ILibrary& lib)
 {
 }
 
-void GameOver::onExit([[maybe_unused]]IGameState::State nextState)
+void GameOver::onExit([[maybe_unused]]IGameState::State nextState, [[maybe_unused]] arc::ILibrary& lib)
 {
 }

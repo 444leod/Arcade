@@ -9,7 +9,7 @@
 
 void Game::initialize(arc::ILibrary &lib)
 {
-    onEnter(IGameState::State::GAME);
+    onEnter(IGameState::State::GAME, lib);
     _map->initTextures(lib.textures());
 
     arc::FontSpecification text {
@@ -27,13 +27,13 @@ void Game::initialize(arc::ILibrary &lib)
     arc::TextureSpecification spec;
     spec.textual.character = 'G';
     spec.textual.color = {0, 0, 0, 255};
-    for (int i = 0; i < 4; i++) {
+    for (uint32_t i = 0; i < 4; i++) {
         std::stringstream ss;
         ss << "deadghost_" << i;
-        spec.graphical = arc::TextureImage{"assets/pacman/entity-tileset.png", arc::Rect<uint32_t>{static_cast<uint32_t>(i * 20), 200, 20, 20}};
+        spec.graphical = arc::TextureImage{"assets/pacman/entity-tileset.png", arc::Rect<uint32_t>{(i * 20), 200, 20, 20}};
         lib.textures().load(ss.str(), spec);
     }
-    std::vector<std::vector<int>> mapp = _map->getMap();
+
     _pathFinder = std::make_shared<PathFinder>(_map->getMap());
     _pathFinder->setCellType(Vec2i(0, 2), PathFinder::CellType::EMPTY);
     _pathFinder->setCellType(0, PathFinder::CellType::WALL);
@@ -89,7 +89,8 @@ void Game::update([[maybe_unused]] arc::ILibrary& lib, float deltaTime)
     if (_elapsed1 >= 0.2) {
         for (auto& ghost : _ghosts) {
             if (ghost->getStatus() != pacman::entity::status::DEAD) {
-                pacman::Direction direction = pacman::Direction(std::rand() % 4);
+                std::vector<pacman::Direction> availableDirections = ghost->getAvailableDirections();
+                pacman::Direction direction = availableDirections[std::rand() % availableDirections.size()];
                 ghost->setMoveQueue({pacman::DirectionToVec2[direction]});
             }
         }
@@ -153,8 +154,9 @@ void Game::draw(arc::ILibrary& lib)
     }
 }
 
-void Game::onEnter(IGameState::State lastState)
+void Game::onEnter(IGameState::State lastState, arc::ILibrary& lib)
 {
+    lib.musics().play("pacman-theme", 50.0f);
     if (lastState == IGameState::State::PAUSE)
         return;
     _map = std::make_shared<pacman::Map>("assets/pacman/map.csv");
@@ -180,8 +182,9 @@ void Game::onEnter(IGameState::State lastState)
     _elapsed1 = 0;
 }
 
-void Game::onExit([[maybe_unused]]IGameState::State nextState)
+void Game::onExit([[maybe_unused]]IGameState::State nextState, arc::ILibrary& lib)
 {
+    lib.musics().stop("pacman-theme");
 }
 
 void Game::interactWithMap()

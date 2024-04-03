@@ -17,6 +17,7 @@ namespace pacman {
                 ~Blinky() = default;
 
                 void initTextures(arc::ITextureManager& manager) override;
+                std::vector<pacman::Direction> getAvailableDirections() override;
         };
     }
 }

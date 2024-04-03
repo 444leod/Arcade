@@ -107,8 +107,8 @@ public:
 
         auto textures = _lib->textures().dump();
         auto fonts = _lib->fonts().dump();
-        // auto sounds = _lib->sounds().dump();
-        // auto musics = _lib->musics().dump();
+        auto sounds = _lib->sounds().dump();
+        auto musics = _lib->musics().dump();
 
         _lib.reset(nullptr);
 
@@ -131,11 +131,11 @@ public:
         for (const auto& font : fonts)
             _lib->fonts().load(font.first, font.second);
 
-        // for (const auto& sound : sounds)
-        //     _lib->sounds().load(sound.first, sound.second);
+        for (const auto& sound : sounds)
+            _lib->sounds().load(sound.first, sound.second);
 
-        // for (const auto& music : musics)
-        //     _lib->musics().load(music.first, music.second);
+        for (const auto& music : musics)
+            _lib->musics().load(music.first, music.second);
     }
 
     void run(int ac, char** av)
