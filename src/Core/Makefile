@@ -9,7 +9,9 @@ NAME = $(DIR)/arcade
 
 CPPFLAGS = -fPIC -iquote $(INC_DIR) -std=c++20 -Wall -Wextra -Werror -g
 
-SRC = ./Core.cpp
+SRC	=	Core.cpp	\
+		CoreMenu.cpp	\
+		LibraryLoader.cpp	\
 
 CC = g++
 
