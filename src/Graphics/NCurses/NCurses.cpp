@@ -281,8 +281,9 @@ public:
             init_pair(5, COLOR_BLUE, COLOR_BLACK);
             init_pair(6, COLOR_MAGENTA, COLOR_BLACK);
             init_pair(7, COLOR_CYAN, COLOR_BLACK);
-            init_pair(8, COLOR_WHITE, COLOR_WHITE);
+            init_pair(8, COLOR_WHITE, COLOR_BLACK);
             init_pair(9, COLOR_ORANGE, COLOR_BLACK);
+            init_pair(10, COLOR_WHITE, COLOR_WHITE);
 
         }
 
@@ -409,6 +410,9 @@ public:
 
     virtual void draw(std::shared_ptr<arc::ITexture> texture, float x, float y)
     {
+        if (texture == nullptr)
+            return;
+
         auto& spec = std::dynamic_pointer_cast<NCursesTexture>(texture)->characteristics();
         int roundedX = static_cast<int>(std::round(x));
         int roundedY = static_cast<int>(std::round(y));
@@ -422,7 +426,10 @@ public:
 
     virtual void print(const std::string& string, std::shared_ptr<arc::IFont> font, float x, float y)
     {
-        [[maybe_unused]] auto& spec = std::dynamic_pointer_cast<NCursesFont>(font)->specification();
+        if (font == nullptr)
+            return;
+
+        auto& spec = std::dynamic_pointer_cast<NCursesFont>(font)->specification();
         if (_canChangeColor)
             attron(COLOR_PAIR(mapToNcurseColor(spec.color)));
         mvprintw(y, x, "%s", string.c_str());
@@ -445,6 +452,8 @@ private:
     {
         int c = 1;
 
+        if (color.red == 1 && color.green == 2 && color.blue == 3)
+            return 10;
         if (color.red > 127)
             c += 1;
         if (color.green > 127)
@@ -461,17 +470,6 @@ private:
     std::size_t _height;
     std::size_t _tileSize;
     std::deque<arc::Event> _events;
-    std::map<std::tuple<size_t, size_t, size_t>, int> _colorPairs = {
-        {{0, 0, 0}, 1},
-        {{255, 0, 0}, 2},
-        {{0, 255, 0}, 3},
-        {{255, 255, 0}, 4},
-        {{0, 0, 255}, 5},
-        {{255, 0, 255}, 6},
-        {{0, 255, 255}, 7},
-        {{255, 255, 255}, 8},
-        {{200, 100, 0}, 9}
-    };
     bool _canChangeColor = false;
 };
 
