@@ -6,9 +6,13 @@
 */
 
 #include "IGame.hpp"
-#include "MapHandler.hpp"
-#include "Player.hpp"
-#include "IEntity.hpp"
+#include "IGameState.hpp"
+#include "Pacman.hpp"
+
+#include "./game/Game.hpp"
+#include "./pause/Pause.hpp"
+#include "./win/Win.hpp"
+#include "./game-over/GameOver.hpp"
 #include "SharedLibraryType.hpp"
 
 #include <iostream>
@@ -19,9 +23,6 @@
 #include <vector>
 #include <memory>
 
-// using pacman::MapHandler;
-// using pacman::player::Player;
-
 class Pacman : public arc::IGame {
 public:
     virtual void initialize(arc::ILibrary& lib)
@@ -29,113 +30,55 @@ public:
         lib.display().setTitle("Arcade");
         lib.display().setFramerate(60);
         lib.display().setTileSize(32);
-
-        // Textures
-        arc::TextureSpecification spec;
-        spec.textual.character = 'P';
-        spec.textual.color = {255, 255, 0, 255};
-        spec.graphical = arc::TextureImage{"assets/tileset.png", arc::Rect<uint32_t>{0, 0, 16, 16}};
-        lib.textures().load("player", spec);
-
-        spec.textual.character = '.';
-        spec.textual.color = {255, 255, 0, 255};
-        spec.graphical = arc::TextureImage{"assets/pacman/board.png", arc::Rect<uint32_t>{1024, 0, 32, 32}};
-        lib.textures().load("coin", spec);
-
-        spec.textual.character = 'O';
-        spec.textual.color = {255, 0, 0, 255};
-        spec.graphical = arc::TextureImage{"assets/pacman/board.png", arc::Rect<uint32_t>{1056, 0, 32, 32}};
-        lib.textures().load("fruit", spec);
-
-        spec.textual.character = ' ';
-        spec.textual.color = {255, 255, 255, 255};
-        for (uint16_t i = 0; i <= 33; ++i) {
-            std::stringstream ss;
-            ss << "wall_" << (i + 2);
-            spec.graphical = arc::TextureImage{"assets/pacman/board.png", arc::Rect<uint32_t>{static_cast<uint16_t>(i * 32), 0, 32, 32}};
-            lib.textures().load(ss.str(), spec);
-        }
-
-        spec.textual.character = ' ';
-        spec.textual.color = {0, 0, 0, 255};
-        spec.graphical = arc::Color{0, 0, 0, 255};
-        lib.textures().load("empty", spec);
-
-        // Fonts
-        arc::FontSpecification text {
-            .color = arc::Color {200, 200, 200, 255},
-            .size = 16,
-            .path = "assets/regular.ttf"
+        lib.display().setHeight(_height);
+        lib.display().setWidth(_width);
+        _states = {
+            {IGameState::State::GAME,   std::make_shared<Game>(_currentState, _score)},
+            {IGameState::State::PAUSE,  std::make_shared<Pause>(_currentState, _score)},
+            {IGameState::State::WIN,    std::make_shared<Win>(_currentState, _score)},
+            {IGameState::State::LOSE,   std::make_shared<GameOver>(_currentState, _score)}
         };
-        lib.fonts().load("font", text);
+        arc::MusicSpecification musicSpec;
+        musicSpec.path = "assets/pacman-theme.wav";
+        musicSpec.loop = true;
+        musicSpec.isPlaying = true;
+        musicSpec.startOffset = 0;
+        lib.musics().load("pacman-theme", musicSpec);
 
-        lib.display().setWidth(_mapHandler.getMapSizeX());
-        lib.display().setHeight(_mapHandler.getMapSizeY() + 5);
-        _player->setPos(_mapHandler.getPlayerPos());
+        for (auto& state : _states) {
+            state.second->initialize(lib);
+        }
     }
 
-    virtual void onKeyPressed([[maybe_unused]] arc::ILibrary& lib, arc::Key key)
+    virtual void onKeyPressed(arc::ILibrary& lib, arc::Key key)
     {
-        switch (key) {
-            case arc::Key::Z:
-                _player->queueMove({0, -1});
-                break;
-            case arc::Key::Q:
-                _player->queueMove({-1, 0});
-                break;
-            case arc::Key::S:
-                _player->queueMove({0, 1});
-                break;
-            case arc::Key::D:
-                _player->queueMove({1, 0});
-                break;
-            case arc::Key::A:
-                break;
-            default: break;
-        }
+        _states[_currentState]->onKeyPressed(lib, key);
     }
 
     virtual void onMouseButtonPressed(
-        [[maybe_unused]] arc::ILibrary& lib,
-        [[maybe_unused]] arc::MouseButton button,
-        [[maybe_unused]] int32_t x,
-        [[maybe_unused]] int32_t y
+        arc::ILibrary& lib,
+        arc::MouseButton button,
+        int32_t x,
+        int32_t y
     )
     {
+        _states[_currentState]->onMouseButtonPressed(lib, button, x, y);
     }
 
-    virtual void update([[maybe_unused]] arc::ILibrary& lib, [[maybe_unused]]float deltaTime)
+    virtual void update(arc::ILibrary& lib, float deltaTime)
     {
-        _steps++;
-        _player->move(deltaTime, _mapHandler);
-        _mapHandler.processPlayerPos(_player->getPos(), _player->getDirection());
-        _player->setPos(_mapHandler.getPlayerPos());
+        if (_currentState != _oldState) {
+            _states[_oldState]->onExit(_currentState, lib);
+            _states[_currentState]->onEnter(_oldState, lib);
+            _oldState = _currentState;
+        }
+        _states[_currentState]->update(lib, deltaTime);
     }
 
     virtual void draw(arc::ILibrary& lib)
     {
-        std::stringstream score;
-
-        score << "Score: " << _score;
-
-        lib.display().clear(arc::Color{0, 0, 0, 0});
-
-        for (auto [pos, texture] : _mapHandler.dumpTextures()) {
-            lib.display().draw(lib.textures().get(texture), pos.x, pos.y);
-        }
-
-        // Vec2i initialPos = _player->getPos();
-        // Vec2f playerPos = _player->getPosf();
-        // playerPos.x = initialPos.x + playerPos.x;
-        // playerPos.y = initialPos.y + playerPos.y;
-        Vec2i playerPos = _player->getPos();
-        lib.display().draw(lib.textures().get("player"), playerPos.x, playerPos.y);
-        auto width = lib.display().width();
-        auto textWidth = lib.display().measure(score.str(), lib.fonts().get("font"), 0, 0).width;
-        auto center = (width - textWidth) / 2;
-
-        lib.display().print(score.str(), lib.fonts().get("font"), center, _mapHandler.getMapSizeX() + 3);
-
+        lib.display().clear();
+        _states[_currentState]->draw(lib);
         lib.display().flush();
     }
 
@@ -145,25 +88,14 @@ public:
     }
 
 private:
-    float _elapsed = 0;
+    std::map<IGameState::State, std::shared_ptr<IGameState>> _states;
+    IGameState::State _currentState = IGameState::State::GAME;
+    IGameState::State _oldState = IGameState::State::GAME;
+
     uint64_t _score = 0;
-    uint32_t _steps = 0;
-
-    MapHandler _mapHandler;
-    std::unique_ptr<pacman::IEntity> _player = std::make_unique<pacman::player::Player>();
+    uint16_t _height = 24;
+    uint16_t _width = 19;
 };
-
-std::ostream& operator<<(std::ostream& os, const Vec2i& vec)
-{
-    os << "(" << vec.x << ", " << vec.y << ")";
-    return os;
-}
-
-std::ostream& operator<<(std::ostream& os, const Vec2f& vec)
-{
-    os << "(" << vec.x << ", " << vec.y << ")";
-    return os;
-}
 
 extern "C" arc::IGame* entrypoint()
 {
