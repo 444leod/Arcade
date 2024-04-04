@@ -170,6 +170,7 @@ class Core
                 before = now;
 
                 if (lib_switch) {
+                    this->_menu->nextGraphicalLib();
                     this->switch_graphic_lib();
                     lib_switch = false;
                     continue;

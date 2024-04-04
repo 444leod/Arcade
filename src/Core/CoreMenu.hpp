@@ -22,16 +22,17 @@ public:
     virtual void update(arc::ILibrary &lib, float deltaTime);
     virtual void draw(arc::ILibrary &lib);
     virtual uint64_t score() const { return 0; }
-    std::shared_ptr<arc::IGame> game();
+    std::shared_ptr<arc::IGame> game() const;
     const std::string& gameName() const { return this->_games.at(this->_game)->name(); }
-    std::shared_ptr<arc::ILibrary> lib();
+    std::shared_ptr<arc::ILibrary> lib() const;
+    void nextGraphicalLib();
 
 protected:
 private:
     void drawRoulette(
         arc::ILibrary &lib, const std::string& name,
         const std::vector<std::shared_ptr<LibraryObject>>& values,
-        int index, int x, int y);
+        int index, int x, int y) const;
 private:
     int _game = 0;
     int _lib = 0;
