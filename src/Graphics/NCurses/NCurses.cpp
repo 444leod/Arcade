@@ -375,10 +375,6 @@ public:
         int ch = getch();
         if (ch != ERR) {
             arc::Key key = NCursesDisplay::MapNCursesKey(ch);
-            if (key == arc::Key::ESCAPE) {
-                this->close();
-                return;
-            }
             arc::Event e;
             e.type = arc::EventType::KEY_PRESSED;
             e.key = key;
