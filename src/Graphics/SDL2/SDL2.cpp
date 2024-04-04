@@ -617,6 +617,7 @@ public:
             surf->w, surf->h};
         SDL_RenderCopy(this->_sdl.renderer().get(), tex, NULL, &rect);
         SDL_FreeSurface(surf);
+        SDL_DestroyTexture(tex);
     }
 
     virtual arc::Rect<float> measure(const std::string &string, std::shared_ptr<arc::IFont> font, float x, float y)
@@ -625,9 +626,9 @@ public:
             return arc::Rect<float>();
         auto attr = dynamic_cast<const SDLFont &>(*font);
         auto surf = TTF_RenderText_Solid(attr.font().get(), string.c_str(), attr.color());
-        arc::Rect<float> rect = {x, y,
-                                static_cast<float>(surf->w / this->_tileSize),
-                                static_cast<float>(surf->h / this->_tileSize)};
+        auto w = static_cast<float>(surf->w) / static_cast<float>(this->_tileSize);
+        auto h = static_cast<float>(surf->h) / static_cast<float>(this->_tileSize);
+        arc::Rect<float> rect = {x, y, w, h};
         SDL_FreeSurface(surf);
         return rect;
     }
