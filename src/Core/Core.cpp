@@ -98,23 +98,29 @@ class Core
                 this->saveScore();
         }
 
-        void switch_game_lib()
+        void start_game()
+        {
+            if (!this->_menu->running())
+                return;
+            this->_menu->setRunning(false);
+            this->_game_handler.reset();
+            this->_game_handler = this->_menu->game();
+            this->_cur_game.reset();
+            this->_cur_game = this->_game_handler->get<arc::IGame>();
+            if (this->_cur_game == nullptr)
+                throw CoreException("Object failed to load game");
+            this->_cur_game->initialize(*_cur_lib);
+        }
+
+        void leave_game()
         {
             if (this->_menu->running()) {
-                this->_game_handler.reset();
-                this->_game_handler = this->_menu->game();
-                this->_cur_game.reset();
-                this->_cur_game = this->_game_handler->get<arc::IGame>();
-                if (this->_cur_game == nullptr)
-                    throw CoreException("Object failed to load game");
-                this->_menu->setRunning(false);
+                this->_cur_lib->display().close();
             } else {
-                this->saveScore();
                 this->_cur_game.reset();
-                this->_cur_game = _menu;
-                this->_menu->setRunning(true);
+                this->_cur_game = this->_menu;
+                this->_menu->initialize(*_cur_lib);
             }
-            this->_cur_game->initialize(*_cur_lib);
         }
 
         void switch_graphic_lib()
@@ -159,11 +165,12 @@ class Core
         void run()
         {
             auto lib_switch = false;
-            auto game_switch = false;
+            auto enter_game = false;
+            auto escape_game = false;
             auto before = std::chrono::high_resolution_clock::now();
 
             this->_cur_game->initialize(*_cur_lib);
-            while (_cur_lib->display().opened()) {
+            while (this->_cur_lib->display().opened()) {
                 arc::Event event = {};
                 auto now = std::chrono::high_resolution_clock::now();
                 float deltaTime = std::chrono::duration_cast<std::chrono::duration<float, std::milli>>(now - before).count() / 1000.0;
@@ -174,10 +181,14 @@ class Core
                     lib_switch = false;
                     continue;
                 }
-
-                if (game_switch) {
-                    this->switch_game_lib();
-                    game_switch = false;
+                if (enter_game) {
+                    this->start_game();
+                    enter_game = false;
+                    continue;
+                }
+                if (escape_game) {
+                    this->leave_game();
+                    escape_game = false;
                     continue;
                 }
 
@@ -189,7 +200,10 @@ class Core
                             this->_menu->onKeyPressed(*_cur_lib, event.key);
                     }
                     if (event.type == arc::EventType::KEY_PRESSED && event.key == arc::Key::ENTER)
-                        game_switch = true;
+                        enter_game = true;
+                    if (event.type == arc::EventType::KEY_PRESSED && event.key == arc::Key::ESCAPE)
+                        escape_game = true;
+
                     if (event.type == arc::EventType::KEY_PRESSED)
                         this->_cur_game->onKeyPressed(*_cur_lib, event.key);
                     if (event.type == arc::EventType::MOUSE_BUTTON_PRESSED)
