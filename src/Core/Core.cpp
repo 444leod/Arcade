@@ -70,14 +70,14 @@ class Core
         {
             if (!this->_loader.contains(path, arc::SharedLibraryType::LIBRARY))
                 throw CoreException("File " + path + " is not a valid graphical library.");
-            auto lib = this->_loader.load(path);
-            if (!lib)
+            this->_lib_handler = this->_loader.load(path);
+            if (!this->_lib_handler)
                 throw CoreException("Could not open " + path + ".");
-            this->_lib = lib->get<arc::ILibrary>();
+            this->_cur_lib = this->_lib_handler->get<arc::ILibrary>();
             if (!this->_loader.contains(arc::SharedLibraryType::GAME))
                 throw CoreException("No game library found.");
             this->_menu = std::make_shared<CoreMenu>(_loader.libs());
-            this->_game = std::static_pointer_cast<arc::IGame>(this->_menu);
+            this->_cur_game = std::static_pointer_cast<arc::IGame>(this->_menu);
 
             std::ifstream rstream(".scores");
             if (!rstream.is_open())
@@ -94,66 +94,66 @@ class Core
 
         ~Core()
         {
-            if (this->_game != this->_menu)
+            if (this->_cur_game != this->_menu)
                 this->saveScore();
-            if (this->_game)
-                dlclose(this->_game.get());
-            if (this->_lib)
-                dlclose(this->_lib.get());
         }
 
         void switch_game_lib()
         {
-            auto menu = std::dynamic_pointer_cast<CoreMenu>(this->_game);
-
-            if (menu != nullptr) {
-                this->_game.reset();
-                auto next = menu->game();
-                this->_game = next;
+            if (this->_menu->running()) {
+                this->_game_handler.reset();
+                this->_game_handler = this->_menu->game();
+                this->_cur_game.reset();
+                this->_cur_game = this->_game_handler->get<arc::IGame>();
+                if (this->_cur_game == nullptr)
+                    throw CoreException("Object failed to load game");
+                this->_menu->setRunning(false);
             } else {
                 this->saveScore();
-                this->_game.reset();
-                this->_game = _menu;
+                this->_cur_game.reset();
+                this->_cur_game = _menu;
+                this->_menu->setRunning(true);
             }
-            this->_game->initialize(*_lib);
+            this->_cur_game->initialize(*_cur_lib);
         }
 
         void switch_graphic_lib()
         {
-            std::string title = this->_lib->display().title();
-            uint32_t framerate = this->_lib->display().framerate();
-            std::size_t tileSize = this->_lib->display().tileSize();
-            std::size_t width = this->_lib->display().width();
-            std::size_t height = this->_lib->display().height();
+            std::string title = this->_cur_lib->display().title();
+            uint32_t framerate = this->_cur_lib->display().framerate();
+            std::size_t tileSize = this->_cur_lib->display().tileSize();
+            std::size_t width = this->_cur_lib->display().width();
+            std::size_t height = this->_cur_lib->display().height();
 
-            auto textures = this->_lib->textures().dump();
-            auto fonts = this->_lib->fonts().dump();
-            auto sounds = this->_lib->sounds().dump();
-            auto musics = this->_lib->musics().dump();
+            auto textures = this->_cur_lib->textures().dump();
+            auto fonts = this->_cur_lib->fonts().dump();
+            auto sounds = this->_cur_lib->sounds().dump();
+            auto musics = this->_cur_lib->musics().dump();
 
-            this->_lib.reset();
-            this->_lib = this->_loader.nextLib()->get<arc::ILibrary>();
+            this->_lib_handler.reset();
+            this->_lib_handler = this->_menu->lib();
+            this->_cur_lib.reset();
+            this->_cur_lib = this->_lib_handler->get<arc::ILibrary>();
+            if (this->_cur_lib == nullptr)
+                throw CoreException("Object failed to load library");
 
-            if (_lib == nullptr)
-                throw CoreException("Failed to load library");
-
-            this->_lib->display().setTitle(title);
-            this->_lib->display().setFramerate(framerate);
-            this->_lib->display().setTileSize(tileSize);
-            this->_lib->display().setWidth(width);
-            this->_lib->display().setHeight(height);
+            this->_cur_lib->display().setTitle(title);
+            this->_cur_lib->display().setFramerate(framerate);
+            this->_cur_lib->display().setTileSize(tileSize);
+            this->_cur_lib->display().setWidth(width);
+            this->_cur_lib->display().setHeight(height);
 
             for (const auto& texture : textures)
-                this->_lib->textures().load(texture.first, texture.second);
+                this->_cur_lib->textures().load(texture.first, texture.second);
 
             for (const auto& font : fonts)
-                this->_lib->fonts().load(font.first, font.second);
+                this->_cur_lib->fonts().load(font.first, font.second);
 
             for (const auto& sound : sounds)
-                this->_lib->sounds().load(sound.first, sound.second);
+                this->_cur_lib->sounds().load(sound.first, sound.second);
 
             for (const auto& music : musics)
-                this->_lib->musics().load(music.first, music.second);
+                this->_cur_lib->musics().load(music.first, music.second);
         }
 
         void run()
@@ -162,15 +162,14 @@ class Core
             auto game_switch = false;
             auto before = std::chrono::high_resolution_clock::now();
 
-            this->_game->initialize(*_lib);
-            while (_lib->display().opened()) {
+            this->_cur_game->initialize(*_cur_lib);
+            while (_cur_lib->display().opened()) {
                 arc::Event event = {};
                 auto now = std::chrono::high_resolution_clock::now();
                 float deltaTime = std::chrono::duration_cast<std::chrono::duration<float, std::milli>>(now - before).count() / 1000.0;
                 before = now;
 
                 if (lib_switch) {
-                    this->_menu->nextGraphicalLib();
                     this->switch_graphic_lib();
                     lib_switch = false;
                     continue;
@@ -182,19 +181,22 @@ class Core
                     continue;
                 }
 
-                this->_lib->display().update(deltaTime);
-                while (_lib->display().pollEvent(event)) {
-                    if (event.type == arc::EventType::KEY_PRESSED && event.key == arc::Key::SPACE)
+                this->_cur_lib->display().update(deltaTime);
+                while (_cur_lib->display().pollEvent(event)) {
+                    if (event.type == arc::EventType::KEY_PRESSED && (event.key == arc::Key::LEFT || event.key == arc::Key::RIGHT)) {
                         lib_switch = true;
+                        if (!this->_menu->running())
+                            this->_menu->onKeyPressed(*_cur_lib, event.key);
+                    }
                     if (event.type == arc::EventType::KEY_PRESSED && event.key == arc::Key::ENTER)
                         game_switch = true;
                     if (event.type == arc::EventType::KEY_PRESSED)
-                        this->_game->onKeyPressed(*_lib, event.key);
+                        this->_cur_game->onKeyPressed(*_cur_lib, event.key);
                     if (event.type == arc::EventType::MOUSE_BUTTON_PRESSED)
-                        this->_game->onMouseButtonPressed(*_lib, event.mouse.button, event.mouse.x, event.mouse.y);
+                        this->_cur_game->onMouseButtonPressed(*_cur_lib, event.mouse.button, event.mouse.x, event.mouse.y);
                 }
-                this->_game->update(*_lib, deltaTime);
-                this->_game->draw(*_lib);
+                this->_cur_game->update(*_cur_lib, deltaTime);
+                this->_cur_game->draw(*_cur_lib);
             }
         }
 
@@ -205,15 +207,17 @@ class Core
 
             if (!stream.is_open())
                 return;
-            if (!this->_scores.contains(this->_menu->gameName()) || this->_scores[this->_menu->gameName()].hs < this->_game->score())
-                this->_scores[this->_menu->gameName()] = { this->_menu->gameName(), this->_game->score() };
+            if (!this->_scores.contains(this->_game_handler->name()) || this->_scores[this->_game_handler->name()].hs < this->_cur_game->score())
+                this->_scores[this->_game_handler->name()] = { this->_game_handler->name(), this->_cur_game->score() };
             for (auto entry : this->_scores)
                 stream << entry.second;
             stream.close();
         }
 
-        std::shared_ptr<arc::ILibrary> _lib = nullptr;
-        std::shared_ptr<arc::IGame> _game = nullptr;
+        std::shared_ptr<arc::ILibrary> _cur_lib = nullptr;
+        std::shared_ptr<arc::IGame> _cur_game = nullptr;
+        std::shared_ptr<LibraryObject> _lib_handler = nullptr;
+        std::shared_ptr<LibraryObject> _game_handler = nullptr;
         std::shared_ptr<CoreMenu> _menu = nullptr;
         std::map<std::string, arc::Score> _scores = {};
         LibraryLoader _loader;

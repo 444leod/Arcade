@@ -34,6 +34,8 @@ void CoreMenu::initialize(arc::ILibrary &lib)
 
     arc::FontSpecification library = {{100, 255, 100, 255}, 16, "assets/regular.ttf"};
     lib.fonts().load("library", library);
+
+    this->_running = true;
 }
 
 void CoreMenu::onKeyPressed([[maybe_unused]] arc::ILibrary &lib, arc::Key key)
@@ -45,6 +47,12 @@ void CoreMenu::onKeyPressed([[maybe_unused]] arc::ILibrary &lib, arc::Key key)
         break;
     case arc::Key::DOWN:
         this->_game = this->_game ? (this->_game - 1) % _games.size() : _games.size() - 1;
+        break;
+    case arc::Key::LEFT:
+        this->_lib = (this->_lib + 1) % _libs.size();
+        break;
+    case arc::Key::RIGHT:
+        this->_lib = this->_lib ? (this->_lib - 1) % _libs.size() : _libs.size() - 1;
         break;
     default:
         break;
@@ -75,16 +83,6 @@ void CoreMenu::draw(arc::ILibrary &lib)
     lib.display().flush();
 }
 
-std::shared_ptr<arc::IGame> CoreMenu::game() const
-{
-    return this->_games.at(this->_game)->get<arc::IGame>();
-}
-
-std::shared_ptr<arc::ILibrary> CoreMenu::lib() const
-{
-    return this->_libs.at(this->_lib)->get<arc::ILibrary>();
-}
-
 void CoreMenu::drawRoulette(
     arc::ILibrary &lib, const std::string& font,
     const std::vector<std::shared_ptr<LibraryObject>>& values,
@@ -99,9 +97,4 @@ void CoreMenu::drawRoulette(
         auto _y = (index - i + 1) * 2;
         lib.display().print(l->name(), lib.fonts().get(_font), x + _x, y + _y);
     }
-}
-
-void CoreMenu::nextGraphicalLib()
-{
-    this->_lib = (this->_lib + 1) % _libs.size();
 }
