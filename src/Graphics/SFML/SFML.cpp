@@ -548,6 +548,9 @@ public:
 
     virtual void print(const std::string& string, std::shared_ptr<arc::IFont> font, float x, float y)
     {
+        if (font == nullptr)
+            return;
+
         auto attr = std::dynamic_pointer_cast<SFMLFont>(font);
         auto text = sf::Text(sf::String(string), attr->font(), attr->size());
         text.setFillColor(attr->color());
@@ -557,6 +560,9 @@ public:
 
     virtual arc::Rect<float> measure(const std::string& string, std::shared_ptr<arc::IFont> font, float x, float y)
     {
+        if (font == nullptr)
+            return arc::Rect<float> { 0.f, 0.f, 0.f, 0.f };
+
         auto attr = std::dynamic_pointer_cast<SFMLFont>(font);
         auto text = sf::Text(sf::String(string), attr->font(), attr->size());
         text.setFillColor(attr->color());

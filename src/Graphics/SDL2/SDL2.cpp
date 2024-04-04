@@ -248,13 +248,16 @@ public:
         std::string path, SDLRendering& rendering,
         std::optional<arc::Rect<uint32_t>> rect)
     {
-        if (std::holds_alternative<arc::Color>(spec.graphical))
-            _color = std::get<arc::Color>(spec.graphical);
-
         this->_spec = spec;
-        this->_texture.reset(
-            IMG_LoadTexture(rendering.renderer().get(), path.c_str()),
-            SDL_DestroyTexture);
+        if (std::holds_alternative<arc::Color>(spec.graphical)) {
+            this->_color = std::get<arc::Color>(spec.graphical);
+        } else {
+            this->_texture.reset(
+                IMG_LoadTexture(rendering.renderer().get(), path.c_str()),
+                SDL_DestroyTexture);
+            if (this->_texture == nullptr)
+                return false;
+        }
 
         if (rect.has_value())
         {
@@ -339,6 +342,8 @@ public:
     {
         this->_spec = spec;
         this->_font.reset(TTF_OpenFont(spec.path.c_str(), spec.size), TTF_CloseFont);
+        if (this->_font == nullptr)
+            return false;
         this->_color = {
             .r = spec.color.red,
             .g = spec.color.green,
@@ -581,6 +586,7 @@ public:
     {
         if (texture == nullptr)
             return;
+
         auto tex = std::dynamic_pointer_cast<SDLTexture>(texture);
         auto rect = SDL_Rect{};
         rect.x = static_cast<int>(x * this->_tileSize);
@@ -602,8 +608,9 @@ public:
     {
         if (font == nullptr)
             return;
-        auto attr = dynamic_cast<const SDLFont &>(*font);
-        auto surf = TTF_RenderText_Solid(attr.font().get(), string.c_str(), attr.color());
+
+        auto f = std::dynamic_pointer_cast<SDLFont>(font);
+        auto surf = TTF_RenderText_Solid(f->font().get(), string.c_str(), f->color());
         auto tex = SDL_CreateTextureFromSurface(this->_sdl.renderer().get(), surf);
         SDL_Rect rect = {
             static_cast<int>(x * static_cast<int>(this->_tileSize)),
@@ -616,9 +623,10 @@ public:
     virtual arc::Rect<float> measure(const std::string &string, std::shared_ptr<arc::IFont> font, float x, float y)
     {
         if (font == nullptr)
-            return arc::Rect<float>();
-        auto attr = dynamic_cast<const SDLFont &>(*font);
-        auto surf = TTF_RenderText_Solid(attr.font().get(), string.c_str(), attr.color());
+            return arc::Rect<float> { 0.f, 0.f, 0.f, 0.f };
+
+        auto f = std::dynamic_pointer_cast<SDLFont>(font);
+        auto surf = TTF_RenderText_Solid(f->font().get(), string.c_str(), f->color());
         arc::Rect<float> rect = {x, y,
                                 static_cast<float>(surf->w / this->_tileSize),
                                 static_cast<float>(surf->h / this->_tileSize)};
