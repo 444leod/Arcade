@@ -35,7 +35,7 @@ void GameOver::draw(arc::ILibrary &lib)
 
     std::vector<std::string> strings = {
         "Game Over!",
-        "Your score was: 0",
+        "Your score was: " + std::to_string(_score),
         "Press W to go back to the game"
     };
 
