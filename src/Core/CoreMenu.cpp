@@ -22,9 +22,9 @@ void CoreMenu::initialize(arc::ILibrary &lib)
 {
     lib.display().setTitle("Arcade");
     lib.display().setFramerate(60);
-    lib.display().setTileSize(16);
-    lib.display().setWidth(25);
-    lib.display().setHeight(25);
+    lib.display().setTileSize(24);
+    lib.display().setWidth(24);
+    lib.display().setHeight(24);
 
     arc::FontSpecification normal = {{200, 200, 200, 200}, 16, "assets/regular.ttf"};
     lib.fonts().load("normal", normal);
@@ -72,25 +72,8 @@ void CoreMenu::draw(arc::ILibrary &lib)
 {
     lib.display().clear();
 
-    for (int i = this->_game - 1; i <= this->_game + 1; i++)
-    {
-        auto l = i < 0 ? _games.back() : _games.at(i % _games.size());
-        auto font = i == this->_game ? "game" : "normal";
-        auto size = lib.display().measure(l->name(), lib.fonts().get(font), 0, 0).width;
-        auto x = (lib.display().width() - size) / 2;
-        auto y = (this->_game - i + 1) * 2;
-        lib.display().print(l->name(), lib.fonts().get(font), x, y + 3);
-    }
-
-    for (int i = this->_lib - 1; i <= this->_lib + 1; i++)
-    {
-        auto l = i < 0 ? _libs.back() : _libs.at(i % _libs.size());
-        auto font = i == this->_lib ? "library" : "normal";
-        auto size = lib.display().measure(l->name(), lib.fonts().get(font), 0, 0).width;
-        auto x = (lib.display().width() - size) / 2;
-        auto y = (this->_lib - i + 1) * 2;
-        lib.display().print(l->name(), lib.fonts().get(font), x, y + 10);
-    }
+    drawRoulette(lib, "game", this->_games, this->_game, 0, 12);
+    drawRoulette(lib, "library", this->_libs, this->_lib, 12, 12);
 
     lib.display().flush();
 }
@@ -103,4 +86,20 @@ std::shared_ptr<arc::IGame> CoreMenu::game()
 std::shared_ptr<arc::ILibrary> CoreMenu::lib()
 {
     return this->_libs.at(this->_lib)->get<arc::ILibrary>();
+}
+
+void CoreMenu::drawRoulette(
+    arc::ILibrary &lib, const std::string& font,
+    const std::vector<std::shared_ptr<LibraryObject>>& values,
+    int index, int x, int y)
+{
+    for (int i = index - 1; i <= index + 1; i++)
+    {
+        auto l = i < 0 ? values.back() : values.at(i % values.size());
+        auto _font = i == index ? font : std::string("normal");
+        auto size = lib.display().measure(l->name(), lib.fonts().get(_font), 0, 0).width;
+        auto _x = (lib.display().width() / 2 - size) / 2;
+        auto _y = (index - i + 1) * 2;
+        lib.display().print(l->name(), lib.fonts().get(_font), x + _x, y + _y);
+    }
 }

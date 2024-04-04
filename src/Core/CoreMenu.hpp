@@ -28,6 +28,11 @@ public:
 
 protected:
 private:
+    void drawRoulette(
+        arc::ILibrary &lib, const std::string& name,
+        const std::vector<std::shared_ptr<LibraryObject>>& values,
+        int index, int x, int y);
+private:
     int _game = 0;
     int _lib = 0;
     std::vector<std::shared_ptr<LibraryObject>> _games = {};
