@@ -7,13 +7,18 @@
 
 #include "CoreMenu.hpp"
 
-CoreMenu::CoreMenu(const std::vector<std::shared_ptr<LibraryObject>> &libs)
+CoreMenu::CoreMenu(const std::vector<std::shared_ptr<LibraryObject>> &libs, std::shared_ptr<LibraryObject> start)
 {
     for (auto l : libs)
         if (l->type() == arc::SharedLibraryType::GAME)
             this->_games.push_back(l);
         else if (l->type() == arc::SharedLibraryType::LIBRARY)
             this->_libs.push_back(l);
+
+    for (auto l : this->_libs) {
+        if (l == start) break;
+        this->_lib++;
+    }
 }
 
 CoreMenu::~CoreMenu() = default;

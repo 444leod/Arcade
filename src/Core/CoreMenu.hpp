@@ -13,7 +13,7 @@
 class CoreMenu : public arc::IGame
 {
 public:
-    CoreMenu(const std::vector<std::shared_ptr<LibraryObject>> &libs);
+    CoreMenu(const std::vector<std::shared_ptr<LibraryObject>> &libs, std::shared_ptr<LibraryObject> start);
     ~CoreMenu();
 
     virtual void initialize(arc::ILibrary &lib);

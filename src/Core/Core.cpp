@@ -76,7 +76,7 @@ class Core
             this->_cur_lib = this->_lib_handler->get<arc::ILibrary>();
             if (!this->_loader.contains(arc::SharedLibraryType::GAME))
                 throw CoreException("No game library found.");
-            this->_menu = std::make_shared<CoreMenu>(_loader.libs());
+            this->_menu = std::make_shared<CoreMenu>(this->_loader.libs(), this->_lib_handler);
             this->_cur_game = std::static_pointer_cast<arc::IGame>(this->_menu);
 
             std::ifstream rstream(".scores");
