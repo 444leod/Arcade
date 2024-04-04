@@ -512,11 +512,17 @@ public:
     {
         if (key >= SDL_KeyCode::SDLK_a && key <= SDL_KeyCode::SDLK_z)
             return static_cast<arc::Key>(static_cast<uint32_t>(arc::Key::A) + key - SDL_KeyCode::SDLK_a);
-        if (key >= SDL_KeyCode::SDLK_RIGHT && key <= SDL_KeyCode::SDLK_UP)
-            return static_cast<arc::Key>(static_cast<uint32_t>(arc::Key::UP) + key - SDL_KeyCode::SDLK_RIGHT);
 
         switch (key)
         {
+        case SDLK_UP:
+            return arc::Key::UP;
+        case SDLK_DOWN:
+            return arc::Key::DOWN;
+        case SDLK_RIGHT:
+            return arc::Key::RIGHT;
+        case SDLK_LEFT:
+            return arc::Key::LEFT;
         case SDL_KeyCode::SDLK_SPACE:
             return arc::Key::SPACE;
         case SDL_KeyCode::SDLK_RETURN:
@@ -618,18 +624,18 @@ public:
             surf->w, surf->h};
         SDL_RenderCopy(this->_sdl.renderer().get(), tex, NULL, &rect);
         SDL_FreeSurface(surf);
+        SDL_DestroyTexture(tex);
     }
 
     virtual arc::Rect<float> measure(const std::string &string, std::shared_ptr<arc::IFont> font, float x, float y)
     {
         if (font == nullptr)
             return arc::Rect<float> { 0.f, 0.f, 0.f, 0.f };
-
-        auto f = std::dynamic_pointer_cast<SDLFont>(font);
-        auto surf = TTF_RenderText_Solid(f->font().get(), string.c_str(), f->color());
-        arc::Rect<float> rect = {x, y,
-                                static_cast<float>(surf->w / this->_tileSize),
-                                static_cast<float>(surf->h / this->_tileSize)};
+        auto attr = dynamic_cast<const SDLFont &>(*font);
+        auto surf = TTF_RenderText_Solid(attr.font().get(), string.c_str(), attr.color());
+        auto w = static_cast<float>(surf->w) / static_cast<float>(this->_tileSize);
+        auto h = static_cast<float>(surf->h) / static_cast<float>(this->_tileSize);
+        arc::Rect<float> rect = {x, y, w, h};
         SDL_FreeSurface(surf);
         return rect;
     }

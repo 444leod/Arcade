@@ -14,17 +14,31 @@
 namespace pacman {
     enum class TileType {
         VOID,
+        EMPTY,
         COIN,
-        WALL,
         FRUIT,
-        PLAYER
+        WALL,
+        PLAYER,
+        DOOR,
+        GHOST
+    };
+
+    inline std::map<TileType, std::string> TileTypeToString = {
+        {TileType::VOID, "VOID"},
+        {TileType::EMPTY, "EMPTY"},
+        {TileType::COIN, "COIN"},
+        {TileType::WALL, "WALL"},
+        {TileType::FRUIT, "FRUIT"},
+        {TileType::PLAYER, "PLAYER"},
+        {TileType::DOOR, "DOOR"}
     };
 
     enum class Direction {
+        LEFT,
+        RIGHT,
         UP,
         DOWN,
-        LEFT,
-        RIGHT
+        NONE
     };
     inline std::map<Direction, Vec2i> DirectionToVec2 = {
         {Direction::UP, {0, -1}},
@@ -32,20 +46,42 @@ namespace pacman {
         {Direction::LEFT, {-1, 0}},
         {Direction::RIGHT, {1, 0}}
     };
+    inline std::map<Vec2i, Direction> Vec2ToDirection = {
+        {{0, -1},   Direction::UP},
+        {{0, 1},    Direction::DOWN},
+        {{-1, 0},   Direction::LEFT},
+        {{1, 0},    Direction::RIGHT}
+    };
+
+    inline std::map<Direction, std::string> DirectionToString = {
+        {Direction::UP, "UP"},
+        {Direction::DOWN, "DOWN"},
+        {Direction::LEFT, "LEFT"},
+        {Direction::RIGHT, "RIGHT"},
+        {Direction::NONE, "NONE"}
+    };
 
     enum class EntityType {
         GHOST,
         PLAYER
     };
-    namespace Ghost {
-        enum class State {
+    namespace entity {
+        enum class status {
+            ALIVE,
+            DEAD,
+            HUNGRY,
+            SCARED
+        };
+    }
+    namespace ghost {
+        enum class state {
             CHASE,
             SCATTER,
             FRIGHTENED,
             EATEN,
             DEAD,
         };
-        enum class Type {
+        enum class type {
             BLINKY,
             PINKY,
             INKY,
@@ -62,5 +98,10 @@ namespace pacman {
         };
         class Player;
     }
-    class MapHandler;
+    class MapTexturer;
+    class Map;
+
+    inline std::ostream& operator<<(std::ostream& os, const Direction& direction) {
+        return os << static_cast<int>(direction);
+    }
 }

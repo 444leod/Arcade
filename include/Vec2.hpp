@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include <iostream>
 class Vec2f {
     public:
         Vec2f(float x, float y) : x(x), y(y) {}
@@ -78,6 +79,12 @@ class Vec2f {
             x -= other.x;
             y -= other.y;
             return *this;
+        }
+
+        friend std::ostream& operator<<(std::ostream& os, const Vec2f& vec)
+        {
+            os << "(" << vec.x << ", " << vec.y << ")";
+            return os;
         }
 
 };
@@ -153,5 +160,11 @@ class Vec2i {
             x -= other.x;
             y -= other.y;
             return *this;
+        }
+
+        friend std::ostream& operator<<(std::ostream& os, const Vec2i& vec)
+        {
+            os << "(" << vec.x << ", " << vec.y << ")";
+            return os;
         }
 };

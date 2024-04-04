@@ -10,6 +10,7 @@
 
 #include <iostream>
 #include <map>
+#include <cmath>
 #include <deque>
 #include <thread>
 #include <ncurses.h>
@@ -271,6 +272,7 @@ public:
             init_color(COLOR_MAGENTA, 1000, 0, 1000);
             init_color(COLOR_CYAN, 0, 1000, 1000);
             init_color(COLOR_WHITE, 1000, 1000, 1000);
+            init_color(COLOR_ORANGE, 900, 450, 0); // RGB values range from 0 to 1000
 
             init_pair(1, COLOR_BLACK, COLOR_BLACK);
             init_pair(2, COLOR_RED, COLOR_BLACK);
@@ -279,7 +281,9 @@ public:
             init_pair(5, COLOR_BLUE, COLOR_BLACK);
             init_pair(6, COLOR_MAGENTA, COLOR_BLACK);
             init_pair(7, COLOR_CYAN, COLOR_BLACK);
-            init_pair(8, COLOR_WHITE, COLOR_BLACK);
+            init_pair(8, COLOR_WHITE, COLOR_WHITE);
+            init_pair(9, COLOR_ORANGE, COLOR_BLACK);
+
         }
 
         this->_title = "";
@@ -457,6 +461,17 @@ private:
     std::size_t _height;
     std::size_t _tileSize;
     std::deque<arc::Event> _events;
+    std::map<std::tuple<size_t, size_t, size_t>, int> _colorPairs = {
+        {{0, 0, 0}, 1},
+        {{255, 0, 0}, 2},
+        {{0, 255, 0}, 3},
+        {{255, 255, 0}, 4},
+        {{0, 0, 255}, 5},
+        {{255, 0, 255}, 6},
+        {{0, 255, 255}, 7},
+        {{255, 255, 255}, 8},
+        {{200, 100, 0}, 9}
+    };
     bool _canChangeColor = false;
 };
 
