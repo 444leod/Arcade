@@ -11,7 +11,7 @@
 
 class Pause : public IGameState {
     public:
-        Pause(IGameState::State& currentState) : _currentState(currentState) {}
+        Pause(IGameState::State &currentState, uint64_t &score) : _currentState(currentState), _score(score) {}
         ~Pause() = default;
 
         virtual void initialize(arc::ILibrary& lib) override;
@@ -25,4 +25,5 @@ class Pause : public IGameState {
     protected:
     private:
         IGameState::State& _currentState;
+        uint64_t &_score;
 };

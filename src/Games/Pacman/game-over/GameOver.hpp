@@ -12,7 +12,7 @@
 
 class GameOver : public IGameState {
     public:
-        GameOver(IGameState::State& currentState);
+        GameOver(IGameState::State &currentState, uint64_t &score) : _currentState(currentState), _score(score) {}
         ~GameOver() = default;
 
         virtual void initialize(arc::ILibrary& lib) override;
@@ -26,4 +26,5 @@ class GameOver : public IGameState {
     protected:
     private:
         IGameState::State& _currentState;
+        uint64_t &_score;
 };

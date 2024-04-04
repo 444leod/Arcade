@@ -11,7 +11,7 @@
 
 class Win : public IGameState {
     public:
-        Win(IGameState::State &currentState) : _currentState(currentState) {};
+        Win(IGameState::State &currentState, uint64_t &score) : _currentState(currentState), _score(score) {}
         ~Win() = default;
 
         virtual void initialize(arc::ILibrary& lib) override;
@@ -25,4 +25,5 @@ class Win : public IGameState {
     protected:
     private:
         IGameState::State &_currentState;
+        uint64_t &_score;
 };

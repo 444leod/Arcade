@@ -33,10 +33,10 @@ public:
         lib.display().setHeight(_height);
         lib.display().setWidth(_width);
         _states = {
-            {IGameState::State::GAME,   std::make_shared<Game>(_currentState)},
-            {IGameState::State::PAUSE,  std::make_shared<Pause>(_currentState)},
-            {IGameState::State::WIN,    std::make_shared<Win>(_currentState)},
-            {IGameState::State::LOSE,   std::make_shared<GameOver>(_currentState)}
+            {IGameState::State::GAME,   std::make_shared<Game>(_currentState, _score)},
+            {IGameState::State::PAUSE,  std::make_shared<Pause>(_currentState, _score)},
+            {IGameState::State::WIN,    std::make_shared<Win>(_currentState, _score)},
+            {IGameState::State::LOSE,   std::make_shared<GameOver>(_currentState, _score)}
         };
         arc::MusicSpecification musicSpec;
         musicSpec.path = "assets/pacman-theme.wav";

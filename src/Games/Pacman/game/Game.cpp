@@ -159,7 +159,14 @@ void Game::onEnter(IGameState::State lastState, arc::ILibrary& lib)
     lib.musics().play("pacman-theme", 50.0f);
     if (lastState == IGameState::State::PAUSE)
         return;
-    _map = std::make_shared<pacman::Map>("assets/pacman/map.csv");
+
+    std::string map_path;
+    if (lastState == IGameState::State::WIN)
+        map_path = "assets/pacman/second_map.csv";
+    else
+        map_path = "assets/pacman/first_map.csv";
+
+    _map = std::make_shared<pacman::Map>(map_path);
     _player->setSpeed(_speedMultiplier);
     _player->setPos(_map->getPlayerPos());
     _player->setPosf(_map->getPlayerPos());

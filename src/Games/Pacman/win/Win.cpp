@@ -13,7 +13,7 @@ void Win::initialize([[maybe_unused]]arc::ILibrary &lib)
 void Win::onKeyPressed([[maybe_unused]]arc::ILibrary &lib, arc::Key key)
 {
     switch (key) {
-        case arc::Key::ENTER:
+        case arc::Key::W:
             _currentState = IGameState::State::GAME;
             break;
         default:
@@ -36,7 +36,7 @@ void Win::draw(arc::ILibrary &lib)
     std::vector<std::string> strings = {
         "You win!",
         "Your score was: 0",
-        "Press Enter to go back to the game"
+        "Press W to go back to the game"
     };
 
     for (size_t i = 0; i < strings.size(); i++) {

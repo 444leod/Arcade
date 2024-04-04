@@ -7,18 +7,13 @@
 
 #include "GameOver.hpp"
 
-GameOver::GameOver(IGameState::State& currentState) : _currentState(currentState)
-{
-}
-
-
 void GameOver::initialize([[maybe_unused]]arc::ILibrary &lib)
 {}
 
 void GameOver::onKeyPressed([[maybe_unused]]arc::ILibrary &lib, arc::Key key)
 {
     switch (key) {
-        case arc::Key::ENTER:
+        case arc::Key::W:
             _currentState = IGameState::State::GAME;
             break;
         default:
@@ -41,7 +36,7 @@ void GameOver::draw(arc::ILibrary &lib)
     std::vector<std::string> strings = {
         "Game Over!",
         "Your score was: 0",
-        "Press Enter to go back to the game"
+        "Press W to go back to the game"
     };
 
     for (size_t i = 0; i < strings.size(); i++) {

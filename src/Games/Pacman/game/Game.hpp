@@ -28,7 +28,7 @@
 
 class Game : public IGameState {
     public:
-        Game(IGameState::State& currentState) : _currentState(currentState) {};
+        Game(IGameState::State &currentState, uint64_t &score) : _currentState(currentState), _score(score) {}
         ~Game() = default;
 
         virtual void initialize(arc::ILibrary& lib) override;
@@ -46,7 +46,7 @@ class Game : public IGameState {
         uint64_t _ticks = 0;
         float _elapsed = 0;
         float _elapsed1 = 0;
-        uint32_t _score = 0;
+        uint64_t &_score;
 
         float _speedMultiplier = 1.0f;
 
