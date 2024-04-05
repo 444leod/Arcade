@@ -8,6 +8,7 @@
 #include "LibraryLoader.hpp"
 #include "IGame.hpp"
 #include "CoreMenu.hpp"
+#include "Score.hpp"
 #include <iostream>
 #include <vector>
 #include <fstream>
@@ -21,47 +22,6 @@ class CoreException : public std::exception
     private:
         std::string _msg;
 };
-
-namespace arc
-{
-    struct Score {
-        std::string game;
-        uint64_t hs;
-    };
-
-    inline std::ofstream& operator<<(std::ofstream& stream, const Score& score)
-    {
-        stream << score.game << ":";
-        stream << std::to_string(score.hs) << std::endl;
-        return stream;
-    }
-
-    inline std::ifstream& operator>>(std::ifstream& stream, Score& score)
-    {
-        std::string g, s;
-
-        std::getline(stream, g, ':');
-        std::getline(stream, s);
-        if (g.empty() || s.empty())
-            return stream;
-        score.game = g;
-        score.hs = std::atoi(s.c_str());
-        return stream;
-    }
-
-    inline void operator>>(std::string& string, Score& score)
-    {
-        std::string g, s;
-        std::stringstream ss(string);
-
-        std::getline(ss, g, ':');
-        std::getline(ss, s);
-        if (g.empty() || s.empty())
-            return;
-        score.game = g;
-        score.hs = std::atoi(s.c_str());
-    }
-}
 
 class Core
 {
@@ -90,6 +50,7 @@ class Core
                 this->_scores[score.game] = score;
             }
             rstream.close();
+            this->_menu->updateScores(this->_scores);
         }
 
         ~Core()
@@ -117,9 +78,11 @@ class Core
             if (this->_menu->running()) {
                 this->_cur_lib->display().close();
             } else {
+                this->saveScore();
                 this->_cur_game.reset();
                 this->_cur_game = this->_menu;
                 this->_menu->initialize(*_cur_lib);
+                this->_menu->updateScores(this->_scores);
             }
         }
 
@@ -222,7 +185,7 @@ class Core
             if (!stream.is_open())
                 return;
             if (!this->_scores.contains(this->_game_handler->name()) || this->_scores[this->_game_handler->name()].hs < this->_cur_game->score())
-                this->_scores[this->_game_handler->name()] = { this->_game_handler->name(), this->_cur_game->score() };
+                this->_scores[this->_game_handler->name()] = { this->_game_handler->name(), this->_menu->player(), this->_cur_game->score() };
             for (auto entry : this->_scores)
                 stream << entry.second;
             stream.close();

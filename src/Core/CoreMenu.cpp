@@ -31,8 +31,12 @@ void CoreMenu::initialize(arc::ILibrary &lib)
     lib.display().setWidth(24);
     lib.display().setHeight(24);
 
+
     arc::FontSpecification normal = {{200, 200, 200, 200}, 16, "assets/regular.ttf"};
     lib.fonts().load("normal", normal);
+
+    arc::FontSpecification name = {{100, 100, 255, 255}, 16, "assets/regular.ttf"};
+    lib.fonts().load("name", name);
 
     arc::FontSpecification game = {{255, 100, 100, 255}, 16, "assets/regular.ttf"};
     lib.fonts().load("game", game);
@@ -45,6 +49,11 @@ void CoreMenu::initialize(arc::ILibrary &lib)
 
 void CoreMenu::onKeyPressed([[maybe_unused]] arc::ILibrary &lib, arc::Key key)
 {
+    if (key >= arc::Key::A && key <= arc::Key::Z && this->_player.size() < 5) {
+        auto c = 'A' + static_cast<char>(key) - static_cast<char>(arc::Key::A);
+        this->_player += c;
+    }
+
     switch (key)
     {
     case arc::Key::UP:
@@ -82,16 +91,35 @@ void CoreMenu::draw(arc::ILibrary &lib)
 {
     lib.display().clear();
 
-    drawRoulette(lib, "game", this->_games, this->_game, 0, 12);
-    drawRoulette(lib, "library", this->_libs, this->_lib, 12, 12);
+    this->printCenteredText(lib, "Player's name:", "normal", 1);
+    this->printCenteredText(lib, this->_player, "name", 2);
+
+    std::string hs = "High-Score: ";
+    if (this->_scores.contains(this->game()->name())) {
+        arc::Score score = this->_scores.at(this->game()->name());
+        hs = hs + score.player + " - " + std::to_string(score.hs);
+    } else
+        hs += "NONE";
+    this->printCenteredText(lib, hs, "normal", 4);
+
+    this->drawRoulette(lib, "game", this->_games, this->_game, 0, 12);
+    this->drawRoulette(lib, "library", this->_libs, this->_lib, 12, 12);
 
     lib.display().flush();
+}
+
+void CoreMenu::printCenteredText(arc::ILibrary& lib, const std::string& string, const std::string& font, int y) const
+{
+    auto width = lib.display().measure(string, lib.fonts().get(font), 0, 0).width;
+    auto x = (lib.display().width() - width) / 2;
+    lib.display().print(string, lib.fonts().get(font), x, y);
 }
 
 void CoreMenu::drawRoulette(
     arc::ILibrary &lib, const std::string& font,
     const std::vector<std::shared_ptr<LibraryObject>>& values,
-    int index, int x, int y) const
+    int index, int x, int y
+) const
 {
     for (int i = index - 1; i <= index + 1; i++)
     {

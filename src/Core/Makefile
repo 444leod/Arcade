@@ -9,7 +9,7 @@ NAME = $(DIR)/arcade
 
 CPPFLAGS	=	-fPIC -iquote $(INC_DIR) -std=c++20 \
 				-Wall -Wextra -Werror \
-				-g -fno-gnu-unique
+				-g -ldl -fno-gnu-unique
 
 SRC	=	Core.cpp	\
 		CoreMenu.cpp	\

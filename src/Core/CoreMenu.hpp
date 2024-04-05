@@ -9,6 +9,7 @@
 
 #include "LibraryLoader.hpp"
 #include "IGame.hpp"
+#include "Score.hpp"
 
 class CoreMenu : public arc::IGame
 {
@@ -26,10 +27,10 @@ public:
     std::shared_ptr<LibraryObject> game() const { return this->_games.at(this->_game); };
     std::shared_ptr<LibraryObject> lib() const { return this->_libs.at(this->_lib); };
 
-    void nextGraphicalLib();
-
     bool running() const { return this->_running; }
     void setRunning(bool run) { this->_running = run; }
+    const std::string& player() const { return this->_player; }
+    void updateScores(const std::map<std::string, arc::Score>& scores) { this->_scores = scores; }
 
 protected:
 private:
@@ -37,10 +38,14 @@ private:
         arc::ILibrary &lib, const std::string& name,
         const std::vector<std::shared_ptr<LibraryObject>>& values,
         int index, int x, int y) const;
+    void printCenteredText(arc::ILibrary& lib, const std::string& string, const std::string& font, int y) const;
 private:
     bool _running = false;
+
+    std::string _player = "GAMER";
     int _game = 0;
     int _lib = 0;
     std::vector<std::shared_ptr<LibraryObject>> _games = {};
     std::vector<std::shared_ptr<LibraryObject>> _libs = {};
+    std::map<std::string, arc::Score> _scores = {};
 };
