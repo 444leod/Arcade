@@ -521,7 +521,7 @@ public:
             case SDLK_LEFT:                     return arc::KeyCode::LEFT;
             case SDL_KeyCode::SDLK_SPACE:       return arc::KeyCode::SPACE;
             case SDL_KeyCode::SDLK_TAB:         return arc::KeyCode::TAB;
-            case SDL_KeyCode::SDLK_BACKSPACE:   return arc::KeyCode::TAB;
+            case SDL_KeyCode::SDLK_BACKSPACE:   return arc::KeyCode::DELETE;
             case SDL_KeyCode::SDLK_RETURN:      return arc::KeyCode::ENTER;
             case SDL_KeyCode::SDLK_ESCAPE:      return arc::KeyCode::ESCAPE;
             default:                            return arc::KeyCode::UNKNOWN;

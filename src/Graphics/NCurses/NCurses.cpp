@@ -367,6 +367,7 @@ public:
         if (key == '\033')              return arc::KeyCode::ESCAPE;
         if (key == '\n')                return arc::KeyCode::ENTER;
         if (key == '\t')                return arc::KeyCode::TAB;
+        if (key == KEY_BACKSPACE)       return arc::KeyCode::DELETE;
         if (key >= '0' && key <= '9')   return static_cast<arc::KeyCode>(key - '0' + 26);
         if (key == KEY_DOWN)            return arc::KeyCode::DOWN;
         if (key == KEY_UP)              return arc::KeyCode::UP;
