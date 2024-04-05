@@ -612,7 +612,7 @@ public:
 
     virtual void print(const std::string &string, std::shared_ptr<arc::IFont> font, float x, float y)
     {
-        if (font == nullptr)
+        if (font == nullptr || string.empty())
             return;
 
         auto f = std::dynamic_pointer_cast<SDLFont>(font);
@@ -629,10 +629,11 @@ public:
 
     virtual arc::Rect<float> measure(const std::string &string, std::shared_ptr<arc::IFont> font, float x, float y)
     {
-        if (font == nullptr)
-            return arc::Rect<float> { 0.f, 0.f, 0.f, 0.f };
-        auto attr = dynamic_cast<const SDLFont &>(*font);
-        auto surf = TTF_RenderText_Solid(attr.font().get(), string.c_str(), attr.color());
+        if (font == nullptr || string.empty())
+            return arc::Rect<float> { 0.f, 0.f, x, y };
+
+        auto f = std::dynamic_pointer_cast<SDLFont>(font);
+        auto surf = TTF_RenderText_Solid(f->font().get(), string.c_str(), f->color());
         auto w = static_cast<float>(surf->w) / static_cast<float>(this->_tileSize);
         auto h = static_cast<float>(surf->h) / static_cast<float>(this->_tileSize);
         arc::Rect<float> rect = {x, y, w, h};
