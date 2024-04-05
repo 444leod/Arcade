@@ -31,7 +31,7 @@ void CoreMenu::initialize(arc::ILibrary &lib)
     lib.display().setWidth(20);
     lib.display().setHeight(20);
 
-    std::string font = "assets/regular.ttf";
+    std::string font = "assets/pacman/emulogic.ttf";
     arc::FontSpecification normal = {{200, 200, 200, 200}, 32, font};
     lib.fonts().load("normal", normal);
     arc::FontSpecification name = {{100, 100, 255, 255}, 32, font};
