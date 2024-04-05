@@ -21,7 +21,7 @@ class NibblerObjectManager : public AGameObjectManager {
 
         ~NibblerObjectManager();
 
-        void update(Vec2i objectCollided, SnakeObject& snake, float deltaTime) override;
+        void update(Vec2i objectCollided, ASnakeObject& snake, float deltaTime) override;
 
         void initMapObjects(std::vector<std::vector<int>> map);
 

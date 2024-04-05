@@ -11,6 +11,7 @@
 #include "SharedLibraryType.hpp"
 #include "CSVParser.hpp"
 #include "GameObjects/NibblerObjectManager.hpp"
+#include "GameObjects/Nibbler.hpp"
 
 #include <ctime>
 #include <iostream>
@@ -26,6 +27,8 @@ public:
         parser.parse();
         _map = parser.getData();
         _nibblerManager.initMapObjects(_map);
+
+        _nibbler = Nibbler(_map);
 
         // Display
         lib.display().setTitle("Nibbler");
@@ -200,7 +203,7 @@ private:
 private:
    std::vector<std::vector<int>> _map;
    NibblerObjectManager _nibblerManager;
-//    NibblerObject _nibbler;
+   Nibbler _nibbler;
 };
 
 extern "C" arc::IGame* entrypoint()

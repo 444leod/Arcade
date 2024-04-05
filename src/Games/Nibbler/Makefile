@@ -12,11 +12,12 @@ SHARED_FLAGS = -shared
 
 SRC =	./NibblerGame.cpp \
 		./GameObjects/NibblerObjectManager.cpp \
+		./GameObjects/Nibbler.cpp \
 		./GameObjects/Rock.cpp \
 		./GameObjects/SuperCandy.cpp \
 		./../SnakeLib/AGameObject.cpp \
 		./../SnakeLib/AGameObjectManager.cpp \
-		./../SnakeLib/SnakeObject.cpp
+		./../SnakeLib/ASnakeObject.cpp
 
 all: $(NAME)
 

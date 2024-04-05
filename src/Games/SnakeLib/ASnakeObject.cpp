@@ -15,9 +15,7 @@
 
 // Public Member Functions
 
-ASnakeObject::ASnakeObject()
-{
-}
+ASnakeObject::ASnakeObject() {}
 
 bool ASnakeObject::setDirection(std::pair<int, int> direction)
 {
