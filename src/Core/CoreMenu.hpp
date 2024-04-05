@@ -41,7 +41,7 @@ private:
     void printCenteredText(arc::ILibrary& lib, const std::string& string, const std::string& font, int y) const;
 private:
     bool _running = false;
-
+    bool _naming = false;
     std::string _player = "GUEST";
     int _game = 0;
     int _lib = 0;

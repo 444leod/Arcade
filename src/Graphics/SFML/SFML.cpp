@@ -447,6 +447,8 @@ public:
         if (key == sf::Keyboard::Space) return arc::KeyCode::SPACE;
         if (key == sf::Keyboard::Enter) return arc::KeyCode::ENTER;
         if (key == sf::Keyboard::Escape) return arc::KeyCode::ESCAPE;
+        if (key == sf::Keyboard::Tab) return arc::KeyCode::TAB;
+        if (key == sf::Keyboard::BackSpace) return arc::KeyCode::DELETE;
         return arc::KeyCode::UNKNOWN;
     }
 

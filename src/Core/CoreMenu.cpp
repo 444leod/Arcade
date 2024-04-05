@@ -49,11 +49,16 @@ void CoreMenu::initialize(arc::ILibrary &lib)
 
 void CoreMenu::onKeyPressed([[maybe_unused]] arc::ILibrary &lib, arc::KeyCode key, [[maybe_unused]]bool shift)
 {
-    if (key >= arc::KeyCode::A && key <= arc::KeyCode::Z && this->_player.size() < 5) {
+    if (key == arc::KeyCode::TAB)
+        this->_naming = !this->_naming;
+
+    if (this->_naming && key >= arc::KeyCode::A && key <= arc::KeyCode::Z && this->_player.size() < 5) {
         auto c = 'A' + static_cast<char>(key) - static_cast<char>(arc::KeyCode::A);
         this->_player += c;
     }
 
+    if (this->_naming)
+        return;
     switch (key)
     {
     case arc::KeyCode::UP:
@@ -92,7 +97,7 @@ void CoreMenu::draw(arc::ILibrary &lib)
     lib.display().clear();
 
     this->printCenteredText(lib, "Player's name:", "normal", 1);
-    this->printCenteredText(lib, this->_player, "name", 2);
+    this->printCenteredText(lib, this->_player, (this->_naming) ? "name" : "normal", 2);
 
     std::string hs = "High-Score: ";
     if (this->_scores.contains(this->game()->name())) {

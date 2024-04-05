@@ -57,6 +57,5 @@ class LibraryLoader {
     private:
         int _gameIndex = -1;
         int _libIndex = -1;
-        void *_handle = nullptr;
         std::vector<std::shared_ptr<LibraryObject>> _libs = {};
 };

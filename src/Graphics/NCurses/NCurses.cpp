@@ -361,16 +361,17 @@ public:
 
     static arc::KeyCode MapNCursesKey(int key)
     {
-        if (key >= 'a' && key <= 'z') return static_cast<arc::KeyCode>(key - 'a');
-        if (key >= 'A' && key <= 'Z') return static_cast<arc::KeyCode>(key - 'A');
-        if (key == ' ')         return arc::KeyCode::SPACE;
-        if (key == '\033')      return arc::KeyCode::ESCAPE;
-        if (key == '\n')        return arc::KeyCode::ENTER;
-        if (key >= '0' && key <= '9') return static_cast<arc::KeyCode>(key - '0' + 26);
-        if (key == KEY_DOWN)    return arc::KeyCode::DOWN;
-        if (key == KEY_UP)      return arc::KeyCode::UP;
-        if (key == KEY_LEFT)    return arc::KeyCode::LEFT;
-        if (key == KEY_RIGHT)   return arc::KeyCode::RIGHT;
+        if (key >= 'a' && key <= 'z')   return static_cast<arc::KeyCode>(key - 'a');
+        if (key >= 'A' && key <= 'Z')   return static_cast<arc::KeyCode>(key - 'A');
+        if (key == ' ')                 return arc::KeyCode::SPACE;
+        if (key == '\033')              return arc::KeyCode::ESCAPE;
+        if (key == '\n')                return arc::KeyCode::ENTER;
+        if (key == '\t')                return arc::KeyCode::TAB;
+        if (key >= '0' && key <= '9')   return static_cast<arc::KeyCode>(key - '0' + 26);
+        if (key == KEY_DOWN)            return arc::KeyCode::DOWN;
+        if (key == KEY_UP)              return arc::KeyCode::UP;
+        if (key == KEY_LEFT)            return arc::KeyCode::LEFT;
+        if (key == KEY_RIGHT)           return arc::KeyCode::RIGHT;
         return arc::KeyCode::UNKNOWN;
     }
 

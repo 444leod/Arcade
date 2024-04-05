@@ -515,22 +515,16 @@ public:
 
         switch (key)
         {
-        case SDLK_UP:
-            return arc::KeyCode::UP;
-        case SDLK_DOWN:
-            return arc::KeyCode::DOWN;
-        case SDLK_RIGHT:
-            return arc::KeyCode::RIGHT;
-        case SDLK_LEFT:
-            return arc::KeyCode::LEFT;
-        case SDL_KeyCode::SDLK_SPACE:
-            return arc::KeyCode::SPACE;
-        case SDL_KeyCode::SDLK_RETURN:
-            return arc::KeyCode::ENTER;
-        case SDL_KeyCode::SDLK_ESCAPE:
-            return arc::KeyCode::ESCAPE;
-        default:
-            return arc::KeyCode::UNKNOWN;
+            case SDLK_UP:                       return arc::KeyCode::UP;
+            case SDLK_DOWN:                     return arc::KeyCode::DOWN;
+            case SDLK_RIGHT:                    return arc::KeyCode::RIGHT;
+            case SDLK_LEFT:                     return arc::KeyCode::LEFT;
+            case SDL_KeyCode::SDLK_SPACE:       return arc::KeyCode::SPACE;
+            case SDL_KeyCode::SDLK_TAB:         return arc::KeyCode::TAB;
+            case SDL_KeyCode::SDLK_BACKSPACE:   return arc::KeyCode::TAB;
+            case SDL_KeyCode::SDLK_RETURN:      return arc::KeyCode::ENTER;
+            case SDL_KeyCode::SDLK_ESCAPE:      return arc::KeyCode::ESCAPE;
+            default:                            return arc::KeyCode::UNKNOWN;
         }
         return arc::KeyCode::UNKNOWN;
     }
@@ -539,14 +533,14 @@ public:
     {
         switch (button)
         {
-        case SDL_BUTTON_LEFT:
-            return arc::MouseButton::LEFT;
-        case SDL_BUTTON_RIGHT:
-            return arc::MouseButton::RIGHT;
-        case SDL_BUTTON_MIDDLE:
-            return arc::MouseButton::MIDDLE;
-        default:
-            break;
+            case SDL_BUTTON_LEFT:
+                return arc::MouseButton::LEFT;
+            case SDL_BUTTON_RIGHT:
+                return arc::MouseButton::RIGHT;
+            case SDL_BUTTON_MIDDLE:
+                return arc::MouseButton::MIDDLE;
+            default:
+                break;
         }
         return arc::MouseButton::UNKNOWN;
     }
@@ -560,25 +554,25 @@ public:
         {
             switch (sdlEvent.type)
             {
-            case SDL_EventType::SDL_QUIT:
-                this->_opened = false;
-                break;
-            case SDL_EventType::SDL_KEYDOWN:
-                arcEvent.type = arc::EventType::KEY_PRESSED;
-                arcEvent.key.code = MapSDLKey(sdlEvent.key.keysym.sym);
-                arcEvent.key.shift = (sdlEvent.key.keysym.mod == SDL_Keymod::KMOD_SHIFT);
-                _events.push_back(arcEvent);
-                break;
-            case SDL_EventType::SDL_MOUSEBUTTONDOWN:
-                arcEvent.type = arc::EventType::MOUSE_BUTTON_PRESSED;
-                arcEvent.mouse = {
-                    .button = MapSDLButton(sdlEvent.button.button),
-                    .x = sdlEvent.button.x / static_cast<int>(this->_tileSize),
-                    .y = sdlEvent.button.y / static_cast<int>(this->_tileSize)};
-                _events.push_back(arcEvent);
-                break;
-            default:
-                break;
+                case SDL_EventType::SDL_QUIT:
+                    this->_opened = false;
+                    break;
+                case SDL_EventType::SDL_KEYDOWN:
+                    arcEvent.type = arc::EventType::KEY_PRESSED;
+                    arcEvent.key.code = MapSDLKey(sdlEvent.key.keysym.sym);
+                    arcEvent.key.shift = (sdlEvent.key.keysym.mod == SDL_Keymod::KMOD_SHIFT);
+                    _events.push_back(arcEvent);
+                    break;
+                case SDL_EventType::SDL_MOUSEBUTTONDOWN:
+                    arcEvent.type = arc::EventType::MOUSE_BUTTON_PRESSED;
+                    arcEvent.mouse = {
+                        .button = MapSDLButton(sdlEvent.button.button),
+                        .x = sdlEvent.button.x / static_cast<int>(this->_tileSize),
+                        .y = sdlEvent.button.y / static_cast<int>(this->_tileSize)};
+                    _events.push_back(arcEvent);
+                    break;
+                default:
+                    break;
             }
         }
     }

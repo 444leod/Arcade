@@ -48,8 +48,6 @@ LibraryLoader::LibraryLoader(const std::string &path)
 
 LibraryLoader::~LibraryLoader()
 {
-    if (this->_handle != nullptr)
-        dlclose(this->_handle);
 }
 
 bool LibraryLoader::contains(const std::string &lib, arc::SharedLibraryType type) const
