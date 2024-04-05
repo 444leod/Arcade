@@ -21,16 +21,16 @@ bool ASnakeObject::setDirection(std::pair<int, int> direction)
 {
     if ((_direction.first == -direction.first && _direction.second == -direction.second) ||
         (_direction.first == direction.first && _direction.second == direction.second) ||
-        _alive == false ||
-        _readyToRotate == false)
+        _alive == false)
+        return false;
+    if (_body[1].x == _body[0].x + direction.first && _body[1].y == _body[0].y + direction.second)
         return false;
     _oldDirection = _direction;
     _direction = direction;
-    _readyToRotate = false;
     return true;
 }
 
-Vec2i ASnakeObject::update([[maybe_unused]] std::vector<Vec2i> objectsPos, float deltaTime)
+Vec2i ASnakeObject::update(std::vector<Vec2i> objectsPos, float deltaTime)
 {
     _elapsed += deltaTime;
     while (_elapsed > _speed) {
@@ -115,11 +115,9 @@ Vec2i ASnakeObject::continueMove(void)
 
 // Privates Member Functions
 
-Vec2i ASnakeObject::move([[maybe_unused]] std::vector<Vec2i> objectsPos)
+Vec2i ASnakeObject::move(std::vector<Vec2i> objectsPos)
 {
-
     _oldDirection = _direction;
-    _readyToRotate = true;
 
     for (auto &pos : objectsPos) {
         if (_body[0].x + _direction.first == pos.x && _body[0].y + _direction.second == pos.y) {

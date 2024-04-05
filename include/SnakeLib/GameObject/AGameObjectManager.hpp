@@ -25,6 +25,8 @@ class AGameObjectManager : public IGameObjectManager{
 
         virtual std::vector<Vec2i> getPos() const;
 
+        virtual std::vector<Vec2i> getBlockingPos() const;
+
         virtual std::vector<Vec2i> getForbidenPos(ASnakeObject &snake) const;
         
         virtual void applyEffects(ASnakeObject &snake) const;

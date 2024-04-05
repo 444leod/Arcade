@@ -21,6 +21,8 @@ class IGameObjectManager {
         virtual std::vector<std::pair<Vec2i, std::string>> dump() const = 0;
 
         virtual std::vector<Vec2i> getPos() const = 0;
+
+        virtual std::vector<Vec2i> getBlockingPos() const = 0;
         
         virtual std::vector<Vec2i> getForbidenPos(ASnakeObject &snake) const = 0;
 

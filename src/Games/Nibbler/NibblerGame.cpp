@@ -17,6 +17,7 @@
 #include <iostream>
 #include <cstdlib>
 #include <sstream>
+#include <algorithm>
 
 class NibblerGame : public arc::IGame {
 public:
@@ -58,16 +59,13 @@ public:
 
     virtual void onKeyPressed([[maybe_unused]] arc::ILibrary& lib, arc::Key key)
     {
-        bool playSound = false;
         switch (key) {
-            case arc::Key::Z: playSound = _nibbler.setDirection({0, -1}); break;
-            case arc::Key::Q: playSound = _nibbler.setDirection({-1, 0}); break;
-            case arc::Key::S: playSound = _nibbler.setDirection({0, 1}); break;
-            case arc::Key::D: playSound = _nibbler.setDirection({1, 0}); break;
+            case arc::Key::Z: _nibbler.setDirectionQueue({0, -1}); break;
+            case arc::Key::Q: _nibbler.setDirectionQueue({-1, 0}); break;
+            case arc::Key::S: _nibbler.setDirectionQueue({0, 1}); break;
+            case arc::Key::D: _nibbler.setDirectionQueue({1, 0}); break;
             default: break;
         }
-        if (playSound)
-            lib.sounds().play("woosh", 30.0f);
     }
 
     virtual void onMouseButtonPressed(
@@ -79,12 +77,24 @@ public:
     {
     }
 
-    virtual void update([[maybe_unused]] arc::ILibrary& lib, [[maybe_unused]] float deltaTime)
+    virtual void update([[maybe_unused]] arc::ILibrary& lib, float deltaTime)
     {
-        Vec2i objectCollided = _nibbler.update(_nibblerManager.getPos(), deltaTime);
-        _nibblerManager.update(objectCollided, _nibbler, deltaTime);
-        if (objectCollided != Vec2i{-1, -1})
-            lib.sounds().play("crunch", 100.0f);
+        std::vector<Vec2i> blockingPos = _nibblerManager.getBlockingPos();
+
+        Vec2i headPos = _nibbler.getPositions()[0];
+        headPos.x += _nibbler.getDirectionQueue().first;
+        headPos.y += _nibbler.getDirectionQueue().second;
+        if (std::find(blockingPos.begin(), blockingPos.end(), headPos) == blockingPos.end() &&
+            _nibbler.getDirectionQueue() != std::make_pair(0, 0)) {
+            _nibbler.setDirection(_nibbler.getDirectionQueue());
+            _nibbler.setDirectionQueue({0, 0});
+        }
+
+        _nibblerManager.update(
+            _nibbler.update(_nibblerManager.getPos(), deltaTime),
+            _nibbler,
+            deltaTime
+        );
     }
 
     virtual void draw(arc::ILibrary& lib)

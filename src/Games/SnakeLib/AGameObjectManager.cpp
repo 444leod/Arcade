@@ -37,6 +37,17 @@ std::vector<Vec2i> AGameObjectManager::getPos() const
     return res;
 }
 
+std::vector<Vec2i> AGameObjectManager::getBlockingPos() const
+{
+    std::vector<Vec2i> blockingPos;
+
+    for (auto &obj : _gameObjects) {
+        if (obj->getBlocking() == true)
+            blockingPos.push_back(obj->getPos());
+    }
+    return blockingPos;
+}
+
 std::vector<Vec2i> AGameObjectManager::getForbidenPos(ASnakeObject &snake) const
 {
     std::vector<Vec2i> res;

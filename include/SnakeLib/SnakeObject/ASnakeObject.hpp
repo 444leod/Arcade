@@ -50,7 +50,7 @@ class ASnakeObject {
         virtual Vec2i continueMove(void);
 
     protected:
-        Vec2i move(std::vector<Vec2i> objectsPos);
+        virtual Vec2i move(std::vector<Vec2i> objectsPos);
 
         bool checkCollision(int oldX, int oldY);
 
@@ -65,7 +65,6 @@ class ASnakeObject {
         float _speed = BASE_SPEED;
         float _elapsed = 0;
         bool _alive = true;
-        bool _readyToRotate = true;
         bool _growthToggle = true;
         std::pair<int, int> _direction = std::make_pair(1, 0);
         std::pair<int, int> _oldDirection = std::make_pair(1, 0);
