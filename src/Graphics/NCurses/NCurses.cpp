@@ -359,19 +359,19 @@ public:
         _opened = false;
     }
 
-    static arc::Key MapNCursesKey(int key)
+    static arc::KeyCode MapNCursesKey(int key)
     {
-        if (key >= 'a' && key <= 'z') return static_cast<arc::Key>(key - 'a');
-        if (key >= 'A' && key <= 'Z') return static_cast<arc::Key>(key - 'A');
-        if (key == ' ')         return arc::Key::SPACE;
-        if (key == '\033')      return arc::Key::ESCAPE;
-        if (key == '\n')        return arc::Key::ENTER;
-        if (key >= '0' && key <= '9') return static_cast<arc::Key>(key - '0' + 26);
-        if (key == KEY_DOWN)    return arc::Key::DOWN;
-        if (key == KEY_UP)      return arc::Key::UP;
-        if (key == KEY_LEFT)    return arc::Key::LEFT;
-        if (key == KEY_RIGHT)   return arc::Key::RIGHT;
-        return arc::Key::UNKNOWN;
+        if (key >= 'a' && key <= 'z') return static_cast<arc::KeyCode>(key - 'a');
+        if (key >= 'A' && key <= 'Z') return static_cast<arc::KeyCode>(key - 'A');
+        if (key == ' ')         return arc::KeyCode::SPACE;
+        if (key == '\033')      return arc::KeyCode::ESCAPE;
+        if (key == '\n')        return arc::KeyCode::ENTER;
+        if (key >= '0' && key <= '9') return static_cast<arc::KeyCode>(key - '0' + 26);
+        if (key == KEY_DOWN)    return arc::KeyCode::DOWN;
+        if (key == KEY_UP)      return arc::KeyCode::UP;
+        if (key == KEY_LEFT)    return arc::KeyCode::LEFT;
+        if (key == KEY_RIGHT)   return arc::KeyCode::RIGHT;
+        return arc::KeyCode::UNKNOWN;
     }
 
     virtual void update(float deltaTime)
@@ -379,10 +379,11 @@ public:
         // TODO: ch could be a MOUSE button
         int ch = getch();
         if (ch != ERR) {
-            arc::Key key = NCursesDisplay::MapNCursesKey(ch);
+            arc::KeyCode key = NCursesDisplay::MapNCursesKey(ch);
             arc::Event e;
             e.type = arc::EventType::KEY_PRESSED;
-            e.key = key;
+            e.key.code = key;
+            e.key.shift = (ch >= 'A' && ch <= 'Z');
             this->_events.push_back(std::move(e));
         }
 

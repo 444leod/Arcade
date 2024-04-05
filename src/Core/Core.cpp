@@ -157,18 +157,18 @@ class Core
 
                 this->_cur_lib->display().update(deltaTime);
                 while (_cur_lib->display().pollEvent(event)) {
-                    if (event.type == arc::EventType::KEY_PRESSED && (event.key == arc::Key::LEFT || event.key == arc::Key::RIGHT)) {
+                    if (event.type == arc::EventType::KEY_PRESSED && (event.key.code == arc::KeyCode::LEFT || event.key.code == arc::KeyCode::RIGHT)) {
                         lib_switch = true;
                         if (!this->_menu->running())
-                            this->_menu->onKeyPressed(*_cur_lib, event.key);
+                            this->_menu->onKeyPressed(*_cur_lib, event.key.code, event.key.shift);
                     }
-                    if (event.type == arc::EventType::KEY_PRESSED && event.key == arc::Key::ENTER)
+                    if (event.type == arc::EventType::KEY_PRESSED && event.key.code == arc::KeyCode::ENTER)
                         enter_game = true;
-                    if (event.type == arc::EventType::KEY_PRESSED && event.key == arc::Key::ESCAPE)
+                    if (event.type == arc::EventType::KEY_PRESSED && event.key.code == arc::KeyCode::ESCAPE)
                         escape_game = true;
 
                     if (event.type == arc::EventType::KEY_PRESSED)
-                        this->_cur_game->onKeyPressed(*_cur_lib, event.key);
+                        this->_cur_game->onKeyPressed(*_cur_lib, event.key.code, event.key.shift);
                     if (event.type == arc::EventType::MOUSE_BUTTON_PRESSED)
                         this->_cur_game->onMouseButtonPressed(*_cur_lib, event.mouse.button, event.mouse.x, event.mouse.y);
                 }

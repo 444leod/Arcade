@@ -45,22 +45,22 @@ void Game::initialize(arc::ILibrary &lib)
     _pathFinder->setCellType(6, PathFinder::CellType::WALL);
 }
 
-void Game::onKeyPressed([[maybe_unused]] arc::ILibrary& lib, arc::Key key)
+void Game::onKeyPressed([[maybe_unused]] arc::ILibrary& lib, arc::KeyCode key)
 {
     switch (key) {
-        case arc::Key::Z:
+        case arc::KeyCode::Z:
             _player->queueMove({0, -1});
             break;
-        case arc::Key::Q:
+        case arc::KeyCode::Q:
             _player->queueMove({-1, 0});
             break;
-        case arc::Key::S:
+        case arc::KeyCode::S:
             _player->queueMove({0, 1});
             break;
-        case arc::Key::D:
+        case arc::KeyCode::D:
             _player->queueMove({1, 0});
             break;
-        case arc::Key::ESCAPE:
+        case arc::KeyCode::ESCAPE:
             _currentState = IGameState::State::PAUSE;
             break;
         default: break;

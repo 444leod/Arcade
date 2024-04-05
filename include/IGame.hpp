@@ -31,7 +31,7 @@ namespace arc {
          * @brief Called when a key is pressed
          * @param event the event
          */
-        virtual void onKeyPressed(ILibrary& lib, Key key) = 0;
+        virtual void onKeyPressed(ILibrary& lib, KeyCode key, bool shift) = 0;
 
         /**
          * @brief Called when a mouse button is pressed

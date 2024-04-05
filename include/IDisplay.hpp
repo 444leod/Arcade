@@ -14,9 +14,9 @@ namespace arc {
     /**
      * @brief Represents a key
      */
-    enum class Key {
+    enum class KeyCode {
         A = 0, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T, U, V,
-        W, X, Y, Z, UP, DOWN, LEFT, RIGHT, SPACE, ENTER, ESCAPE, UNKNOWN
+        W, X, Y, Z, UP, DOWN, LEFT, RIGHT, SPACE, ENTER, TAB, DELETE, ESCAPE, UNKNOWN
     };
 
     /**
@@ -40,7 +40,10 @@ namespace arc {
     struct Event {
         EventType type;
         union {
-            Key key;
+            struct {
+                KeyCode code;
+                bool shift;
+            } key;
             struct {
                 MouseButton button;
                 int32_t x;
