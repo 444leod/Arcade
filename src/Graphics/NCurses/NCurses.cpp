@@ -271,7 +271,7 @@ public:
             init_color(COLOR_MAGENTA, 1000, 0, 1000);
             init_color(COLOR_CYAN, 0, 1000, 1000);
             init_color(COLOR_WHITE, 1000, 1000, 1000);
-            init_color(COLOR_ORANGE, 900, 450, 0); // RGB values range from 0 to 1000
+            init_color(COLOR_ORANGE, 900, 450, 0);
 
             init_pair(1, COLOR_BLACK, COLOR_BLACK);
             init_pair(2, COLOR_RED, COLOR_BLACK);
@@ -432,8 +432,13 @@ public:
 
     virtual void print(const std::string& string, std::shared_ptr<arc::IFont> font, float x, float y)
     {
-        [[maybe_unused]] auto& spec = std::dynamic_pointer_cast<NCursesFont>(font)->specification();
+        auto& spec = std::dynamic_pointer_cast<NCursesFont>(font)->specification();
+
+        if (_canChangeColor)
+            attron(COLOR_PAIR(getPairColor(spec.color)));
         mvprintw(y, x, "%s", string.c_str());
+        if (_canChangeColor)
+            attroff(COLOR_PAIR(getPairColor(spec.color)));
     }
 
     virtual arc::Rect<float> measure(const std::string& string, [[maybe_unused]] std::shared_ptr<arc::IFont> font, float x, float y)
