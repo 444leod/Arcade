@@ -54,7 +54,7 @@ void CoreMenu::onKeyPressed([[maybe_unused]] arc::ILibrary &lib, arc::KeyCode ke
     if (this->_naming && this->_running) {
         if (key == arc::KeyCode::DELETE)
             this->_player = this->_player.substr(0, this->_player.size() - 1);
-        else if (key >= arc::KeyCode::A && key <= arc::KeyCode::Z && this->_player.size() < 20) {
+        else if (key >= arc::KeyCode::A && key <= arc::KeyCode::Z && this->_player.size() < 10) {
             auto c = 'A' + static_cast<char>(key) - static_cast<char>(arc::KeyCode::A);
             this->_player += c;
         }
