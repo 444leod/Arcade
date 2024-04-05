@@ -16,6 +16,8 @@ class Nibbler : public ASnakeObject {
         ~Nibbler() = default;
 
         Vec2i update(std::vector<Vec2i> objectsPos, float deltaTime) override;
+        
+        Vec2i continueMove(void) override;
 
     protected:
     private:
