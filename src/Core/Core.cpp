@@ -88,6 +88,9 @@ class Core
 
         void switch_graphic_lib()
         {
+            if (this->_menu->lib() == this->_lib_handler)
+                return;
+
             std::string title = this->_cur_lib->display().title();
             uint32_t framerate = this->_cur_lib->display().framerate();
             std::size_t tileSize = this->_cur_lib->display().tileSize();
@@ -191,10 +194,10 @@ class Core
             stream.close();
         }
 
-        std::shared_ptr<arc::ILibrary> _cur_lib = nullptr;
         std::shared_ptr<arc::IGame> _cur_game = nullptr;
-        std::shared_ptr<LibraryObject> _lib_handler = nullptr;
+        std::shared_ptr<arc::ILibrary> _cur_lib = nullptr;
         std::shared_ptr<LibraryObject> _game_handler = nullptr;
+        std::shared_ptr<LibraryObject> _lib_handler = nullptr;
         std::shared_ptr<CoreMenu> _menu = nullptr;
         std::map<std::string, arc::Score> _scores = {};
         LibraryLoader _loader;
