@@ -10,10 +10,10 @@
 void GameOver::initialize([[maybe_unused]]arc::ILibrary &lib)
 {}
 
-void GameOver::onKeyPressed([[maybe_unused]]arc::ILibrary &lib, arc::Key key)
+void GameOver::onKeyPressed([[maybe_unused]]arc::ILibrary &lib, [[maybe_unused]]arc::KeyCode key)
 {
     switch (key) {
-        case arc::Key::W:
+        case arc::KeyCode::W:
             _currentState = IGameState::State::GAME;
             break;
         default:

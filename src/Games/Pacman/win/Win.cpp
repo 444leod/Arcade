@@ -10,10 +10,10 @@
 void Win::initialize([[maybe_unused]]arc::ILibrary &lib)
 {}
 
-void Win::onKeyPressed([[maybe_unused]]arc::ILibrary &lib, arc::Key key)
+void Win::onKeyPressed([[maybe_unused]]arc::ILibrary &lib, arc::KeyCode key)
 {
     switch (key) {
-        case arc::Key::W:
+        case arc::KeyCode::W:
             _currentState = IGameState::State::GAME;
             break;
         default:

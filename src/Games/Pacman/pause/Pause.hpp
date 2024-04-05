@@ -15,7 +15,7 @@ class Pause : public IGameState {
         ~Pause() = default;
 
         virtual void initialize(arc::ILibrary& lib) override;
-        virtual void onKeyPressed(arc::ILibrary& lib, arc::Key key) override;
+        virtual void onKeyPressed(arc::ILibrary& lib, arc::KeyCode key) override;
         virtual void onMouseButtonPressed(arc::ILibrary& lib, arc::MouseButton button, int32_t x, int32_t y) override;
         virtual void update(arc::ILibrary& lib, float deltaTime) override;
         virtual void draw(arc::ILibrary& lib) override;

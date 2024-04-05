@@ -508,31 +508,31 @@ public:
         return true;
     }
 
-    static arc::Key MapSDLKey(SDL_Keycode key)
+    static arc::KeyCode MapSDLKey(SDL_Keycode key)
     {
         if (key >= SDL_KeyCode::SDLK_a && key <= SDL_KeyCode::SDLK_z)
-            return static_cast<arc::Key>(static_cast<uint32_t>(arc::Key::A) + key - SDL_KeyCode::SDLK_a);
+            return static_cast<arc::KeyCode>(static_cast<uint32_t>(arc::KeyCode::A) + key - SDL_KeyCode::SDLK_a);
 
         switch (key)
         {
         case SDLK_UP:
-            return arc::Key::UP;
+            return arc::KeyCode::UP;
         case SDLK_DOWN:
-            return arc::Key::DOWN;
+            return arc::KeyCode::DOWN;
         case SDLK_RIGHT:
-            return arc::Key::RIGHT;
+            return arc::KeyCode::RIGHT;
         case SDLK_LEFT:
-            return arc::Key::LEFT;
+            return arc::KeyCode::LEFT;
         case SDL_KeyCode::SDLK_SPACE:
-            return arc::Key::SPACE;
+            return arc::KeyCode::SPACE;
         case SDL_KeyCode::SDLK_RETURN:
-            return arc::Key::ENTER;
+            return arc::KeyCode::ENTER;
         case SDL_KeyCode::SDLK_ESCAPE:
-            return arc::Key::ESCAPE;
+            return arc::KeyCode::ESCAPE;
         default:
-            return arc::Key::UNKNOWN;
+            return arc::KeyCode::UNKNOWN;
         }
-        return arc::Key::UNKNOWN;
+        return arc::KeyCode::UNKNOWN;
     }
 
     static arc::MouseButton MapSDLButton(uint8_t button)
@@ -565,7 +565,8 @@ public:
                 break;
             case SDL_EventType::SDL_KEYDOWN:
                 arcEvent.type = arc::EventType::KEY_PRESSED;
-                arcEvent.key = MapSDLKey(sdlEvent.key.keysym.sym);
+                arcEvent.key.code = MapSDLKey(sdlEvent.key.keysym.sym);
+                arcEvent.key.shift = (sdlEvent.key.keysym.mod == SDL_Keymod::KMOD_SHIFT);
                 _events.push_back(arcEvent);
                 break;
             case SDL_EventType::SDL_MOUSEBUTTONDOWN:

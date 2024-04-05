@@ -22,7 +22,7 @@ class IGameState {
         } _state;
 
         virtual void initialize(arc::ILibrary& lib) = 0;
-        virtual void onKeyPressed(arc::ILibrary& lib, arc::Key key) = 0;
+        virtual void onKeyPressed(arc::ILibrary& lib, arc::KeyCode key) = 0;
         virtual void onMouseButtonPressed(arc::ILibrary& lib, arc::MouseButton button, int32_t x, int32_t y) = 0;
         virtual void update(arc::ILibrary& lib, float deltaTime) = 0;
         virtual void draw(arc::ILibrary& lib) = 0;

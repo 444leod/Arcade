@@ -47,25 +47,25 @@ void CoreMenu::initialize(arc::ILibrary &lib)
     this->_running = true;
 }
 
-void CoreMenu::onKeyPressed([[maybe_unused]] arc::ILibrary &lib, arc::Key key)
+void CoreMenu::onKeyPressed([[maybe_unused]] arc::ILibrary &lib, arc::KeyCode key, [[maybe_unused]]bool shift)
 {
-    if (key >= arc::Key::A && key <= arc::Key::Z && this->_player.size() < 5) {
-        auto c = 'A' + static_cast<char>(key) - static_cast<char>(arc::Key::A);
+    if (key >= arc::KeyCode::A && key <= arc::KeyCode::Z && this->_player.size() < 5) {
+        auto c = 'A' + static_cast<char>(key) - static_cast<char>(arc::KeyCode::A);
         this->_player += c;
     }
 
     switch (key)
     {
-    case arc::Key::UP:
+    case arc::KeyCode::UP:
         this->_game = (this->_game + 1) % _games.size();
         break;
-    case arc::Key::DOWN:
+    case arc::KeyCode::DOWN:
         this->_game = this->_game ? (this->_game - 1) % _games.size() : _games.size() - 1;
         break;
-    case arc::Key::LEFT:
+    case arc::KeyCode::LEFT:
         this->_lib = (this->_lib + 1) % _libs.size();
         break;
-    case arc::Key::RIGHT:
+    case arc::KeyCode::RIGHT:
         this->_lib = this->_lib ? (this->_lib - 1) % _libs.size() : _libs.size() - 1;
         break;
     default:
