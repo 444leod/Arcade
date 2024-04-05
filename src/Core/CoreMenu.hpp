@@ -42,7 +42,7 @@ private:
 private:
     bool _running = false;
 
-    std::string _player = "GAMER";
+    std::string _player = "GUEST";
     int _game = 0;
     int _lib = 0;
     std::vector<std::shared_ptr<LibraryObject>> _games = {};
