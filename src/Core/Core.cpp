@@ -160,11 +160,12 @@ class Core
 
                 this->_cur_lib->display().update(deltaTime);
                 while (_cur_lib->display().pollEvent(event)) {
-                    if (event.type == arc::EventType::KEY_PRESSED && (event.key.code == arc::KeyCode::LEFT || event.key.code == arc::KeyCode::RIGHT)) {
+                    if (event.type == arc::EventType::KEY_PRESSED && (event.key.code == arc::KeyCode::J || event.key.code == arc::KeyCode::L)) {
                         lib_switch = true;
                         if (!this->_menu->running())
                             this->_menu->onKeyPressed(*_cur_lib, event.key.code, event.key.shift);
                     }
+
                     if (event.type == arc::EventType::KEY_PRESSED && event.key.code == arc::KeyCode::ENTER)
                         enter_game = true;
                     if (event.type == arc::EventType::KEY_PRESSED && event.key.code == arc::KeyCode::ESCAPE)

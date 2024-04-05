@@ -26,22 +26,21 @@ CoreMenu::~CoreMenu() = default;
 void CoreMenu::initialize(arc::ILibrary &lib)
 {
     lib.display().setTitle("Arcade");
-    lib.display().setFramerate(60);
-    lib.display().setTileSize(24);
-    lib.display().setWidth(24);
-    lib.display().setHeight(24);
+    lib.display().setFramerate(30);
+    lib.display().setTileSize(32);
+    lib.display().setWidth(20);
+    lib.display().setHeight(20);
 
-
-    arc::FontSpecification normal = {{200, 200, 200, 200}, 16, "assets/regular.ttf"};
+    std::string font = "assets/regular.ttf";
+    arc::FontSpecification normal = {{200, 200, 200, 200}, 32, font};
     lib.fonts().load("normal", normal);
-
-    arc::FontSpecification name = {{100, 100, 255, 255}, 16, "assets/regular.ttf"};
+    arc::FontSpecification name = {{100, 100, 255, 255}, 32, font};
     lib.fonts().load("name", name);
-
-    arc::FontSpecification game = {{255, 100, 100, 255}, 16, "assets/regular.ttf"};
+    arc::FontSpecification hs = {{255, 200, 100, 255}, 32, font};
+    lib.fonts().load("hs", hs);
+    arc::FontSpecification game = {{255, 100, 100, 255}, 32, font};
     lib.fonts().load("game", game);
-
-    arc::FontSpecification library = {{100, 255, 100, 255}, 16, "assets/regular.ttf"};
+    arc::FontSpecification library = {{100, 255, 100, 255}, 32, font};
     lib.fonts().load("library", library);
 
     this->_running = true;
@@ -55,7 +54,7 @@ void CoreMenu::onKeyPressed([[maybe_unused]] arc::ILibrary &lib, arc::KeyCode ke
     if (this->_naming && this->_running) {
         if (key == arc::KeyCode::DELETE)
             this->_player = this->_player.substr(0, this->_player.size() - 1);
-        else if (key >= arc::KeyCode::A && key <= arc::KeyCode::Z && this->_player.size() < 10) {
+        else if (key >= arc::KeyCode::A && key <= arc::KeyCode::Z && this->_player.size() < 20) {
             auto c = 'A' + static_cast<char>(key) - static_cast<char>(arc::KeyCode::A);
             this->_player += c;
         }
@@ -65,16 +64,16 @@ void CoreMenu::onKeyPressed([[maybe_unused]] arc::ILibrary &lib, arc::KeyCode ke
         return;
     switch (key)
     {
-    case arc::KeyCode::UP:
+    case arc::KeyCode::I:
         this->_game = (this->_game + 1) % _games.size();
         break;
-    case arc::KeyCode::DOWN:
+    case arc::KeyCode::K:
         this->_game = this->_game ? (this->_game - 1) % _games.size() : _games.size() - 1;
         break;
-    case arc::KeyCode::LEFT:
+    case arc::KeyCode::J:
         this->_lib = (this->_lib + 1) % _libs.size();
         break;
-    case arc::KeyCode::RIGHT:
+    case arc::KeyCode::L:
         this->_lib = this->_lib ? (this->_lib - 1) % _libs.size() : _libs.size() - 1;
         break;
     default:
@@ -93,7 +92,8 @@ void CoreMenu::onMouseButtonPressed(arc::ILibrary &lib, arc::MouseButton button,
 void CoreMenu::update(arc::ILibrary &lib, float deltaTime)
 {
     (void)lib;
-    (void)deltaTime;
+    if (this->_naming)
+        this->_nameBlink = (this->_nameBlink > 0.f) ? this->_nameBlink - deltaTime : 0.9f;
 }
 
 void CoreMenu::draw(arc::ILibrary &lib)
@@ -101,27 +101,36 @@ void CoreMenu::draw(arc::ILibrary &lib)
     lib.display().clear();
 
     this->printCenteredText(lib, "Player's name:", "normal", 1);
-    this->printCenteredText(lib, this->_player, (this->_naming) ? "name" : "normal", 2);
+    if (this->_nameBlink > 0.4f || !this->_naming)
+        this->printCenteredText(lib, this->_player, "name", 2);
 
-    std::string hs = "High-Score: ";
+    this->printCenteredText(lib, "Highest Score", "normal", 4);
+    std::string hs = "";
     if (this->_scores.contains(this->game()->name())) {
         arc::Score score = this->_scores.at(this->game()->name());
-        hs = hs + score.player + " - " + std::to_string(score.hs);
+        hs = hs + score.player + ": " + std::to_string(score.hs);
     } else
         hs += "NONE";
-    this->printCenteredText(lib, hs, "normal", 4);
+    this->printCenteredText(lib, hs, "hs", 5);
 
-    this->drawRoulette(lib, "game", this->_games, this->_game, 0, 12);
-    this->drawRoulette(lib, "library", this->_libs, this->_lib, 12, 12);
+    auto x = lib.display().width() / 2;
+    auto y = lib.display().height() / 2;
+    this->drawRoulette(lib, "game", this->_games, this->_game, 0, y);
+    this->drawRoulette(lib, "library", this->_libs, this->_lib, x, y);
 
     lib.display().flush();
 }
 
 void CoreMenu::printCenteredText(arc::ILibrary& lib, const std::string& string, const std::string& font, int y) const
 {
+    this->printCenteredText(lib, string, font, 0, y, lib.display().width());
+}
+
+void CoreMenu::printCenteredText(arc::ILibrary& lib, const std::string& string, const std::string& font, int x, int y, int w) const
+{
     auto width = lib.display().measure(string, lib.fonts().get(font), 0, 0).width;
-    auto x = (lib.display().width() - width) / 2;
-    lib.display().print(string, lib.fonts().get(font), x, y);
+    auto _x = (w - width) / 2;
+    lib.display().print(string, lib.fonts().get(font), _x + x, y);
 }
 
 void CoreMenu::drawRoulette(
