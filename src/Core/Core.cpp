@@ -195,13 +195,14 @@ class Core
             stream.close();
         }
 
-        LibraryLoader _loader;
-        std::map<std::string, arc::Score> _scores = {};
-        std::shared_ptr<CoreMenu> _menu = nullptr;
-        std::shared_ptr<LibraryObject> _game_handler = nullptr;
-        std::shared_ptr<LibraryObject> _lib_handler = nullptr;
         std::shared_ptr<arc::IGame> _cur_game = nullptr;
         std::shared_ptr<arc::ILibrary> _cur_lib = nullptr;
+        std::shared_ptr<LibraryObject> _game_handler = nullptr;
+        std::shared_ptr<LibraryObject> _lib_handler = nullptr;
+        std::shared_ptr<CoreMenu> _menu = nullptr;
+
+        std::map<std::string, arc::Score> _scores = {};
+        LibraryLoader _loader;
 };
 
 int main(int ac, char **av, char **env)

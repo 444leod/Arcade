@@ -19,10 +19,10 @@ class LibraryObject {
         ~LibraryObject();
 
         template<typename T>
-        std::unique_ptr<T> get()
+        std::shared_ptr<T> get()
         {
             auto h = reinterpret_cast<T *(*)()>(dlsym(_handle, "entrypoint"));
-            return std::unique_ptr<T>(h());
+            return std::shared_ptr<T>(h());
         }
 
         bool loaded() const { return this->_loaded; }
