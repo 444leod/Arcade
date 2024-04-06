@@ -11,7 +11,8 @@ CPPFLAGS = -fPIC -iquote $(INC_DIR) -std=c++20 -Wall -Wextra -Werror
 SHARED_FLAGS = -shared
 
 SRC =	Fighto.cpp	\
-		Champion.cpp
+		Champion.cpp	\
+		Hit.cpp
 
 all: $(NAME)
 

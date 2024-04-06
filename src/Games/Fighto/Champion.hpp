@@ -19,6 +19,9 @@ class Champion {
         void input(float xaxis, bool jump);
         void update(float dt);
 
+        const fVector position() const { return this->_postion; }
+        const fVector size() const { return { 1.f, 1.f }; }
+
     protected:
     private:
         const float _maxspeed = 8.f;
