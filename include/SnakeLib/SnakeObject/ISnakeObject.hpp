@@ -28,6 +28,8 @@ class ISnakeObject {
 
         virtual bool setDirection(std::pair<int, int> direction) = 0;
 
+        virtual bool getWon() const = 0;
+
         virtual std::vector<std::pair<Vec2i, std::string>> dump() const = 0;
 
         virtual void setSpeed(float speed) = 0;
@@ -37,6 +39,8 @@ class ISnakeObject {
         virtual void setScore(int score) = 0;
 
         virtual void setGrowToggle(bool growthToggle) = 0;
+
+        virtual void setWon(bool won) = 0;
 
         virtual void grow(int x, int y, std::size_t size) = 0;
 

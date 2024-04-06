@@ -28,6 +28,8 @@ class IGameObjectManager {
 
         virtual void applyEffects(ASnakeObject &snake) const = 0;
 
+        virtual uint64_t getSizeByType(IGameObject::Type type) const = 0;
+
     protected:
         virtual Vec2i getSpawnPos(std::vector<Vec2i> forbidenPositions) const = 0;
     private:

@@ -31,6 +31,8 @@ class AGameObjectManager : public IGameObjectManager{
         
         virtual void applyEffects(ASnakeObject &snake) const;
 
+        virtual uint64_t getSizeByType(IGameObject::Type type) const;
+
     protected:
         std::vector<Vec2i> _basePositions;
 

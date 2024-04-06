@@ -27,6 +27,8 @@ class ASnakeObject : public ISnakeObject{
 
         virtual int getScore() const {return _score;}
 
+        virtual bool getWon() const {return _won;}
+
         virtual std::vector<Vec2i> getPositions() const;
 
         virtual Vec2i update(std::vector<Vec2i> objectsPos, float deltaTime);
@@ -42,6 +44,8 @@ class ASnakeObject : public ISnakeObject{
         virtual void setScore(int score) {_score = score;}
 
         virtual void setGrowToggle(bool growthToggle) {_growthToggle = growthToggle;}
+
+        virtual void setWon(bool won) {_won = won;}
 
         virtual void grow(int x, int y, std::size_t size);
 
@@ -66,6 +70,7 @@ class ASnakeObject : public ISnakeObject{
         float _elapsed = 0;
         bool _alive = true;
         bool _growthToggle = true;
+        bool _won = false;
         std::pair<int, int> _direction = std::make_pair(1, 0);
         std::pair<int, int> _oldDirection = std::make_pair(1, 0);
         std::map<std::tuple<int, int>, std::string> _headTextures = {

@@ -79,6 +79,10 @@ public:
 
     virtual void update([[maybe_unused]] arc::ILibrary& lib, float deltaTime)
     {
+        if (_nibblerManager.checkWin(_nibbler)) {
+            nextMap(deltaTime);
+            return;
+        }
         std::vector<Vec2i> blockingPos = _nibblerManager.getBlockingPos();
 
         Vec2i headPos = _nibbler.getPositions()[0];
@@ -128,6 +132,21 @@ public:
     }
 
 private:
+    void nextMap(float deltaTime)
+    {
+        if (_nibbler.getPositions().size() == 4) {
+            // logic
+            printf("You won\n");
+            return;
+        }
+        _elapsed += deltaTime;
+        while (_elapsed > BASE_SPEED) {
+            if (_nibbler.getPositions().size() > 4)
+                _nibbler.shrink(1);
+            _elapsed -= BASE_SPEED;
+        }
+    }
+
     void initTextures(arc::ILibrary& lib)
     {
         arc::TextureSpecification spec;
@@ -214,6 +233,7 @@ private:
    std::vector<std::vector<int>> _map;
    NibblerObjectManager _nibblerManager;
    Nibbler _nibbler;
+   float _elapsed = 0;
 };
 
 extern "C" arc::IGame* entrypoint()

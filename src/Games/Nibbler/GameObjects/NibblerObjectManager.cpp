@@ -21,6 +21,7 @@ void NibblerObjectManager::update(Vec2i objectCollided, ASnakeObject& snake, [[m
         return;
     }
     for (auto &obj : _gameObjects) {
+
         if (obj->getPos() == objectCollided) {
             if (obj->getBlocking() == true)
                 handleAutoRedirection(snake, obj->getPos());
@@ -31,6 +32,19 @@ void NibblerObjectManager::update(Vec2i objectCollided, ASnakeObject& snake, [[m
                 obj->setPos(Vec2i{-1, -1});
         }
     }
+
+}
+
+bool NibblerObjectManager::checkWin(ASnakeObject& snake)
+{
+    uint16_t eatenCandies = 0;
+
+    for (auto &obj : _gameObjects)
+        if (obj->getType() == IGameObject::Type::SUPER_CANDY && obj->getPos() == Vec2i{-1, -1})
+            eatenCandies++;
+    if (eatenCandies == getSizeByType(IGameObject::Type::SUPER_CANDY))
+        snake.setWon(true);
+    return snake.getWon();
 }
 
 void NibblerObjectManager::handleAutoRedirection(ASnakeObject& snake, Vec2i blockingObj)

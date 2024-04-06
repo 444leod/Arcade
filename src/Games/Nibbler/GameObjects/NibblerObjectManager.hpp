@@ -25,6 +25,7 @@ class NibblerObjectManager : public AGameObjectManager {
 
         void initMapObjects(std::vector<std::vector<int>> map);
 
+        bool checkWin(ASnakeObject& snake);
     protected:
     private:
         void handleAutoRedirection(ASnakeObject& snake, Vec2i blockingObj);
