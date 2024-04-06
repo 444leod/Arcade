@@ -29,17 +29,17 @@ class Fighto : public arc::IGame
             });
         }
 
-        virtual void onKeyPressed(arc::ILibrary& lib, arc::Key key)
+        virtual void onKeyPressed(arc::ILibrary& lib, arc::KeyCode key, [[maybe_unused]] bool shift)
         {
             (void)lib;
 
-            if (key == arc::Key::Q)     _playerOne.input(-1.f, false);
-            if (key == arc::Key::D)     _playerOne.input(+1.f, false);
-            if (key == arc::Key::Z)     _playerOne.input( 0.f, true);
+            if (key == arc::KeyCode::Q)     this->_playerOne.input(-1.f, false);
+            if (key == arc::KeyCode::D)     this->_playerOne.input(+1.f, false);
+            if (key == arc::KeyCode::Z)     this->_playerOne.input( 0.f, true);
 
-            if (key == arc::Key::LEFT)  _playerTwo.input(-1.f, false);
-            if (key == arc::Key::RIGHT) _playerTwo.input(+1.f, false);
-            if (key == arc::Key::UP)    _playerTwo.input( 0.f, true);
+            if (key == arc::KeyCode::LEFT)  this->_playerTwo.input(-1.f, false);
+            if (key == arc::KeyCode::RIGHT) this->_playerTwo.input(+1.f, false);
+            if (key == arc::KeyCode::UP)    this->_playerTwo.input( 0.f, true);
         }
 
         virtual void onMouseButtonPressed(arc::ILibrary& lib, arc::MouseButton button, int32_t x, int32_t y)
@@ -53,15 +53,15 @@ class Fighto : public arc::IGame
         virtual void update(arc::ILibrary& lib, float deltaTime)
         {
             (void)lib;
-            _playerOne.update(deltaTime);
-            _playerTwo.update(deltaTime);
+            this->_playerOne.update(deltaTime);
+            this->_playerTwo.update(deltaTime);
         }
 
         virtual void draw(arc::ILibrary& lib)
         {
             lib.display().clear();
-            _playerOne.draw(lib);
-            _playerTwo.draw(lib);
+            this->_playerOne.draw(lib);
+            this->_playerTwo.draw(lib);
             lib.display().flush();
         }
 
