@@ -26,7 +26,7 @@ class CoreException : public std::exception
 class Core
 {
     public:
-        Core(const std::string& path) : _loader(LibraryLoader("./lib"))
+        Core(const std::string& path, bool tty) : _loader(LibraryLoader("./lib", tty))
         {
             if (!this->_loader.contains(path, arc::SharedLibraryType::LIBRARY))
                 throw CoreException("File " + path + " is not a valid graphical library.");
@@ -204,15 +204,23 @@ class Core
         std::shared_ptr<arc::ILibrary> _cur_lib = nullptr;
 };
 
-int main(int ac, char **av, [[maybe_unused]] char **env)
+int main(int ac, char **av, char **env)
 {
+    bool tty = true;
+
     if (ac != 2) {
         std::cerr << "Wrong argument count" << std::endl;
         return 84;
     }
+    for (int i = 0; env[i]; i++) {
+        if (!std::string(env[i]).starts_with("DISPLAY"))
+            continue;
+        tty = false;
+        break;
+    }
 
     try {
-        Core core(av[1]);
+        Core core(av[1], tty);
         core.run();
     }
     catch (const std::exception& e) {

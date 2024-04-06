@@ -41,7 +41,7 @@ class LibraryObject {
 
 class LibraryLoader {
     public:
-        LibraryLoader(const std::string &path);
+        LibraryLoader(const std::string &path, bool restrict_tty);
         ~LibraryLoader();
         const std::vector<std::shared_ptr<LibraryObject>> &libs() const { return this->_libs; }
         bool contains(const std::string &lib, arc::SharedLibraryType type) const;

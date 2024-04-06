@@ -33,7 +33,7 @@ LibraryObject::~LibraryObject()
         dlclose(_handle);
 }
 
-LibraryLoader::LibraryLoader(const std::string &path)
+LibraryLoader::LibraryLoader(const std::string &path, bool restrict_tty)
 {
     if (!std::filesystem::exists(path))
         return;
@@ -41,6 +41,8 @@ LibraryLoader::LibraryLoader(const std::string &path)
     for (const auto &entry : std::filesystem::directory_iterator(path))
     {
         auto object = std::make_shared<LibraryObject>(entry.path().string());
+        if (restrict_tty && object->type() == arc::SharedLibraryType::LIBRARY && object->name() != "NCurses")
+            continue;
         if (object->loaded())
             this->_libs.push_back(object);
     }
