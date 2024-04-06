@@ -9,6 +9,7 @@
 
 #include <memory>
 #include <iostream>
+#include <algorithm>
 
 NibblerObjectManager::NibblerObjectManager() : AGameObjectManager() {}
 
@@ -21,6 +22,8 @@ void NibblerObjectManager::update(Vec2i objectCollided, ASnakeObject& snake, [[m
     }
     for (auto &obj : _gameObjects) {
         if (obj->getPos() == objectCollided) {
+            if (obj->getBlocking() == true)
+                handleAutoRedirection(snake, obj->getPos());
             obj->applyEffect(snake);
             if (obj->getRespawn() == true)
                 obj->setPos(getSpawnPos(getForbidenPos(snake)));
@@ -28,6 +31,30 @@ void NibblerObjectManager::update(Vec2i objectCollided, ASnakeObject& snake, [[m
                 obj->setPos(Vec2i{-1, -1});
         }
     }
+}
+
+void NibblerObjectManager::handleAutoRedirection(ASnakeObject& snake, Vec2i blockingObj)
+{
+    Vec2i head = snake.getPositions()[0];
+    Vec2i headDelta = head - blockingObj;
+    std::vector<Vec2i> objectsPos = getBlockingPos();
+    Vec2i newDir = {0, 0};
+
+    if (headDelta.x == 0) {
+        if (std::find(objectsPos.begin(), objectsPos.end(), head + Vec2i{1, 0}) == objectsPos.end())
+            newDir += Vec2i{1, 0};
+        if (std::find(objectsPos.begin(), objectsPos.end(), head + Vec2i{-1, 0}) == objectsPos.end())
+            newDir += Vec2i{-1, 0};
+    }
+    if (headDelta.y == 0) {
+        if (std::find(objectsPos.begin(), objectsPos.end(), head + Vec2i{0, 1}) == objectsPos.end())
+            newDir += Vec2i{0, 1};
+        if (std::find(objectsPos.begin(), objectsPos.end(), head + Vec2i{0, -1}) == objectsPos.end())
+            newDir += Vec2i{0, -1};
+    }
+    if (newDir != Vec2i{0, 0})
+        snake.setDirection({newDir.x, newDir.y});
+    snake.continueMove();
 }
 
 void NibblerObjectManager::initMapObjects(std::vector<std::vector<int>> map)

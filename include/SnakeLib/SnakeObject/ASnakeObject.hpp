@@ -15,7 +15,7 @@
 #include <string>
 #include <map>
 
-class ASnakeObject {
+class ASnakeObject : public ISnakeObject{
     public:
         ASnakeObject();
 
@@ -49,9 +49,9 @@ class ASnakeObject {
         
         virtual Vec2i continueMove(void);
 
-    protected:
         virtual Vec2i move(std::vector<Vec2i> objectsPos);
 
+    protected:
         bool checkCollision(int oldX, int oldY);
 
         std::pair<Vec2i, std::string> getDumpHead() const;

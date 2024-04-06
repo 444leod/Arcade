@@ -21,7 +21,6 @@ class Nibbler : public ASnakeObject {
         
         Vec2i continueMove(void) override;
 
-
         void setDirectionQueue(std::pair<int, int> direction) {_directionQueue = direction;}
 
         std::pair<int, int> getDirectionQueue() const {return _directionQueue;}

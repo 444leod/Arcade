@@ -43,4 +43,6 @@ class ISnakeObject {
         virtual void shrink(size_t size) = 0;
         
         virtual Vec2i continueMove(void) = 0;
+
+        virtual Vec2i move(std::vector<Vec2i> objectsPos) = 0;
 };

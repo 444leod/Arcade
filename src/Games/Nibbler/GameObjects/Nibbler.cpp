@@ -12,7 +12,7 @@ Nibbler::Nibbler(std::vector<std::vector<int>> map)
     for (uint64_t i = 0; i < 4; i++)
         _body.push_back(Vec2i {
             static_cast<int>(map[0].size()) / 2 - static_cast<int>(i),
-            static_cast<int>(map.size()) / 2
+            static_cast<int>(map.size()) - 2
         });
 }
 

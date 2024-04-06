@@ -27,4 +27,5 @@ class NibblerObjectManager : public AGameObjectManager {
 
     protected:
     private:
+        void handleAutoRedirection(ASnakeObject& snake, Vec2i blockingObj);
 };

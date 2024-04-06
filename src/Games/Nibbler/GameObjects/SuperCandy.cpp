@@ -13,7 +13,7 @@ SuperCandy::SuperCandy(Vec2i pos) : AGameObject(pos)
 {
     _textureName = "super_candy";
     _effects.deltaScore = 10;
-    _effects.deltaSpeed = 0.95;
+    _effects.deltaSpeed = 0.97;
     _effects.deltaGrowth = 1;
     _effects.killPlayer = false;
     _respawn = false;
