@@ -27,7 +27,12 @@ class Fighto : public arc::IGame
         virtual void onKeyPressed(arc::ILibrary& lib, arc::Key key)
         {
             (void)lib;
-            (void)key;
+
+            if (key == arc::Key::Q)     _playerOne.input(-1, false);
+            if (key == arc::Key::D)     _playerOne.input(+1, false);
+
+            if (key == arc::Key::LEFT)  _playerOne.input(-1, false);
+            if (key == arc::Key::RIGHT) _playerOne.input(+1, false);
         }
 
         virtual void onMouseButtonPressed(arc::ILibrary& lib, arc::MouseButton button, int32_t x, int32_t y)
@@ -41,7 +46,8 @@ class Fighto : public arc::IGame
         virtual void update(arc::ILibrary& lib, float deltaTime)
         {
             (void)lib;
-            (void)deltaTime;
+            _playerOne.update(deltaTime);
+            _playerTwo.update(deltaTime);
         }
 
         virtual void draw(arc::ILibrary& lib)
