@@ -22,17 +22,24 @@ class Fighto : public arc::IGame
             lib.display().setHeight(16);
             lib.display().setWidth(32);
             lib.display().setFramerate(60);
+
+            arc::Color color = {255, 100, 100, 255};
+            lib.textures().load("player", {
+                {'#', color}, color
+            });
         }
 
         virtual void onKeyPressed(arc::ILibrary& lib, arc::Key key)
         {
             (void)lib;
 
-            if (key == arc::Key::Q)     _playerOne.input(-1, false);
-            if (key == arc::Key::D)     _playerOne.input(+1, false);
+            if (key == arc::Key::Q)     _playerOne.input(-1.f, false);
+            if (key == arc::Key::D)     _playerOne.input(+1.f, false);
+            if (key == arc::Key::Z)     _playerOne.input( 0.f, true);
 
-            if (key == arc::Key::LEFT)  _playerOne.input(-1, false);
-            if (key == arc::Key::RIGHT) _playerOne.input(+1, false);
+            if (key == arc::Key::LEFT)  _playerTwo.input(-1.f, false);
+            if (key == arc::Key::RIGHT) _playerTwo.input(+1.f, false);
+            if (key == arc::Key::UP)    _playerTwo.input( 0.f, true);
         }
 
         virtual void onMouseButtonPressed(arc::ILibrary& lib, arc::MouseButton button, int32_t x, int32_t y)

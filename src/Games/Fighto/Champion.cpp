@@ -6,6 +6,7 @@
 */
 
 #include "Champion.hpp"
+#include "Physics.hpp"
 
 Champion::Champion()
 {
@@ -17,34 +18,28 @@ Champion::~Champion()
 
 void Champion::draw(arc::ILibrary& lib) const
 {
-    lib.display().draw(lib.textures().get(""), this->_postion.x, this->_postion.y);
+    lib.display().draw(lib.textures().get("player"), this->_postion.x, this->_postion.y);
 }
 
-void Champion::input(uint8_t xaxis, bool jump)
+void Champion::input(float xaxis, bool jump)
 {
-    if (xaxis != 0) {
-        // Do not accelerate if you're going max speed
-        this->_velocity.x += std::abs(this->_velocity.x) < this->_maxspeed ? xaxis * this->_acceleration : 0;
-        this->_accelerating = true;
-    }
-
-    if (jump)
+    if (xaxis != 0)
+        this->_velocity.x = xaxis * this->_maxspeed;
+    if (jump && this->_grounded)
         this->_velocity.y = this->_jumpforce;
 }
 
 void Champion::update(float dt)
 {
     this->_postion.x += this->_velocity.x * dt;
-    this->_postion.y += this->_velocity.y * dt;
+    this->_postion.y -= this->_velocity.y * dt; // -= because down is technically inverted
 
-    this->_velocity.y -= 0.5f;
+    this->_velocity.y -= GRAVITY; // falling faster and faster
     // do not fall under a certain height
-    if (this->_postion.y <= 2.f) {
-        this->_postion.y = 2.f;
+    if (this->_postion.y >= FLOOR) {
+        this->_postion.y = FLOOR;
         this->_velocity.y = 0.f;
     }
-
-    if (!this->_accelerating)
-        this->_velocity.x -= this->_velocity.x > 0 ? 0.5f : -0.5f;
-    this->_accelerating = false;
+    // if approximately at ground level
+    this->_grounded = std::abs(_postion.y - 14.f) < 0.01f;
 }

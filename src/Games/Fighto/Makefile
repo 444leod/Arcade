@@ -10,7 +10,8 @@ NAME = $(LIB_DIR)/arcade_fighto.so
 CPPFLAGS = -fPIC -iquote $(INC_DIR) -std=c++20 -Wall -Wextra -Werror
 SHARED_FLAGS = -shared
 
-SRC =	Fighto.cpp
+SRC =	Fighto.cpp	\
+		Champion.cpp
 
 all: $(NAME)
 
