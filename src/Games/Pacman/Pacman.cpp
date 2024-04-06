@@ -50,7 +50,7 @@ public:
         }
     }
 
-    virtual void onKeyPressed(arc::ILibrary& lib, arc::Key key)
+    virtual void onKeyPressed(arc::ILibrary& lib, arc::KeyCode key, [[maybe_unused]] bool shift)
     {
         _states[_currentState]->onKeyPressed(lib, key);
     }

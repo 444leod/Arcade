@@ -45,7 +45,7 @@ void pacman::Map::initTextures(arc::ITextureManager& manager)
     manager.load("fruit", spec);
 
     spec.textual.character = ' ';
-    spec.textual.color = {255, 255, 255, 255};
+    spec.textual.color = {1, 2, 3, 255}; // special code for white bg
     for (uint16_t i = 0; i <= 33; ++i) {
         std::stringstream ss;
         ss << "wall_" << 100 + i;
