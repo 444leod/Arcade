@@ -18,25 +18,37 @@
 #include <cstdlib>
 #include <sstream>
 #include <algorithm>
+#include <string>
+#include <filesystem>
 
 class NibblerGame : public arc::IGame {
 public:
     virtual void initialize(arc::ILibrary& lib)
     {
         // Map
-        CSVParser<int> parser("assets/nibbler/map.csv");
-        parser.parse();
-        _map = parser.getData();
-        _nibblerManager.initMapObjects(_map);
+        CSVParser<int> parser(_mapNames[0]);
+        for (auto &mapName : _mapNames) {
+            if (std::filesystem::exists(mapName) == false) {
+                throw(std::runtime_error("Map file not found"));
+            }
+            parser.setFilename(mapName);
+            parser.parse();
+            _currentMap = parser.getData();
+            maps.push_back(_currentMap);
+        }
 
-        _nibbler = Nibbler(_map);
+        _currentMap = maps[0];
+
+        _nibblerManager.initMapObjects(_currentMap);
+
+        _nibbler = Nibbler(_currentMap);
 
         // Display
         lib.display().setTitle("Nibbler");
         lib.display().setFramerate(60);
         lib.display().setTileSize(40);
-        lib.display().setWidth(_map[0].size());
-        lib.display().setHeight(_map.size() + 1);
+        lib.display().setWidth(_currentMap[0].size());
+        lib.display().setHeight(_currentMap.size() + 1);
 
         // Textures
         initTextures(lib);
@@ -51,10 +63,8 @@ public:
 
         // Sounds
         arc::SoundSpecification sound;
-        sound.path = "assets/snake/sounds/woosh.wav";
-        lib.sounds().load("woosh", sound);
-        sound.path = "assets/snake/sounds/crunch.wav";
-        lib.sounds().load("crunch", sound);
+        sound.path = "assets/nibbler/sounds/level_up.wav";
+        lib.sounds().load("LevelUp", sound);
     }
 
     virtual void onKeyPressed([[maybe_unused]] arc::ILibrary& lib, arc::Key key)
@@ -80,7 +90,7 @@ public:
     virtual void update([[maybe_unused]] arc::ILibrary& lib, float deltaTime)
     {
         if (_nibblerManager.checkWin(_nibbler)) {
-            nextMap(deltaTime);
+            nextMap(deltaTime, lib);
             return;
         }
         std::vector<Vec2i> blockingPos = _nibblerManager.getBlockingPos();
@@ -122,7 +132,7 @@ public:
         auto textWidth = lib.display().measure(score.str(), lib.fonts().get("Pokemon"), 0, 0).width;
         auto center = (width - textWidth) / 2;
 
-        lib.display().print(score.str(), lib.fonts().get("Pokemon"), center, _map.size());
+        lib.display().print(score.str(), lib.fonts().get("Pokemon"), center, _currentMap.size());
         lib.display().flush();
     }
 
@@ -132,11 +142,19 @@ public:
     }
 
 private:
-    void nextMap(float deltaTime)
+    void nextMap(float deltaTime, arc::ILibrary& lib)
     {
         if (_nibbler.getPositions().size() == 4) {
-            // logic
-            printf("You won\n");
+            lib.sounds().play("LevelUp", 100.0f);
+            uint16_t tmpScore = _nibbler.getScore();
+            _currentMapIndex++;
+            if (_currentMapIndex >= _mapNames.size()) {
+                _currentMapIndex = 0;
+            }
+            _currentMap = maps[_currentMapIndex];
+            _nibblerManager.initMapObjects(_currentMap);
+            _nibbler = Nibbler(_currentMap);
+            _nibbler.setScore(tmpScore);
             return;
         }
         _elapsed += deltaTime;
@@ -222,18 +240,24 @@ private:
 
     void draw_arena(arc::ILibrary& lib)
     {
-        for (uint64_t i = 0; _map.size() + 1 > i; i++) {
-            for (uint64_t j = 0; _map[0].size() > j; j++) {
+        for (uint64_t i = 0; _currentMap.size() + 1 > i; i++) {
+            for (uint64_t j = 0; _currentMap[0].size() > j; j++) {
                 lib.display().draw(lib.textures().get("arena_0"), j, i);
             }
         }
     }
 
 private:
-   std::vector<std::vector<int>> _map;
-   NibblerObjectManager _nibblerManager;
-   Nibbler _nibbler;
-   float _elapsed = 0;
+    std::vector<std::string> _mapNames = {
+        "assets/nibbler/maps/map0.csv",
+        "assets/nibbler/maps/map1.csv",
+    };
+    std::vector<std::vector<std::vector<int>>> maps;
+    std::vector<std::vector<int>> _currentMap;
+    NibblerObjectManager _nibblerManager;
+    Nibbler _nibbler;
+    float _elapsed = 0;
+    uint16_t _currentMapIndex = 0;
 };
 
 extern "C" arc::IGame* entrypoint()

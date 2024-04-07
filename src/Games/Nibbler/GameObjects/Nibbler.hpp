@@ -8,6 +8,7 @@
 #pragma once
 
 #include "SnakeLib/SnakeObject/ASnakeObject.hpp"
+#include <cstdint>
 
 class Nibbler : public ASnakeObject {
     public:

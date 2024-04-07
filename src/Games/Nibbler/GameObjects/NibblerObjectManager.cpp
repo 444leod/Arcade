@@ -32,7 +32,6 @@ void NibblerObjectManager::update(Vec2i objectCollided, ASnakeObject& snake, [[m
                 obj->setPos(Vec2i{-1, -1});
         }
     }
-
 }
 
 bool NibblerObjectManager::checkWin(ASnakeObject& snake)
@@ -73,6 +72,7 @@ void NibblerObjectManager::handleAutoRedirection(ASnakeObject& snake, Vec2i bloc
 
 void NibblerObjectManager::initMapObjects(std::vector<std::vector<int>> map)
 {
+    _gameObjects.clear();
     for (uint16_t y = 0; y < map.size(); y++) {
         for (uint16_t x = 0; x < map[y].size(); x++) {
             switch (map[y][x]) {
