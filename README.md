@@ -41,6 +41,8 @@ Pressing `ESCAPE` in any game will make you come back into the menu, and you can
 ## Our games
 
 To switch game, press `ESCAPE` will move you back to the menu.
+You can also press `I` or `K` to switch to the previous or next game.
+`ENTER` will restart the game from the beginning.
 
 ### Snake
 
