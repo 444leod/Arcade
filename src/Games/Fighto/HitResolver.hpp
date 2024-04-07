@@ -7,7 +7,11 @@
 
 #pragma once
 
+#include <vector>
 #include "Hit.hpp"
+
+class Champion;
+class Hit;
 
 class HitResolver {
     public:

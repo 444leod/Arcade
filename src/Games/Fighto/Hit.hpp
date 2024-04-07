@@ -10,6 +10,8 @@
 #include "Champion.hpp"
 #include "Vector.hpp"
 
+class Champion;
+
 class Hit {
     public:
         Hit(fVector position, fVector size, Champion& source);

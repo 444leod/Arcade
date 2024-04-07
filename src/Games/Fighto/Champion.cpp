@@ -23,10 +23,18 @@ void Champion::draw(arc::ILibrary& lib) const
 
 void Champion::input(float xaxis, bool jump)
 {
+    // todo: wait until end of lag
     if (xaxis != 0)
         this->_velocity.x = xaxis * this->_maxspeed;
     if (jump && this->_grounded)
         this->_velocity.y = this->_jumpforce;
+}
+
+void Champion::input(HitResolver& hits)
+{
+    Hit hit(this->_postion - this->_size, this->_size, *this);
+    hits.add(hit);
+    // todo: add lag
 }
 
 void Champion::update(float dt)
@@ -42,4 +50,10 @@ void Champion::update(float dt)
     }
     // if approximately at ground level
     this->_grounded = std::abs(_postion.y - 14.f) < 0.01f;
+}
+
+void Champion::damage(float amount)
+{
+    this->_lifepoints -= amount;
+    //if (this->_lifepoints <= 0.f) death();
 }
