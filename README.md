@@ -34,6 +34,7 @@ Press `I`, `K` to select the game you want to play.
 Press `J`, `L` to select the graphical library you want to use.
 
 Pressing `ESCAPE` in any game will make you come back into the menu, and you can close the menu by pressing `ESCAPE`.
+
 ## Our games
 
 To switch game, press `ESCAPE` will move you back to the menu.
@@ -62,6 +63,16 @@ Ghosts will reappear after getting back to the base.
 You can cross borders, it will teleport you to the otherside.
 You can also pause the game by pressing `P`, press it back to come back in the game.
 
+### Nibbler
+
+Use `Z`, `Q`, `S`, `D` to move the nibbler.
+
+Try to eat as many candies as possible to increase your score will avoiding the nibbler's body.
+
+Consumables:
+- ![](./assets//snake/images/super_candy.png) **Super-Candy**:  Increases the snake's size by 1 and is worth 10 score points. It has the side effect of increasing the snake's speed, be careful!
+
+After succefully eating all the super-candies on the map, the nibbler will shrink to its original size and a new map will be appear, try to get the highest score possible!
 
 ## Our Graphical Libraries
 
