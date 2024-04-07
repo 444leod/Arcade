@@ -52,7 +52,7 @@ graphicals_re:
 tests_run:
 	@exit 0
 
-bonuss:
+bonus:
 	@make -s -C ./bonus re LIB_DIR=$(LIB_DIR) INC_DIR=$(INC_DIR)
 
 init: install-hooks install-mango
@@ -66,5 +66,5 @@ install-mango:
 	@chmod +x ./init/install-mango.sh
 	@./init/install-mango.sh
 
-.PHONY: all clean fclean re
+.PHONY: all clean fclean re bonus
 .SILENT: run
