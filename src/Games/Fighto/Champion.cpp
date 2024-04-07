@@ -38,6 +38,7 @@ void Champion::input(float xaxis, int yaxis)
 void Champion::input(HitResolver& hits)
 {
     if (!this->_alive) return;
+    if (this->_inputlag > 0.f) return;
 
     float normalized = this->_velocity.x == 0.f ? 0.f : this->_velocity.x / std::abs(this->_velocity.x);
     fVector offset = { this->_size.x * normalized, 0.f };
@@ -45,7 +46,7 @@ void Champion::input(HitResolver& hits)
 
     Hit hit(25.f, this->_position + offset, this->_size, *this);
     hits.add(hit);
-    // todo: add lag
+    this->_inputlag = 0.35f;
 }
 
 void Champion::update(float dt)
@@ -63,6 +64,8 @@ void Champion::update(float dt)
     }
     // if approximately at ground level
     this->_grounded = std::abs(_position.y - 14.f) < 0.01f;
+
+    if (this->_inputlag > 0.f) this->_inputlag -= dt;
 }
 
 void Champion::damage(float amount)

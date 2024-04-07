@@ -37,6 +37,7 @@ class Champion {
         const fVector _size = {1.f, 1.f};
 
         bool _alive = true;
+        float _inputlag = 0.f;
         float _lifepoints = 100.f;
         arc::Color _color = { 255, 0, 0, 255 };
         fVector _position = {0.f, 0.f};
