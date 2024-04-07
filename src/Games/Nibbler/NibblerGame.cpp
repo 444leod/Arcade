@@ -20,6 +20,7 @@
 #include <algorithm>
 #include <string>
 #include <filesystem>
+#include <fstream>
 
 class NibblerGame : public arc::IGame {
 public:
@@ -28,9 +29,13 @@ public:
         // Map
         CSVParser<int> parser(_mapNames[0]);
         for (auto &mapName : _mapNames) {
-            if (std::filesystem::exists(mapName) == false) {
+            if (mapName.empty())
+                throw(std::runtime_error("Map Empty"));
+            std::ifstream file(mapName);
+            if (!file.is_open())
+                throw (std::runtime_error("Could not open file"));
+            if (std::filesystem::exists(mapName) == false)
                 throw(std::runtime_error("Map file not found"));
-            }
             parser.setFilename(mapName);
             parser.parse();
             _currentMap = parser.getData();
