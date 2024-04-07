@@ -25,7 +25,7 @@ SnakeObjectManager::SnakeObjectManager() : AGameObjectManager()
 
 SnakeObjectManager::~SnakeObjectManager() {}
 
-void SnakeObjectManager::update(Vec2i objectCollided, SnakeObject& snake, [[maybe_unused]] float deltaTime)
+void SnakeObjectManager::update(Vec2i objectCollided, ASnakeObject& snake, [[maybe_unused]] float deltaTime)
 {
     bool spawnTamato = false;
     bool spawnAguav = false;

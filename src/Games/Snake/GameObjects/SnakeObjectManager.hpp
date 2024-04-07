@@ -21,7 +21,7 @@ class SnakeObjectManager : public AGameObjectManager {
 
         ~SnakeObjectManager();
 
-        void update(Vec2i objectCollided, SnakeObject& snake, float deltaTime) override;
+        void update(Vec2i objectCollided, ASnakeObject& snake, float deltaTime) override;
 
     protected:
     private:

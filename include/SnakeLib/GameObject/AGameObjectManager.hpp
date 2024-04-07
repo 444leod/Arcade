@@ -19,15 +19,19 @@ class AGameObjectManager : public IGameObjectManager{
 
         ~AGameObjectManager() {};
 
-        virtual void update(Vec2i objectCollided, SnakeObject& snake, float deltaTime) = 0;
+        virtual void update(Vec2i objectCollided, ASnakeObject& snake, float deltaTime) = 0;
 
         virtual std::vector<std::pair<Vec2i, std::string>> dump() const;
 
         virtual std::vector<Vec2i> getPos() const;
 
-        virtual std::vector<Vec2i> getForbidenPos(SnakeObject &snake) const;
+        virtual std::vector<Vec2i> getBlockingPos() const;
+
+        virtual std::vector<Vec2i> getForbidenPos(ASnakeObject &snake) const;
         
-        virtual void applyEffects(SnakeObject &snake) const;
+        virtual void applyEffects(ASnakeObject &snake) const;
+
+        virtual uint64_t getSizeByType(IGameObject::Type type) const;
 
     protected:
         std::vector<Vec2i> _basePositions;

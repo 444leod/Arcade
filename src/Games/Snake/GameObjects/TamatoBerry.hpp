@@ -16,7 +16,7 @@ class TamatoBerry : public AGameObject {
         
         ~TamatoBerry() = default;
 
-        void applyEffect(SnakeObject &snake) override;
+        void applyEffect(ASnakeObject &snake) override;
 
     protected:
     private:
