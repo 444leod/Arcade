@@ -9,7 +9,7 @@
 
 LibraryObject::LibraryObject(const std::string &path)
 {
-    this->_path = path.starts_with("./") ? path : "./" + path;
+    this->_path = path;
     this->_handle = dlopen(this->_path.c_str(), RTLD_LAZY);
     if (this->_handle == nullptr)
         return;
@@ -105,7 +105,9 @@ std::shared_ptr<LibraryObject> LibraryLoader::load(const std::string &path, arc:
 
 bool LibraryLoader::path_cmp(const std::string &a, const std::string& b) const
 {
-    std::string _a = a.starts_with("./") ? a : "./" + a;
-    std::string _b = b.starts_with("./") ? b : "./" + b;
+    std::string _a = a.starts_with(".") || a.starts_with("/") ? a : "./" + a;
+    std::string _b = b.starts_with(".") || b.starts_with("/") ? b : "./" + b;
+    _a = _a.starts_with("/") ? "." + _a.substr(std::filesystem::current_path().string().size()) : _a;
+    _b = _b.starts_with("/") ? "." + _b.substr(std::filesystem::current_path().string().size()) : _b;
     return _a == _b;
 }
