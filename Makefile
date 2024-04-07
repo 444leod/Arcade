@@ -20,13 +20,8 @@ clean:
 	@make -s -C src/Core clean 				DIR=$(DIR)
 
 fclean: clean
-<<<<<<< HEAD
-	@make -s -C src/Games/Pacman fclean 	LIB_DIR=$(LIB_DIR)
 	@make -s -C src/Games/Snake fclean 		LIB_DIR=$(LIB_DIR)
 	@make -s -C src/Games/Nibbler fclean 	LIB_DIR=$(LIB_DIR)
-=======
-	@make -s -C src/Games/Snake fclean 	LIB_DIR=$(LIB_DIR)
->>>>>>> 0a9ef44601540df1d559b82ec27f6013467f5a0e
 	@make -s -C src/Graphics/SFML fclean 	LIB_DIR=$(LIB_DIR)
 	@make -s -C src/Graphics/NCurses fclean LIB_DIR=$(LIB_DIR)
 	@make -s -C src/Graphics/SDL2 fclean 	LIB_DIR=$(LIB_DIR)
