@@ -67,7 +67,7 @@ std::string Ghost::getTexture(uint16_t tick)
     pacman::Direction direction;
     Vec2f pos;
     if (this->getDirection() == Vec2i(0, 0))
-        return this->_name + "_start";
+        return _textures[pacman::Direction::NONE][0];
 
     for (auto [dir, vec] : pacman::DirectionToVec2) {
         if (vec == this->getDirection()) {
@@ -79,9 +79,16 @@ std::string Ghost::getTexture(uint16_t tick)
     if (this->getStatus() == pacman::entity::status::DEAD) {
         return "deadghost_" + std::to_string(static_cast<int>(direction));
     } else if (this->getStatus() == pacman::entity::status::SCARED) {
+        #if V2
+        auto entityTexture = entityTextures[direction];
+        if (entityTexture.size() == 0)
+            return "";
+        return "scared" + entityTexture[tick % entityTexture.size()];
+        #else
         std::stringstream ss;
         ss << "scaredghost_" << (tick % 2 + 1);
         return ss.str();
+        #endif
     }
     auto entityTexture = entityTextures[direction];
     if (entityTexture.size() == 0)

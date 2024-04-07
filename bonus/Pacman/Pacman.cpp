@@ -39,18 +39,22 @@ public:
             {IGameState::State::LOSE,   std::make_shared<GameOver>(_currentState, _score)}
         };
         arc::MusicSpecification musicSpec;
+        #if V2
+        musicSpec.path = "assets/pacman/sounds/offline.wav";
+        #else
         musicSpec.path = "assets/pacman-theme.wav";
+        #endif
         musicSpec.loop = true;
         musicSpec.isPlaying = true;
         musicSpec.startOffset = 0;
-        lib.musics().load("pacman-theme", musicSpec);
+        lib.musics().load("main-theme", musicSpec);
 
         for (auto& state : _states) {
             state.second->initialize(lib);
         }
     }
 
-    virtual void onKeyPressed(arc::ILibrary& lib, arc::KeyCode key, [[maybe_unused]] bool shift)
+    virtual void onKeyPressed(arc::ILibrary& lib, arc::KeyCode key, [[maybe_unused]]bool shift)
     {
         _states[_currentState]->onKeyPressed(lib, key);
     }
@@ -109,5 +113,8 @@ extern "C" arc::SharedLibraryType type()
 
 extern "C" const char *name()
 {
+    #if V2
+    return "Pokman";
+    #endif
     return "Pacman";
 }
