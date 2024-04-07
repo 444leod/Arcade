@@ -24,6 +24,7 @@ class Fighto : public arc::IGame
             lib.display().setWidth(32);
             lib.display().setFramerate(60);
 
+            arc::Color white = {255, 255, 255, 255};
             arc::Color green = {100, 255, 100, 255};
             arc::Color red = {255, 100, 100, 255};
 
@@ -32,6 +33,9 @@ class Fighto : public arc::IGame
             });
             lib.textures().load("hit", {
                 {'X', red}, red
+            });
+            lib.fonts().load("font", {
+                white, 16, "assets/regular.ttf"
             });
         }
 

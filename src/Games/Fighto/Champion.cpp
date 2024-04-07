@@ -20,6 +20,9 @@ void Champion::draw(arc::ILibrary& lib) const
 {
     if (!this->_alive) return;
     lib.display().draw(lib.textures().get("player"), this->_position.x, this->_position.y);
+
+    lib.display().print(std::to_string(static_cast<int>(this->_lifepoints)) + "%",
+        lib.fonts().get("font"), this->_position.x, this->_position.y - this->_size.y);
 }
 
 void Champion::input(float xaxis, int yaxis)

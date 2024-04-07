@@ -12,7 +12,7 @@ class Vector
 {
     public:
         Vector(T _x, T _y) : x(_x), y(_y) {}
-        ~Vector();
+        ~Vector() = default;
         T x;
         T y;
 };
