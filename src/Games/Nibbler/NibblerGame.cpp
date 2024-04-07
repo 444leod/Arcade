@@ -268,6 +268,8 @@ private:
     std::vector<std::string> _mapNames = {
         "assets/nibbler/maps/map0.csv",
         "assets/nibbler/maps/map1.csv",
+        "assets/nibbler/maps/map2.csv",
+        "assets/nibbler/maps/map3.csv",
     };
     std::vector<std::vector<std::vector<int>>> maps;
     std::vector<std::vector<int>> _currentMap;
