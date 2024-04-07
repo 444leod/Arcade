@@ -10,7 +10,7 @@
 void GameOver::initialize([[maybe_unused]]arc::ILibrary &lib)
 {}
 
-void GameOver::onKeyPressed([[maybe_unused]]arc::ILibrary &lib, [[maybe_unused]]arc::KeyCode key)
+void GameOver::onKeyPressed([[maybe_unused]]arc::ILibrary &lib, arc::KeyCode key)
 {
     switch (key) {
         case arc::KeyCode::W:
@@ -36,7 +36,7 @@ void GameOver::draw(arc::ILibrary &lib)
     std::vector<std::string> strings = {
         "Game Over!",
         "Your score was: " + std::to_string(_score),
-        "Press W to go back to the game"
+        "Press W to retry"
     };
 
     for (size_t i = 0; i < strings.size(); i++) {
