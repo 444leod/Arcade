@@ -50,7 +50,7 @@ games:
 games_re:
 	@make -s -C src/Games/Pacman re 	LIB_DIR=$(LIB_DIR) INC_DIR=$(INC_DIR)
 	@make -s -C src/Games/Snake re 		LIB_DIR=$(LIB_DIR) INC_DIR=$(INC_DIR)
-	@make -s -C src/Games/Nibbler re 		LIB_DIR=$(LIB_DIR) INC_DIR=$(INC_DIR)
+	@make -s -C src/Games/Nibbler re 	LIB_DIR=$(LIB_DIR) INC_DIR=$(INC_DIR)
 
 graphicals:
 	@make -s -C src/Graphics/NCurses 	LIB_DIR=$(LIB_DIR) INC_DIR=$(INC_DIR)
