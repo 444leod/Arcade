@@ -272,7 +272,7 @@ public:
             init_color(COLOR_MAGENTA, 1000, 0, 1000);
             init_color(COLOR_CYAN, 0, 1000, 1000);
             init_color(COLOR_WHITE, 1000, 1000, 1000);
-            init_color(COLOR_ORANGE, 900, 450, 0); // RGB values range from 0 to 1000
+            init_color(COLOR_ORANGE, 900, 450, 0);
 
             init_pair(1, COLOR_BLACK, COLOR_BLACK);
             init_pair(2, COLOR_RED, COLOR_BLACK);
