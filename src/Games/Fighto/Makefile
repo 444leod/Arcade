@@ -12,7 +12,8 @@ SHARED_FLAGS = -shared
 
 SRC =	Fighto.cpp	\
 		Champion.cpp	\
-		Hit.cpp
+		Hit.cpp	\
+		HitResolver.cpp
 
 all: $(NAME)
 

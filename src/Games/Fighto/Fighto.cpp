@@ -74,7 +74,9 @@ class Fighto : public arc::IGame
 
     private:
         HitResolver _hits;
-        std::vector<Champion> _champs;
+        std::vector<Champion> _champs = {
+            Champion(), Champion()
+        };
 
 };
 
