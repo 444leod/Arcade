@@ -14,17 +14,19 @@ class Champion;
 
 class Hit {
     public:
-        Hit(fVector position, fVector size, Champion& source);
+        Hit(float _damage, fVector position, fVector size, Champion& source);
         ~Hit();
 
-        const fVector position() const { return this->_position; }
-        const fVector size() const { return this->_size; }
+        fVector position() const { return this->_position; }
+        fVector size() const { return this->_size; }
         const Champion& source() const { return this->_source; }
+        float damage() const { return this->_damage; }
 
         bool overlaps(const Champion& other) const;
 
     protected:
     private:
+        const float _damage;
         const fVector _position;
         const fVector _size;
         const Champion& _source;

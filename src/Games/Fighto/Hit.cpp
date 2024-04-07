@@ -7,8 +7,8 @@
 
 #include "Hit.hpp"
 
-Hit::Hit(fVector position, fVector size, Champion& source) :
-    _position(position), _size(size), _source(source),
+Hit::Hit(float damage, fVector position, fVector size, Champion& source) :
+    _damage(damage), _position(position), _size(size), _source(source),
     _cornerA(position), _cornerB(position + size)
 {
 }
@@ -19,7 +19,8 @@ Hit::~Hit()
 
 bool Hit::overlaps(const Champion& other) const
 {
-    // if (other == source) return false;
+    if (this->_source == other)
+        return false;
     auto a = other.position();
     auto b = other.position() + other.size();
 

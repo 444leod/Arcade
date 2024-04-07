@@ -8,7 +8,7 @@
 #include "Champion.hpp"
 #include "Physics.hpp"
 
-Champion::Champion()
+Champion::Champion(id_t id) : _id(id)
 {
 }
 
@@ -18,42 +18,56 @@ Champion::~Champion()
 
 void Champion::draw(arc::ILibrary& lib) const
 {
-    lib.display().draw(lib.textures().get("player"), this->_postion.x, this->_postion.y);
+    if (!this->_alive) return;
+    lib.display().draw(lib.textures().get("player"), this->_position.x, this->_position.y);
 }
 
-void Champion::input(float xaxis, bool jump)
+void Champion::input(float xaxis, int yaxis)
 {
+    if (!this->_alive) return;
+
     // todo: wait until end of lag
     if (xaxis != 0)
         this->_velocity.x = xaxis * this->_maxspeed;
-    if (jump && this->_grounded)
+    if (yaxis > 0 && this->_grounded)
         this->_velocity.y = this->_jumpforce;
+    if (yaxis < 0 && this->_grounded)
+        this->_velocity.x = 0;
 }
 
 void Champion::input(HitResolver& hits)
 {
-    Hit hit(this->_postion - this->_size, this->_size, *this);
+    if (!this->_alive) return;
+
+    float normalized = this->_velocity.x == 0.f ? 0.f : this->_velocity.x / std::abs(this->_velocity.x);
+    fVector offset = { this->_size.x * normalized, 0.f };
+    if (normalized == 0.f) offset.y -= this->_size.y;
+
+    Hit hit(25.f, this->_position + offset, this->_size, *this);
     hits.add(hit);
     // todo: add lag
 }
 
 void Champion::update(float dt)
 {
-    this->_postion.x += this->_velocity.x * dt;
-    this->_postion.y -= this->_velocity.y * dt; // -= because down is technically inverted
+    if (!this->_alive) return;
+
+    this->_position.x += this->_velocity.x * dt;
+    this->_position.y -= this->_velocity.y * dt; // -= because down is technically inverted
 
     this->_velocity.y -= GRAVITY; // falling faster and faster
     // do not fall under a certain height
-    if (this->_postion.y >= FLOOR) {
-        this->_postion.y = FLOOR;
+    if (this->_position.y >= FLOOR) {
+        this->_position.y = FLOOR;
         this->_velocity.y = 0.f;
     }
     // if approximately at ground level
-    this->_grounded = std::abs(_postion.y - 14.f) < 0.01f;
+    this->_grounded = std::abs(_position.y - 14.f) < 0.01f;
 }
 
 void Champion::damage(float amount)
 {
     this->_lifepoints -= amount;
-    //if (this->_lifepoints <= 0.f) death();
+    if (this->_lifepoints <= 0.f)
+        this->_alive = false;
 }

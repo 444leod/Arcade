@@ -12,6 +12,9 @@
 
 class Champion;
 class Hit;
+namespace arc {
+    class ILibrary;
+}
 
 class HitResolver {
     public:
@@ -19,6 +22,7 @@ class HitResolver {
         ~HitResolver();
 
         void add(const Hit& hit);
+        void debug(arc::ILibrary& lib);
         void resolve(std::vector<Champion>& champions);
 
     protected:
