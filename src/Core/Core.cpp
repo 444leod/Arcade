@@ -169,28 +169,26 @@ class Core
                 }
 
                 this->_cur_lib->display().update(deltaTime);
-                while (_cur_lib->display().pollEvent(event)) {
-                    if (event.type == arc::EventType::KEY_PRESSED && (event.key.code == arc::KeyCode::J || event.key.code == arc::KeyCode::L)) {
-                        lib_switch = true;
-                        if (!this->_menu->running())
-                            this->_menu->onKeyPressed(*_cur_lib, event.key.code, event.key.shift);
-                    }
-                    if (event.type == arc::EventType::KEY_PRESSED && (event.key.code == arc::KeyCode::I || event.key.code == arc::KeyCode::K)) {
-                        enter_game = true;
-                        if (!this->_menu->running())
-                            this->_menu->onKeyPressed(*_cur_lib, event.key.code, event.key.shift);
-                    }
 
+                while (_cur_lib->display().pollEvent(event)) {
+                    if (event.type == arc::EventType::MOUSE_BUTTON_PRESSED) {
+                        this->_cur_game->onMouseButtonPressed(*_cur_lib, event.mouse.button, event.mouse.x, event.mouse.y);
+                        continue;
+                    }
+                    if (event.key.code == arc::KeyCode::J || event.key.code == arc::KeyCode::L)
+                        lib_switch = true;
+                    if (event.key.code == arc::KeyCode::I || event.key.code == arc::KeyCode::K)
+                        enter_game = !this->_menu->running();
                     if (event.type == arc::EventType::KEY_PRESSED && event.key.code == arc::KeyCode::ENTER)
                         enter_game = true;
                     if (event.type == arc::EventType::KEY_PRESSED && event.key.code == arc::KeyCode::ESCAPE)
                         escape_game = true;
 
-                    if (event.type == arc::EventType::KEY_PRESSED)
-                        this->_cur_game->onKeyPressed(*_cur_lib, event.key.code, event.key.shift);
-                    if (event.type == arc::EventType::MOUSE_BUTTON_PRESSED)
-                        this->_cur_game->onMouseButtonPressed(*_cur_lib, event.mouse.button, event.mouse.x, event.mouse.y);
+                    this->_cur_game->onKeyPressed(*_cur_lib, event.key.code, event.key.shift);
+                    if (!this->_menu->running())
+                        this->_menu->onKeyPressed(*_cur_lib, event.key.code, event.key.shift);
                 }
+
                 this->_cur_game->update(*_cur_lib, deltaTime);
                 this->_cur_game->draw(*_cur_lib);
             }
