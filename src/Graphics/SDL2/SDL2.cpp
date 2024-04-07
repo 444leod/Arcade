@@ -248,13 +248,16 @@ public:
         std::string path, SDLRendering& rendering,
         std::optional<arc::Rect<uint32_t>> rect)
     {
-        if (std::holds_alternative<arc::Color>(spec.graphical))
-            _color = std::get<arc::Color>(spec.graphical);
-
         this->_spec = spec;
-        this->_texture.reset(
-            IMG_LoadTexture(rendering.renderer().get(), path.c_str()),
-            SDL_DestroyTexture);
+        if (std::holds_alternative<arc::Color>(spec.graphical)) {
+            this->_color = std::get<arc::Color>(spec.graphical);
+        } else {
+            this->_texture.reset(
+                IMG_LoadTexture(rendering.renderer().get(), path.c_str()),
+                SDL_DestroyTexture);
+            if (this->_texture == nullptr)
+                return false;
+        }
 
         if (rect.has_value())
         {
@@ -339,6 +342,8 @@ public:
     {
         this->_spec = spec;
         this->_font.reset(TTF_OpenFont(spec.path.c_str(), spec.size), TTF_CloseFont);
+        if (this->_font == nullptr)
+            return false;
         this->_color = {
             .r = spec.color.red,
             .g = spec.color.green,
@@ -503,45 +508,39 @@ public:
         return true;
     }
 
-    static arc::Key MapSDLKey(SDL_Keycode key)
+    static arc::KeyCode MapSDLKey(SDL_Keycode key)
     {
         if (key >= SDL_KeyCode::SDLK_a && key <= SDL_KeyCode::SDLK_z)
-            return static_cast<arc::Key>(static_cast<uint32_t>(arc::Key::A) + key - SDL_KeyCode::SDLK_a);
+            return static_cast<arc::KeyCode>(static_cast<uint32_t>(arc::KeyCode::A) + key - SDL_KeyCode::SDLK_a);
 
         switch (key)
         {
-        case SDLK_UP:
-            return arc::Key::UP;
-        case SDLK_DOWN:
-            return arc::Key::DOWN;
-        case SDLK_RIGHT:
-            return arc::Key::RIGHT;
-        case SDLK_LEFT:
-            return arc::Key::LEFT;
-        case SDL_KeyCode::SDLK_SPACE:
-            return arc::Key::SPACE;
-        case SDL_KeyCode::SDLK_RETURN:
-            return arc::Key::ENTER;
-        case SDL_KeyCode::SDLK_ESCAPE:
-            return arc::Key::ESCAPE;
-        default:
-            return arc::Key::UNKNOWN;
+            case SDLK_UP:                       return arc::KeyCode::UP;
+            case SDLK_DOWN:                     return arc::KeyCode::DOWN;
+            case SDLK_RIGHT:                    return arc::KeyCode::RIGHT;
+            case SDLK_LEFT:                     return arc::KeyCode::LEFT;
+            case SDL_KeyCode::SDLK_SPACE:       return arc::KeyCode::SPACE;
+            case SDL_KeyCode::SDLK_TAB:         return arc::KeyCode::TAB;
+            case SDL_KeyCode::SDLK_BACKSPACE:   return arc::KeyCode::DELETE;
+            case SDL_KeyCode::SDLK_RETURN:      return arc::KeyCode::ENTER;
+            case SDL_KeyCode::SDLK_ESCAPE:      return arc::KeyCode::ESCAPE;
+            default:                            return arc::KeyCode::UNKNOWN;
         }
-        return arc::Key::UNKNOWN;
+        return arc::KeyCode::UNKNOWN;
     }
 
     static arc::MouseButton MapSDLButton(uint8_t button)
     {
         switch (button)
         {
-        case SDL_BUTTON_LEFT:
-            return arc::MouseButton::LEFT;
-        case SDL_BUTTON_RIGHT:
-            return arc::MouseButton::RIGHT;
-        case SDL_BUTTON_MIDDLE:
-            return arc::MouseButton::MIDDLE;
-        default:
-            break;
+            case SDL_BUTTON_LEFT:
+                return arc::MouseButton::LEFT;
+            case SDL_BUTTON_RIGHT:
+                return arc::MouseButton::RIGHT;
+            case SDL_BUTTON_MIDDLE:
+                return arc::MouseButton::MIDDLE;
+            default:
+                break;
         }
         return arc::MouseButton::UNKNOWN;
     }
@@ -555,24 +554,25 @@ public:
         {
             switch (sdlEvent.type)
             {
-            case SDL_EventType::SDL_QUIT:
-                this->_opened = false;
-                break;
-            case SDL_EventType::SDL_KEYDOWN:
-                arcEvent.type = arc::EventType::KEY_PRESSED;
-                arcEvent.key = MapSDLKey(sdlEvent.key.keysym.sym);
-                _events.push_back(arcEvent);
-                break;
-            case SDL_EventType::SDL_MOUSEBUTTONDOWN:
-                arcEvent.type = arc::EventType::MOUSE_BUTTON_PRESSED;
-                arcEvent.mouse = {
-                    .button = MapSDLButton(sdlEvent.button.button),
-                    .x = sdlEvent.button.x / static_cast<int>(this->_tileSize),
-                    .y = sdlEvent.button.y / static_cast<int>(this->_tileSize)};
-                _events.push_back(arcEvent);
-                break;
-            default:
-                break;
+                case SDL_EventType::SDL_QUIT:
+                    this->_opened = false;
+                    break;
+                case SDL_EventType::SDL_KEYDOWN:
+                    arcEvent.type = arc::EventType::KEY_PRESSED;
+                    arcEvent.key.code = MapSDLKey(sdlEvent.key.keysym.sym);
+                    arcEvent.key.shift = (sdlEvent.key.keysym.mod == SDL_Keymod::KMOD_SHIFT);
+                    _events.push_back(arcEvent);
+                    break;
+                case SDL_EventType::SDL_MOUSEBUTTONDOWN:
+                    arcEvent.type = arc::EventType::MOUSE_BUTTON_PRESSED;
+                    arcEvent.mouse = {
+                        .button = MapSDLButton(sdlEvent.button.button),
+                        .x = sdlEvent.button.x / static_cast<int>(this->_tileSize),
+                        .y = sdlEvent.button.y / static_cast<int>(this->_tileSize)};
+                    _events.push_back(arcEvent);
+                    break;
+                default:
+                    break;
             }
         }
     }
@@ -587,6 +587,7 @@ public:
     {
         if (texture == nullptr)
             return;
+
         auto tex = std::dynamic_pointer_cast<SDLTexture>(texture);
         auto rect = SDL_Rect{};
         rect.x = static_cast<int>(x * this->_tileSize);
@@ -606,10 +607,11 @@ public:
 
     virtual void print(const std::string &string, std::shared_ptr<arc::IFont> font, float x, float y)
     {
-        if (font == nullptr)
+        if (font == nullptr || string.empty())
             return;
-        auto attr = dynamic_cast<const SDLFont &>(*font);
-        auto surf = TTF_RenderText_Solid(attr.font().get(), string.c_str(), attr.color());
+
+        auto f = std::dynamic_pointer_cast<SDLFont>(font);
+        auto surf = TTF_RenderText_Solid(f->font().get(), string.c_str(), f->color());
         auto tex = SDL_CreateTextureFromSurface(this->_sdl.renderer().get(), surf);
         SDL_Rect rect = {
             static_cast<int>(x * static_cast<int>(this->_tileSize)),
@@ -622,10 +624,11 @@ public:
 
     virtual arc::Rect<float> measure(const std::string &string, std::shared_ptr<arc::IFont> font, float x, float y)
     {
-        if (font == nullptr)
-            return arc::Rect<float>();
-        auto attr = dynamic_cast<const SDLFont &>(*font);
-        auto surf = TTF_RenderText_Solid(attr.font().get(), string.c_str(), attr.color());
+        if (font == nullptr || string.empty())
+            return arc::Rect<float> { 0.f, 0.f, x, y };
+
+        auto f = std::dynamic_pointer_cast<SDLFont>(font);
+        auto surf = TTF_RenderText_Solid(f->font().get(), string.c_str(), f->color());
         auto w = static_cast<float>(surf->w) / static_cast<float>(this->_tileSize);
         auto h = static_cast<float>(surf->h) / static_cast<float>(this->_tileSize);
         arc::Rect<float> rect = {x, y, w, h};
