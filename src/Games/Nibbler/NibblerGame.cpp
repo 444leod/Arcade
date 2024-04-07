@@ -71,6 +71,10 @@ public:
         music.path = "assets/nibbler/sounds/Cieux.wav";
         music.loop = true;
         lib.musics().load("Cieux", music);
+
+        music.path = "assets/snake/sounds/GameOver.wav";
+        lib.musics().load("GameOver", music);
+
         lib.musics().play("Cieux", 100.0f);
     }
 
@@ -121,8 +125,8 @@ public:
     virtual void draw(arc::ILibrary& lib)
     {
         std::stringstream score;
-
         score << "Score: " << _nibbler.getScore();
+        std::size_t width = lib.display().width();
 
         lib.display().clear(arc::Color{0, 0, 255, 0});
         draw_arena(lib);
@@ -131,14 +135,20 @@ public:
                 lib.display().draw(lib.textures().get(part.second), part.first.x, part.first.y);
             }
         }
+        else {
+            if (lib.musics().isPlaying("GameOver") == false)
+                lib.musics().play("GameOver", 100.0f);
+            float textWidth = lib.display().measure("Game Over", lib.fonts().get("Pokemon"), 0, 0).width;
+            float center = (width - textWidth) / 2;
+            lib.musics().stop("Cieux");
+            lib.display().print("Game Over", lib.fonts().get("Pokemon"), center, _currentMap.size() / 2);
+        }
         for (auto &part : _nibblerManager.dump()) {
                 lib.display().draw(lib.textures().get(part.second), part.first.x, part.first.y);
             }
 
-        auto width = lib.display().width();
-        auto textWidth = lib.display().measure(score.str(), lib.fonts().get("Pokemon"), 0, 0).width;
-        auto center = (width - textWidth) / 2;
-
+        float textWidth = lib.display().measure(score.str(), lib.fonts().get("Pokemon"), 0, 0).width;
+        float center = (width - textWidth) / 2;
         lib.display().print(score.str(), lib.fonts().get("Pokemon"), center, _currentMap.size());
         lib.display().flush();
     }

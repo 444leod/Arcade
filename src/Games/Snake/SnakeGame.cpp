@@ -46,9 +46,13 @@ public:
         lib.sounds().load("crunch", sound);
 
         arc::MusicSpecification music;
-        music.path = "assets/nibbler/sounds/Porte.wav";
+        music.path = "assets/snake/sounds/Porte.wav";
         music.loop = true;
         lib.musics().load("Porte", music);
+
+        music.path = "assets/snake/sounds/GameOver.wav";
+        lib.musics().load("GameOver", music);
+
         lib.musics().play("Porte", 100.0f);
 
         // Set the random
@@ -90,6 +94,7 @@ public:
     {
         std::stringstream score;
         score << "Score: " << _snake.getScore();
+        std::size_t width = lib.display().width();
 
         lib.display().clear(arc::Color{0, 0, 255, 0});
         draw_arena(lib);
@@ -98,14 +103,20 @@ public:
                 lib.display().draw(lib.textures().get(part.second), part.first.x, part.first.y);
             }
         }
+        else {
+            if (lib.musics().isPlaying("GameOver") == false)
+                lib.musics().play("GameOver", 100.0f);
+            float textWidth = lib.display().measure("Game Over", lib.fonts().get("Pokemon"), 0, 0).width;
+            float center = (width - textWidth) / 2;
+            lib.musics().stop("Porte");
+            lib.display().print("Game Over", lib.fonts().get("Pokemon"), center, ARENA_HEIGHT / 2);
+        }
         for (auto &part : _snakeManager.dump()) {
                 lib.display().draw(lib.textures().get(part.second), part.first.x, part.first.y);
             }
-
-        auto width = lib.display().width();
-        auto textWidth = lib.display().measure(score.str(), lib.fonts().get("Pokemon"), 0, 0).width;
-        auto center = (width - textWidth) / 2;
-
+    
+        float textWidth = lib.display().measure(score.str(), lib.fonts().get("Pokemon"), 0, 0).width;
+        float center = (width - textWidth) / 2;
         lib.display().print(score.str(), lib.fonts().get("Pokemon"), center, ARENA_HEIGHT + 2);
         lib.display().flush();
     }
