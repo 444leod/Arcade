@@ -8,10 +8,13 @@
 #pragma once
 
 template<typename T>
-struct Vector
+class Vector
 {
-    T x;
-    T y;
+    public:
+        Vector(T _x, T _y) : x(_x), y(_y) {}
+        ~Vector();
+        T x;
+        T y;
 };
 
 template<typename T>
