@@ -65,15 +65,22 @@ public:
         arc::SoundSpecification sound;
         sound.path = "assets/nibbler/sounds/level_up.wav";
         lib.sounds().load("LevelUp", sound);
+
+        //Music
+        arc::MusicSpecification music;
+        music.path = "assets/nibbler/sounds/Cieux.wav";
+        music.loop = true;
+        lib.musics().load("Cieux", music);
+        lib.musics().play("Cieux", 100.0f);
     }
 
-    virtual void onKeyPressed([[maybe_unused]] arc::ILibrary& lib, arc::Key key)
+    virtual void onKeyPressed([[maybe_unused]] arc::ILibrary& lib, arc::KeyCode key, [[maybe_unused]] bool shift)
     {
         switch (key) {
-            case arc::Key::Z: _nibbler.setDirectionQueue({0, -1}); break;
-            case arc::Key::Q: _nibbler.setDirectionQueue({-1, 0}); break;
-            case arc::Key::S: _nibbler.setDirectionQueue({0, 1}); break;
-            case arc::Key::D: _nibbler.setDirectionQueue({1, 0}); break;
+            case arc::KeyCode::Z: _nibbler.setDirectionQueue({0, -1}); break;
+            case arc::KeyCode::Q: _nibbler.setDirectionQueue({-1, 0}); break;
+            case arc::KeyCode::S: _nibbler.setDirectionQueue({0, 1}); break;
+            case arc::KeyCode::D: _nibbler.setDirectionQueue({1, 0}); break;
             default: break;
         }
     }

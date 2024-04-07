@@ -36,3 +36,6 @@ pacman.txt
 ncurses.cpp
 txr.txt
 Commons
+.gitignore
+Geometry*
+geometry*

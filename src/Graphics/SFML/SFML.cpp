@@ -12,14 +12,17 @@
 #include <SFML/Audio.hpp>
 #include <deque>
 #include <memory>
-#include <cmath>
 
 class SFMLTexture : public arc::ITexture {
 public:
     SFMLTexture() = default;
     virtual ~SFMLTexture() = default;
 
-    void load(const arc::TextureSpecification& spec, const std::shared_ptr<sf::Texture>& texture, std::optional<arc::Rect<uint32_t>> rect)
+    void load(
+        const arc::TextureSpecification& spec,
+        const std::shared_ptr<sf::Texture>& texture,
+        std::optional<arc::Rect<uint32_t>> rect
+    )
     {
         this->_spec = spec;
         this->_texture = texture;
@@ -92,6 +95,8 @@ public:
 
     virtual std::shared_ptr<arc::ITexture> get(const std::string& name)
     {
+        if (this->_textures.find(name) == this->_textures.end())
+            return nullptr;
         return this->_textures.at(name);
     }
 
@@ -120,7 +125,7 @@ public:
         this->_spec = spec;
         if (!this->_font.loadFromFile(spec.path))
             return false;
-        this->_color =  sf::Color(spec.color.red, spec.color.blue, spec.color.blue, spec.color.alpha);
+        this->_color =  sf::Color(spec.color.red, spec.color.green, spec.color.blue, spec.color.alpha);
         this->_size = spec.size;
         return true;
     }
@@ -154,6 +159,8 @@ public:
 
     virtual std::shared_ptr<arc::IFont> get(const std::string &name)
     {
+        if (this->_fonts.find(name) == this->_fonts.end())
+            return nullptr;
         return this->_fonts.at(name);
     }
 
@@ -430,29 +437,31 @@ public:
         return this->_height;
     }
 
-    static arc::Key MapSFMLKey(sf::Keyboard::Key key)
+    static arc::KeyCode MapSFMLKey(sf::Keyboard::Key key)
     {
-        if (key < 26) return static_cast<arc::Key>(key);
-        if (key == sf::Keyboard::Up) return arc::Key::UP;
-        if (key == sf::Keyboard::Down) return arc::Key::DOWN;
-        if (key == sf::Keyboard::Left) return arc::Key::LEFT;
-        if (key == sf::Keyboard::Right) return arc::Key::RIGHT;
-        if (key == sf::Keyboard::Space) return arc::Key::SPACE;
-        if (key == sf::Keyboard::Enter) return arc::Key::ENTER;
-        if (key == sf::Keyboard::Escape) return arc::Key::ESCAPE;
-        return arc::Key::UNKNOWN;
+        if (key < 26) return static_cast<arc::KeyCode>(key);
+        if (key == sf::Keyboard::Up) return arc::KeyCode::UP;
+        if (key == sf::Keyboard::Down) return arc::KeyCode::DOWN;
+        if (key == sf::Keyboard::Left) return arc::KeyCode::LEFT;
+        if (key == sf::Keyboard::Right) return arc::KeyCode::RIGHT;
+        if (key == sf::Keyboard::Space) return arc::KeyCode::SPACE;
+        if (key == sf::Keyboard::Enter) return arc::KeyCode::ENTER;
+        if (key == sf::Keyboard::Escape) return arc::KeyCode::ESCAPE;
+        if (key == sf::Keyboard::Tab) return arc::KeyCode::TAB;
+        if (key == sf::Keyboard::BackSpace) return arc::KeyCode::DELETE;
+        return arc::KeyCode::UNKNOWN;
     }
 
-    static sf::Keyboard::Key MapArcKey(arc::Key key)
+    static sf::Keyboard::Key MapArcKey(arc::KeyCode key)
     {
         if (static_cast<uint64_t>(key) < 26) return static_cast<sf::Keyboard::Key>(key);
-        if (key == arc::Key::UP) return sf::Keyboard::Up;
-        if (key == arc::Key::DOWN) return sf::Keyboard::Down;
-        if (key == arc::Key::LEFT) return sf::Keyboard::Left;
-        if (key == arc::Key::RIGHT) return sf::Keyboard::Right;
-        if (key == arc::Key::SPACE) return sf::Keyboard::Space;
-        if (key == arc::Key::ENTER) return sf::Keyboard::Enter;
-        if (key == arc::Key::ESCAPE) return sf::Keyboard::Escape;
+        if (key == arc::KeyCode::UP) return sf::Keyboard::Up;
+        if (key == arc::KeyCode::DOWN) return sf::Keyboard::Down;
+        if (key == arc::KeyCode::LEFT) return sf::Keyboard::Left;
+        if (key == arc::KeyCode::RIGHT) return sf::Keyboard::Right;
+        if (key == arc::KeyCode::SPACE) return sf::Keyboard::Space;
+        if (key == arc::KeyCode::ENTER) return sf::Keyboard::Enter;
+        if (key == arc::KeyCode::ESCAPE) return sf::Keyboard::Escape;
         return sf::Keyboard::Unknown;
     }
 
@@ -484,7 +493,8 @@ public:
                 break;
             case sf::Event::KeyPressed:
                 e.type = arc::EventType::KEY_PRESSED;
-                e.key = SFMLDisplay::MapSFMLKey(event.key.code);
+                e.key.code = SFMLDisplay::MapSFMLKey(event.key.code);
+                e.key.shift = event.key.shift;
                 this->_events.push_back(std::move(e));
                 break;
             case sf::Event::MouseButtonPressed:
@@ -527,6 +537,9 @@ public:
 
     virtual void draw(std::shared_ptr<arc::ITexture> texture, float x, float y)
     {
+        if (texture == nullptr)
+            return;
+
         auto rect = sf::RectangleShape{sf::Vector2f{static_cast<float>(this->_tileSize), static_cast<float>(this->_tileSize)}};
         auto tex = std::dynamic_pointer_cast<SFMLTexture>(texture);
 
@@ -538,6 +551,9 @@ public:
 
     virtual void print(const std::string& string, std::shared_ptr<arc::IFont> font, float x, float y)
     {
+        if (font == nullptr)
+            return;
+
         auto attr = std::dynamic_pointer_cast<SFMLFont>(font);
         auto text = sf::Text(sf::String(string), attr->font(), attr->size());
         text.setFillColor(attr->color());
@@ -547,6 +563,9 @@ public:
 
     virtual arc::Rect<float> measure(const std::string& string, std::shared_ptr<arc::IFont> font, float x, float y)
     {
+        if (font == nullptr)
+            return arc::Rect<float> { 0.f, 0.f, 0.f, 0.f };
+
         auto attr = std::dynamic_pointer_cast<SFMLFont>(font);
         auto text = sf::Text(sf::String(string), attr->font(), attr->size());
         text.setFillColor(attr->color());

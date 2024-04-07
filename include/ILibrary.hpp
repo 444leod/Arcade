@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include "SharedLibraryType.hpp"
 #include "IDisplay.hpp"
 #include "ISoundManager.hpp"
 #include "IMusicManager.hpp"

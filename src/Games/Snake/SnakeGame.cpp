@@ -45,18 +45,24 @@ public:
         sound.path = "assets/snake/sounds/crunch.wav";
         lib.sounds().load("crunch", sound);
 
+        arc::MusicSpecification music;
+        music.path = "assets/nibbler/sounds/Porte.wav";
+        music.loop = true;
+        lib.musics().load("Porte", music);
+        lib.musics().play("Porte", 100.0f);
+
         // Set the random
         std::srand(std::time(nullptr));
     }
 
-    virtual void onKeyPressed([[maybe_unused]] arc::ILibrary& lib, arc::Key key)
+    virtual void onKeyPressed([[maybe_unused]] arc::ILibrary& lib, arc::KeyCode key, [[maybe_unused]] bool shift)
     {
         bool playSound = false;
         switch (key) {
-            case arc::Key::Z: playSound = _snake.setDirection({0, -1}); break;
-            case arc::Key::Q: playSound = _snake.setDirection({-1, 0}); break;
-            case arc::Key::S: playSound = _snake.setDirection({0, 1}); break;
-            case arc::Key::D: playSound = _snake.setDirection({1, 0}); break;
+            case arc::KeyCode::Z: playSound = _snake.setDirection({0, -1}); break;
+            case arc::KeyCode::Q: playSound = _snake.setDirection({-1, 0}); break;
+            case arc::KeyCode::S: playSound = _snake.setDirection({0, 1}); break;
+            case arc::KeyCode::D: playSound = _snake.setDirection({1, 0}); break;
             default: break;
         }
         if (playSound)

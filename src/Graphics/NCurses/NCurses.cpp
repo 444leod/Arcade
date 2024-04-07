@@ -8,7 +8,9 @@
 #include "ILibrary.hpp"
 #include "SharedLibraryType.hpp"
 
+#include <iostream>
 #include <map>
+#include <cmath>
 #include <deque>
 #include <thread>
 #include <ncurses.h>
@@ -270,6 +272,7 @@ public:
             init_color(COLOR_MAGENTA, 1000, 0, 1000);
             init_color(COLOR_CYAN, 0, 1000, 1000);
             init_color(COLOR_WHITE, 1000, 1000, 1000);
+            init_color(COLOR_ORANGE, 900, 450, 0);
 
             init_pair(1, COLOR_BLACK, COLOR_BLACK);
             init_pair(2, COLOR_RED, COLOR_BLACK);
@@ -278,7 +281,10 @@ public:
             init_pair(5, COLOR_BLUE, COLOR_BLACK);
             init_pair(6, COLOR_MAGENTA, COLOR_BLACK);
             init_pair(7, COLOR_CYAN, COLOR_BLACK);
-            init_pair(8, COLOR_WHITE, COLOR_WHITE);
+            init_pair(8, COLOR_WHITE, COLOR_BLACK);
+            init_pair(9, COLOR_ORANGE, COLOR_BLACK);
+            init_pair(10, COLOR_WHITE, COLOR_WHITE);
+
         }
 
         this->_title = "";
@@ -311,13 +317,6 @@ public:
     virtual void setWidth(std::size_t width)
     {
         this->_width = width;
-    }
-
-    virtual size_t getPairColor(const arc::Color color) const
-    {
-        if (_colorPairs.find({color.red, color.green, color.blue}) != _colorPairs.end())
-            return _colorPairs.at({color.red, color.green, color.blue});
-        return 1;
     }
 
     virtual void setHeight(std::size_t height)
@@ -360,19 +359,21 @@ public:
         _opened = false;
     }
 
-    static arc::Key MapNCursesKey(int key)
+    static arc::KeyCode MapNCursesKey(int key)
     {
-        if (key >= 'a' && key <= 'z') return static_cast<arc::Key>(key - 'a');
-        if (key >= 'A' && key <= 'Z') return static_cast<arc::Key>(key - 'A');
-        if (key == ' ')         return arc::Key::SPACE;
-        if (key == '\033')      return arc::Key::ESCAPE;
-        if (key == '\n')        return arc::Key::ENTER;
-        if (key >= '0' && key <= '9') return static_cast<arc::Key>(key - '0' + 26);
-        if (key == KEY_DOWN)    return arc::Key::DOWN;
-        if (key == KEY_UP)      return arc::Key::UP;
-        if (key == KEY_LEFT)    return arc::Key::LEFT;
-        if (key == KEY_RIGHT)   return arc::Key::RIGHT;
-        return arc::Key::UNKNOWN;
+        if (key >= 'a' && key <= 'z')   return static_cast<arc::KeyCode>(key - 'a');
+        if (key >= 'A' && key <= 'Z')   return static_cast<arc::KeyCode>(key - 'A');
+        if (key == ' ')                 return arc::KeyCode::SPACE;
+        if (key == '\033')              return arc::KeyCode::ESCAPE;
+        if (key == '\n')                return arc::KeyCode::ENTER;
+        if (key == '\t')                return arc::KeyCode::TAB;
+        if (key == KEY_BACKSPACE)       return arc::KeyCode::DELETE;
+        if (key >= '0' && key <= '9')   return static_cast<arc::KeyCode>(key - '0' + 26);
+        if (key == KEY_DOWN)            return arc::KeyCode::DOWN;
+        if (key == KEY_UP)              return arc::KeyCode::UP;
+        if (key == KEY_LEFT)            return arc::KeyCode::LEFT;
+        if (key == KEY_RIGHT)           return arc::KeyCode::RIGHT;
+        return arc::KeyCode::UNKNOWN;
     }
 
     virtual void update(float deltaTime)
@@ -380,14 +381,11 @@ public:
         // TODO: ch could be a MOUSE button
         int ch = getch();
         if (ch != ERR) {
-            arc::Key key = NCursesDisplay::MapNCursesKey(ch);
-            if (key == arc::Key::ESCAPE) {
-                this->close();
-                return;
-            }
+            arc::KeyCode key = NCursesDisplay::MapNCursesKey(ch);
             arc::Event e;
             e.type = arc::EventType::KEY_PRESSED;
-            e.key = key;
+            e.key.code = key;
+            e.key.shift = (ch >= 'A' && ch <= 'Z');
             this->_events.push_back(std::move(e));
         }
 
@@ -415,21 +413,31 @@ public:
 
     virtual void draw(std::shared_ptr<arc::ITexture> texture, float x, float y)
     {
+        if (texture == nullptr)
+            return;
+
         auto& spec = std::dynamic_pointer_cast<NCursesTexture>(texture)->characteristics();
         int roundedX = static_cast<int>(std::round(x));
         int roundedY = static_cast<int>(std::round(y));
 
         if (_canChangeColor)
-            attron(COLOR_PAIR(getPairColor(spec.color)));
+            attron(COLOR_PAIR(mapToNcurseColor(spec.color)));
         mvaddch(roundedY, roundedX, spec.character);
         if (_canChangeColor)
-            attroff(COLOR_PAIR(getPairColor(spec.color)));
+            attroff(COLOR_PAIR(mapToNcurseColor(spec.color)));
     }
 
     virtual void print(const std::string& string, std::shared_ptr<arc::IFont> font, float x, float y)
     {
-        [[maybe_unused]] auto& spec = std::dynamic_pointer_cast<NCursesFont>(font)->specification();
+        if (font == nullptr)
+            return;
+
+        auto& spec = std::dynamic_pointer_cast<NCursesFont>(font)->specification();
+        if (_canChangeColor)
+            attron(COLOR_PAIR(mapToNcurseColor(spec.color)));
         mvprintw(y, x, "%s", string.c_str());
+        if (_canChangeColor)
+            attroff(COLOR_PAIR(mapToNcurseColor(spec.color)));
     }
 
     virtual arc::Rect<float> measure(const std::string& string, [[maybe_unused]] std::shared_ptr<arc::IFont> font, float x, float y)
@@ -443,6 +451,21 @@ public:
     }
 
 private:
+    int mapToNcurseColor(arc::Color color)
+    {
+        int c = 1;
+
+        if (color.red == 1 && color.green == 2 && color.blue == 3)
+            return 10;
+        if (color.red > 127)
+            c += 1;
+        if (color.green > 127)
+            c += 2;
+        if (color.blue > 127)
+            c += 4;
+        return c;
+    }
+
     bool _opened = true;
     std::string _title;
     uint32_t _framerate;
@@ -450,16 +473,6 @@ private:
     std::size_t _height;
     std::size_t _tileSize;
     std::deque<arc::Event> _events;
-    std::map<std::tuple<size_t, size_t, size_t>, int> _colorPairs = {
-        {{0, 0, 0}, 1},
-        {{255, 0, 0}, 2},
-        {{0, 255, 0}, 3},
-        {{255, 255, 0}, 4},
-        {{0, 0, 255}, 5},
-        {{255, 0, 255}, 6},
-        {{0, 255, 255}, 7},
-        {{255, 255, 255}, 8}
-    };
     bool _canChangeColor = false;
 };
 
