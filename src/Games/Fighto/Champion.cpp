@@ -21,8 +21,10 @@ void Champion::draw(arc::ILibrary& lib) const
     if (!this->_alive) return;
     lib.display().draw(lib.textures().get("player"), this->_position.x, this->_position.y);
 
-    lib.display().print(std::to_string(static_cast<int>(this->_lifepoints)) + "%",
-        lib.fonts().get("font"), this->_position.x, this->_position.y - this->_size.y);
+    const std::string& str = std::to_string(static_cast<int>(this->_lifepoints)) + "%";
+    float width = lib.display().measure(str, lib.fonts().get("font"), 0, 0).width;
+    float center = this->_position.x + this->_size.x / 2.f - width / 2.f;
+    lib.display().print(str, lib.fonts().get("font"), center, this->_position.y - this->_size.y);
 }
 
 void Champion::input(float xaxis, int yaxis)
@@ -49,7 +51,7 @@ void Champion::input(HitResolver& hits)
 
     Hit hit(25.f, this->_position + offset, this->_size, *this);
     hits.add(hit);
-    this->_inputlag = 0.35f;
+    this->_inputlag = 0.25f;
 }
 
 void Champion::update(float dt)
