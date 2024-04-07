@@ -58,9 +58,27 @@ Use `Z`, `Q`, `S`, `D` to move Pacman.
 Try to eat as many dots as possible to increase your score while avoiding the ghosts.
 Eating a big dot will allow you to eat the ghosts for 10 seconds.
 Eating all dots (including big dots) will make you win, and will spawn you into a new map!
+
 Ghosts will reappear after getting back to the base.
 You can cross borders, it will teleport you to the otherside.
 You can also pause the game by pressing `P`, press it back to come back in the game.
+
+Consumables:
+- ![](./assets/pacman/coin.png) **Coin**:
+The coin is the main consumable of the game, there are coins everywhere, and eating them all wwill lead you to the win! Each coin give you 10 points.
+
+- ![](./assets/pacman/gum.png) **PacGum**:
+PacGums are larger coins, they will help you fights ghosts! eating one will make you able to eat ghosts for 10 seconds, and make ghosts slower and scared too! Each PacGum give you 100 points. Each ghost eaten will give you 200 points!!
+
+Ghosts:
+- ![](./assets/pacman/blinky.png) **Blinky**:
+This ghost will always move to the top part of the map, making him the protector of both top pacgums.
+
+- ![](./assets/pacman/pinky.png) ![](./assets/pacman/inky.png) ![](./assets/pacman/clyde.png) **Pinky**, **Inky**, **Clyde**:
+  Theses gosts are discoverers, they will travel the whole map to protect pacgums and trap you!
+
+- ![](./assets/pacman/scared_ghost.png) **Scared ghosts**:
+When a ghost is scared, its skin will change to this one, it means that you can eat it! but be aware, if they blink, it means they will be back to normal soon.
 
 
 ## Our Graphical Libraries
