@@ -13,7 +13,7 @@ void Pause::initialize([[maybe_unused]]arc::ILibrary &lib)
 void Pause::onKeyPressed([[maybe_unused]]arc::ILibrary &lib, arc::KeyCode key)
 {
     switch (key) {
-        case arc::KeyCode::ESCAPE:
+        case arc::KeyCode::P:
             _currentState = IGameState::State::GAME;
             break;
         default:

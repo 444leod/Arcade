@@ -33,33 +33,45 @@ pacman::Map::Map(std::string path)
 
 void pacman::Map::initTextures(arc::ITextureManager& manager)
 {
+    #if V2
+    std::string path = "assets/pacman/images/snow_tileset.png";
+    uint32_t size = 24;
+    #else
+    std::string path = "assets/pacman/board.png";
+    uint32_t size = 32;
+    #endif
+
     arc::TextureSpecification spec;
     spec.textual.character = '.';
     spec.textual.color = {255, 255, 0, 255};
-    spec.graphical = arc::TextureImage{"assets/pacman/board.png", arc::Rect<uint32_t>{1024, 0, 32, 32}};
+    spec.graphical = arc::TextureImage{path, arc::Rect<uint32_t>{(32 * size), 0, size, size}};
     manager.load("coin", spec);
 
     spec.textual.character = 'O';
     spec.textual.color = {255, 0, 0, 255};
-    spec.graphical = arc::TextureImage{"assets/pacman/board.png", arc::Rect<uint32_t>{1056, 0, 32, 32}};
+    spec.graphical = arc::TextureImage{path, arc::Rect<uint32_t>{(33 * size), 0, size, size}};
     manager.load("fruit", spec);
 
     spec.textual.character = ' ';
-    spec.textual.color = {1, 2, 3, 255}; // special code for white bg
+    spec.textual.color = {1, 2, 3, 255};
     for (uint16_t i = 0; i <= 33; ++i) {
         std::stringstream ss;
         ss << "wall_" << 100 + i;
-        spec.graphical = arc::TextureImage{"assets/pacman/board.png", arc::Rect<uint32_t>{static_cast<uint16_t>(i * 32), 0, 32, 32}};
+        spec.graphical = arc::TextureImage{path, arc::Rect<uint32_t>{static_cast<uint16_t>(i * size), 0, size, size}};
         manager.load(ss.str(), spec);
     }
 
     spec.textual.character = ' ';
     spec.textual.color = {0, 0, 0, 255};
+    #if V2
+    spec.graphical = arc::TextureImage{path, arc::Rect<uint32_t>{(34 * size), 0, size, size}};
+    #else
     spec.graphical = arc::Color{0, 0, 0, 255};
+    #endif
     manager.load("empty", spec);
     spec.textual.character = '_';
     spec.textual.color = {255, 255, 0, 255}; //yellow
-    spec.graphical = arc::TextureImage{"assets/pacman/board.png", arc::Rect<uint32_t>{1088, 0, 32, 32}};
+    spec.graphical = arc::TextureImage{path, arc::Rect<uint32_t>{(34 * size), 0, size, size}};
     manager.load("door", spec);
 }
 
@@ -239,6 +251,12 @@ std::vector<Vec2i> pacman::Map::getGhostSpawnPoints() const
 std::vector<std::pair<Vec2i, std::string>> pacman::Map::getTextures() const
 {
     std::vector<std::pair<Vec2i, std::string>> textures;
+
+    for (uint16_t y = 0; y < _mapSizeY; y++) {
+        for (uint16_t x = 0; x < _mapSizeX; x++) {
+            textures.push_back({{x, y}, "empty"});
+        }
+    }
     for (uint16_t y = 0; y < _mapSizeY; y++) {
         for (uint16_t x = 0; x < _mapSizeX; x++) {
             textures.push_back({{x, y}, _texturer.getTexture(_map[y][x])});

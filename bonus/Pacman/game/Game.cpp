@@ -30,7 +30,11 @@ void Game::initialize(arc::ILibrary &lib)
     for (uint32_t i = 0; i < 4; i++) {
         std::stringstream ss;
         ss << "deadghost_" << i;
-        spec.graphical = arc::TextureImage{"assets/pacman/entity-tileset.png", arc::Rect<uint32_t>{(i * 20), 200, 20, 20}};
+        #if V2
+            spec.graphical = arc::TextureImage{"assets/pacman/images/pokemon_spritesheet.png", arc::Rect<uint32_t>{0, 120, 24, 24}};
+        #else
+            spec.graphical = arc::TextureImage{"assets/pacman/entity-tileset.png", arc::Rect<uint32_t>{(i * 20), 200, 20, 20}};
+        #endif
         lib.textures().load(ss.str(), spec);
     }
 
@@ -60,7 +64,7 @@ void Game::onKeyPressed([[maybe_unused]] arc::ILibrary& lib, arc::KeyCode key)
         case arc::KeyCode::D:
             _player->queueMove({1, 0});
             break;
-        case arc::KeyCode::ESCAPE:
+        case arc::KeyCode::P:
             _currentState = IGameState::State::PAUSE;
             break;
         default: break;
@@ -134,9 +138,12 @@ void Game::draw(arc::ILibrary& lib)
         std::string texture = entity->getTexture(_ticks);
         if (texture.length() == 0)
             continue;
+        #if V2
+        #else
         if (entity->getStatus() == pacman::entity::status::SCARED && _ticks - _hungerTick >= 75 && _ticks % 2 == 0) {
             texture += "_";
         }
+        #endif
         lib.display().draw(lib.textures().get(texture), entity->getPosf().x, entity->getPosf().y);
     }
 
@@ -156,7 +163,7 @@ void Game::draw(arc::ILibrary& lib)
 
 void Game::onEnter(IGameState::State lastState, arc::ILibrary& lib)
 {
-    lib.musics().play("pacman-theme", 50.0f);
+    lib.musics().play("main-theme", 50.0f);
     if (lastState == IGameState::State::PAUSE)
         return;
 
@@ -191,7 +198,7 @@ void Game::onEnter(IGameState::State lastState, arc::ILibrary& lib)
 
 void Game::onExit([[maybe_unused]]IGameState::State nextState, arc::ILibrary& lib)
 {
-    lib.musics().stop("pacman-theme");
+    lib.musics().stop("main-theme");
 }
 
 void Game::interactWithMap()

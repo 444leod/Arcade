@@ -36,7 +36,7 @@ void Win::draw(arc::ILibrary &lib)
     std::vector<std::string> strings = {
         "You win!",
         "Your score was: " + std::to_string(_score),
-        "Press W to go back to the game"
+        "Press W to continue"
     };
 
     for (size_t i = 0; i < strings.size(); i++) {

@@ -75,6 +75,9 @@ class Core
 
         void leave_game()
         {
+            for (const auto& sound : this->_cur_lib->musics().dump()) {
+                this->_cur_lib->musics().stop(sound.first);
+            }
             if (this->_menu->running()) {
                 this->_cur_lib->display().close();
             } else {
@@ -195,11 +198,11 @@ class Core
             stream.close();
         }
 
+        std::shared_ptr<CoreMenu> _menu = nullptr;
         std::shared_ptr<arc::IGame> _cur_game = nullptr;
         std::shared_ptr<arc::ILibrary> _cur_lib = nullptr;
         std::shared_ptr<LibraryObject> _game_handler = nullptr;
         std::shared_ptr<LibraryObject> _lib_handler = nullptr;
-        std::shared_ptr<CoreMenu> _menu = nullptr;
 
         std::map<std::string, arc::Score> _scores = {};
         LibraryLoader _loader;
