@@ -23,6 +23,9 @@ We (Stereo Madness) chose to work with the following groups:
 
 We have the same interfaces and our games and graphical libraries are compatible with each other.
 
+For the project, we made the games Snake & Nibbler and the graphical librairies SFML, SDL2 & NCurses.
+We made some bonus, including custom assets for each games, Pacman and an open world Pacman.
+
 ## How to use
 
 Do `make` to compile the project, then run `./arcade ./lib/lib_arcade_sfml.so` to start the program with the SFML graphical library (or any other library). You can then switch between games and libraries at runtime.
