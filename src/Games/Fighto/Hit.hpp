@@ -19,7 +19,7 @@ class Hit {
         const fVector size() const { return this->_size; }
         const Champion& source() const { return this->_source; }
 
-        bool overlaps(Champion& other) const;
+        bool overlaps(const Champion& other) const;
 
     protected:
     private:

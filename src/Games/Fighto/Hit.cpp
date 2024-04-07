@@ -17,7 +17,7 @@ Hit::~Hit()
 {
 }
 
-bool Hit::overlaps(Champion& other) const
+bool Hit::overlaps(const Champion& other) const
 {
     // if (other == source) return false;
     auto a = other.position();

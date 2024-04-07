@@ -5,6 +5,7 @@
 ** Fighto
 */
 
+#include "HitResolver.hpp"
 #include "Champion.hpp"
 #include "IGame.hpp"
 #include "SharedLibraryType.hpp"
@@ -33,13 +34,13 @@ class Fighto : public arc::IGame
         {
             (void)lib;
 
-            if (key == arc::KeyCode::Q)     this->_playerOne.input(-1.f, false);
-            if (key == arc::KeyCode::D)     this->_playerOne.input(+1.f, false);
-            if (key == arc::KeyCode::Z)     this->_playerOne.input( 0.f, true);
+            if (key == arc::KeyCode::Q)     this->_champs.at(0).input(-1.f, false);
+            if (key == arc::KeyCode::D)     this->_champs.at(0).input(+1.f, false);
+            if (key == arc::KeyCode::Z)     this->_champs.at(0).input( 0.f, true);
 
-            if (key == arc::KeyCode::LEFT)  this->_playerTwo.input(-1.f, false);
-            if (key == arc::KeyCode::RIGHT) this->_playerTwo.input(+1.f, false);
-            if (key == arc::KeyCode::UP)    this->_playerTwo.input( 0.f, true);
+            if (key == arc::KeyCode::LEFT)  this->_champs.at(1).input(-1.f, false);
+            if (key == arc::KeyCode::RIGHT) this->_champs.at(1).input(+1.f, false);
+            if (key == arc::KeyCode::UP)    this->_champs.at(1).input( 0.f, true);
         }
 
         virtual void onMouseButtonPressed(arc::ILibrary& lib, arc::MouseButton button, int32_t x, int32_t y)
@@ -53,15 +54,15 @@ class Fighto : public arc::IGame
         virtual void update(arc::ILibrary& lib, float deltaTime)
         {
             (void)lib;
-            this->_playerOne.update(deltaTime);
-            this->_playerTwo.update(deltaTime);
+            this->_champs.at(0).update(deltaTime);
+            this->_champs.at(1).update(deltaTime);
         }
 
         virtual void draw(arc::ILibrary& lib)
         {
             lib.display().clear();
-            this->_playerOne.draw(lib);
-            this->_playerTwo.draw(lib);
+            this->_champs.at(0).draw(lib);
+            this->_champs.at(1).draw(lib);
             lib.display().flush();
         }
 
@@ -72,8 +73,8 @@ class Fighto : public arc::IGame
 
 
     private:
-        Champion _playerOne;
-        Champion _playerTwo;
+        HitResolver _hits;
+        std::vector<Champion> _champs;
 
 };
 
