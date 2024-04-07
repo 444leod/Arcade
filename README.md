@@ -27,7 +27,16 @@ We have the same interfaces and our games and graphical libraries are compatible
 
 Do `make` to compile the project, then run `./arcade ./lib/lib_arcade_sfml.so` to start the program with the SFML graphical library (or any other library). You can then switch between games and libraries at runtime.
 
+Press `TAB` to modify you username, the maximum username length is 10 characters.
+Press `TAB` an other time to leave username modification.
+
+Press `I`, `K` to select the game you want to play.
+Press `J`, `L` to select the graphical library you want to use.
+
+Pressing `ESCAPE` in any game will make you come back into the menu, and you can close the menu by pressing `ESCAPE`.
 ## Our games
+
+To switch game, press `ESCAPE` will move you back to the menu.
 
 ### Snake
 
@@ -47,11 +56,16 @@ Berries may appear after eating a super-candy but only one of each type can be p
 Use `Z`, `Q`, `S`, `D` to move Pacman.
 
 Try to eat as many dots as possible to increase your score while avoiding the ghosts.
-Eating a big dot will allow you to eat the ghosts for a short period of time.
+Eating a big dot will allow you to eat the ghosts for 10 seconds.
+Eating all dots (including big dots) will make you win, and will spawn you into a new map!
+Ghosts will reappear after getting back to the base.
+You can cross borders, it will teleport you to the otherside.
+You can also pause the game by pressing `P`, press it back to come back in the game.
+
 
 ## Our Graphical Libraries
 
-To switch graphical libraries, use the ... key.
+To switch graphical libraries, use the `J` and `L` keys.
 
 ### SFML
 
