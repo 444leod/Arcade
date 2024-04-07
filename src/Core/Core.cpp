@@ -61,8 +61,12 @@ class Core
 
         void start_game()
         {
-            if (!this->_menu->running())
-                return;
+            for (const auto& sound : this->_cur_lib->musics().dump()) {
+                this->_cur_lib->musics().stop(sound.first);
+            }
+            for (const auto& sound : this->_cur_lib->sounds().dump()) {
+                this->_cur_lib->sounds().stop(sound.first);
+            }
             this->_menu->setRunning(false);
             this->_game_handler.reset();
             this->_game_handler = this->_menu->game();
@@ -77,6 +81,9 @@ class Core
         {
             for (const auto& sound : this->_cur_lib->musics().dump()) {
                 this->_cur_lib->musics().stop(sound.first);
+            }
+            for (const auto& sound : this->_cur_lib->sounds().dump()) {
+                this->_cur_lib->sounds().stop(sound.first);
             }
             if (this->_menu->running()) {
                 this->_cur_lib->display().close();
@@ -165,6 +172,11 @@ class Core
                 while (_cur_lib->display().pollEvent(event)) {
                     if (event.type == arc::EventType::KEY_PRESSED && (event.key.code == arc::KeyCode::J || event.key.code == arc::KeyCode::L)) {
                         lib_switch = true;
+                        if (!this->_menu->running())
+                            this->_menu->onKeyPressed(*_cur_lib, event.key.code, event.key.shift);
+                    }
+                    if (event.type == arc::EventType::KEY_PRESSED && (event.key.code == arc::KeyCode::I || event.key.code == arc::KeyCode::K)) {
+                        enter_game = true;
                         if (!this->_menu->running())
                             this->_menu->onKeyPressed(*_cur_lib, event.key.code, event.key.shift);
                     }
