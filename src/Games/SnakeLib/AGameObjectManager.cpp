@@ -37,7 +37,18 @@ std::vector<Vec2i> AGameObjectManager::getPos() const
     return res;
 }
 
-std::vector<Vec2i> AGameObjectManager::getForbidenPos(SnakeObject &snake) const
+std::vector<Vec2i> AGameObjectManager::getBlockingPos() const
+{
+    std::vector<Vec2i> blockingPos;
+
+    for (auto &obj : _gameObjects) {
+        if (obj->getBlocking() == true)
+            blockingPos.push_back(obj->getPos());
+    }
+    return blockingPos;
+}
+
+std::vector<Vec2i> AGameObjectManager::getForbidenPos(ASnakeObject &snake) const
 {
     std::vector<Vec2i> res;
 
@@ -50,7 +61,7 @@ std::vector<Vec2i> AGameObjectManager::getForbidenPos(SnakeObject &snake) const
     return res;
 }
 
-void AGameObjectManager::applyEffects(SnakeObject &snake) const
+void AGameObjectManager::applyEffects(ASnakeObject &snake) const
 {
     for (auto &obj : _gameObjects) {
         obj->applyEffect(snake);
@@ -67,4 +78,15 @@ Vec2i AGameObjectManager::getSpawnPos(std::vector<Vec2i> forbidenPositions) cons
         }
     }
     return authorizedPos[std::rand() % (authorizedPos.size() - 1)];
+}
+
+uint64_t AGameObjectManager::getSizeByType(IGameObject::Type type) const
+{
+    uint64_t size = 0;
+
+    for (auto &obj : _gameObjects) {
+        if (obj->getType() == type)
+            size++;
+    }
+    return size;
 }

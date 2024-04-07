@@ -25,7 +25,9 @@ class AGameObject : public IGameObject {
 
         virtual IGameObject::Type getType() const {return _type;}
 
-        virtual void applyEffect(SnakeObject &snake);
+        virtual bool getBlocking() const {return _effects.blocking;}
+
+        virtual void applyEffect(ASnakeObject &snake);
 
     protected:
         std::string _textureName;

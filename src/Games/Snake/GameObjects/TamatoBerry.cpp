@@ -18,7 +18,7 @@ TamatoBerry::TamatoBerry(Vec2i pos) : AGameObject(pos)
     _type = IGameObject::TAMATO_BERRY;
 }
 
-void TamatoBerry::applyEffect(SnakeObject &snake) {
+void TamatoBerry::applyEffect(ASnakeObject &snake) {
     AGameObject::applyEffect(snake);
     snake.setSpeed(_effects.deltaSpeed);
 }
