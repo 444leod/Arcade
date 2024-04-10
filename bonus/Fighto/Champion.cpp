@@ -24,20 +24,28 @@ void Champion::draw(arc::ILibrary& lib) const
     const std::string& str = std::to_string(static_cast<int>(this->_lifepoints)) + "%";
     float width = lib.display().measure(str, lib.fonts().get("font"), 0, 0).width;
     float center = this->_position.x + this->_size.x / 2.f - width / 2.f;
-    lib.display().print(str, lib.fonts().get("font"), center, this->_position.y - this->_size.y);
+    lib.display().print(str, lib.fonts().get("font"), center, this->_position.y - 1.5f);
 }
 
-void Champion::input(float xaxis, int yaxis)
+#include <iostream>
+
+void Champion::input()
+{
+    if (!this->_alive || !this->_grounded) return;
+
+    this->_velocity.y = this->_jumpforce;
+}
+
+void Champion::input(float xaxis, bool remove)
 {
     if (!this->_alive) return;
 
-    // todo: wait until end of lag
-    if (xaxis != 0)
-        this->_velocity.x = xaxis * this->_maxspeed;
-    if (yaxis > 0 && this->_grounded)
-        this->_velocity.y = this->_jumpforce;
-    if (yaxis < 0 && this->_grounded)
-        this->_velocity.x = 0;
+    float acceleration = xaxis * this->_maxspeed * (remove ? -1 : +1);
+    if (this->_velocity.x != acceleration)
+    this->_velocity.x += acceleration;
+
+    if (this->_velocity.x != 0.f)
+        this->_facing = this->_velocity.x / std::abs(this->_velocity.x);
 }
 
 void Champion::input(HitResolver& hits)
@@ -45,9 +53,7 @@ void Champion::input(HitResolver& hits)
     if (!this->_alive) return;
     if (this->_inputlag > 0.f) return;
 
-    float normalized = this->_velocity.x == 0.f ? 0.f : this->_velocity.x / std::abs(this->_velocity.x);
-    fVector offset = { this->_size.x * normalized, 0.f };
-    if (normalized == 0.f) offset.y -= this->_size.y;
+    fVector offset = { this->_size.x * this->_facing, 0.f };
 
     Hit hit(25.f, this->_position + offset, this->_size, *this);
     hits.add(hit);

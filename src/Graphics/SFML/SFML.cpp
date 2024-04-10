@@ -497,6 +497,11 @@ public:
                 e.key.shift = event.key.shift;
                 this->_events.push_back(std::move(e));
                 break;
+            case sf::Event::KeyReleased:
+                e.type = arc::EventType::KEY_RELEASED;
+                e.key.code = SFMLDisplay::MapSFMLKey(event.key.code);
+                this->_events.push_back(std::move(e));
+                break;
             case sf::Event::MouseButtonPressed:
                 e.type = arc::EventType::MOUSE_BUTTON_PRESSED;
                 e.mouse.button = SFMLDisplay::MapSFMLMouseButton(event.mouseButton.button);

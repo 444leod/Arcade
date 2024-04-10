@@ -31,6 +31,7 @@ namespace arc {
      */
     enum class EventType {
         KEY_PRESSED = 0,
+        KEY_RELEASED,
         MOUSE_BUTTON_PRESSED
     };
 

@@ -33,6 +33,9 @@ namespace arc {
          */
         virtual void onKeyPressed(ILibrary& lib, KeyCode key, bool shift) = 0;
 
+        // Release key event
+        virtual void onKeyReleased(arc::ILibrary& lib, arc::KeyCode key) = 0;
+
         /**
          * @brief Called when a mouse button is pressed
          * @param event the event

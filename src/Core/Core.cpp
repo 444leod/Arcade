@@ -175,6 +175,10 @@ class Core
                         this->_cur_game->onMouseButtonPressed(*_cur_lib, event.mouse.button, event.mouse.x, event.mouse.y);
                         continue;
                     }
+                    if (event.type == arc::EventType::KEY_RELEASED) {
+                        this->_cur_game->onKeyReleased(*_cur_lib, event.key.code);
+                        continue;
+                    }
                     if (event.key.code == arc::KeyCode::J || event.key.code == arc::KeyCode::L)
                         lib_switch = true;
                     if (event.key.code == arc::KeyCode::I || event.key.code == arc::KeyCode::K)

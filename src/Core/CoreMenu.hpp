@@ -19,6 +19,7 @@ public:
 
     virtual void initialize(arc::ILibrary &lib);
     virtual void onKeyPressed([[maybe_unused]] arc::ILibrary &lib, arc::KeyCode key, bool shift);
+    virtual void onKeyReleased([[maybe_unused]] arc::ILibrary& lib, [[maybe_unused]] arc::KeyCode key) { ; }
     virtual void onMouseButtonPressed(arc::ILibrary &lib, arc::MouseButton button, int32_t x, int32_t y);
     virtual void update(arc::ILibrary &lib, float deltaTime);
     virtual void draw(arc::ILibrary &lib);

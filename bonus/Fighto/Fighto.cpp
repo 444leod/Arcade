@@ -19,7 +19,7 @@ class Fighto : public arc::IGame
         virtual void initialize(arc::ILibrary& lib)
         {
             lib.display().setTitle("Fighto - Prototype");
-            lib.display().setTileSize(16);
+            lib.display().setTileSize(24);
             lib.display().setHeight(16);
             lib.display().setWidth(32);
             lib.display().setFramerate(60);
@@ -35,7 +35,7 @@ class Fighto : public arc::IGame
                 {'X', red}, red
             });
             lib.fonts().load("font", {
-                white, 16, "assets/regular.ttf"
+                white, 24, "assets/regular.ttf"
             });
         }
 
@@ -43,19 +43,26 @@ class Fighto : public arc::IGame
         {
             (void)lib;
 
-
-
-            if (key == arc::KeyCode::Q)     this->_champs.at(0).input(-1.f,  0);
-            if (key == arc::KeyCode::D)     this->_champs.at(0).input(+1.f,  0);
-            if (key == arc::KeyCode::Z)     this->_champs.at(0).input( 0.f, +1);
-            if (key == arc::KeyCode::S)     this->_champs.at(0).input( 0.f, -1);
+            if (key == arc::KeyCode::Q)     this->_champs.at(0).input(-1.f, false);
+            if (key == arc::KeyCode::D)     this->_champs.at(0).input(+1.f, false);
+            if (key == arc::KeyCode::Z)     this->_champs.at(0).input();
             if (key == arc::KeyCode::F)     this->_champs.at(0).input(this->_hits);
 
-            if (key == arc::KeyCode::LEFT)  this->_champs.at(1).input(-1.f,  0);
-            if (key == arc::KeyCode::RIGHT) this->_champs.at(1).input(+1.f,  0);
-            if (key == arc::KeyCode::UP)    this->_champs.at(1).input( 0.f, +1);
-            if (key == arc::KeyCode::DOWN)  this->_champs.at(1).input( 0.f, -1);
-            if (key == arc::KeyCode::N)     this->_champs.at(0).input(this->_hits);
+            if (key == arc::KeyCode::LEFT)  this->_champs.at(1).input(-1.f, false);
+            if (key == arc::KeyCode::RIGHT) this->_champs.at(1).input(+1.f, false);
+            if (key == arc::KeyCode::UP)    this->_champs.at(1).input();
+            if (key == arc::KeyCode::N)     this->_champs.at(1).input(this->_hits);
+        }
+
+        virtual void onKeyReleased(arc::ILibrary& lib, arc::KeyCode key)
+        {
+            (void)lib;
+
+            if (key == arc::KeyCode::Q)     this->_champs.at(0).input(-1.f, true);
+            if (key == arc::KeyCode::D)     this->_champs.at(0).input(+1.f, true);
+
+            if (key == arc::KeyCode::LEFT)  this->_champs.at(1).input(-1.f, true);
+            if (key == arc::KeyCode::RIGHT) this->_champs.at(1).input(+1.f, true);
         }
 
         virtual void onMouseButtonPressed(arc::ILibrary& lib, arc::MouseButton button, int32_t x, int32_t y)
