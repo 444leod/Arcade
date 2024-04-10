@@ -19,7 +19,7 @@ Champion::~Champion()
 void Champion::draw(arc::ILibrary& lib) const
 {
     if (!this->_alive) return;
-    lib.display().draw(lib.textures().get("player"), this->_position.x, this->_position.y);
+    lib.display().draw(lib.textures().get("player" + std::to_string(this->_id)), this->_position.x, this->_position.y);
 
     const std::string& str = std::to_string(static_cast<int>(this->_lifepoints)) + "%";
     float width = lib.display().measure(str, lib.fonts().get("font"), 0, 0).width;

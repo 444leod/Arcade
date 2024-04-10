@@ -26,10 +26,14 @@ class Fighto : public arc::IGame
 
             arc::Color white = {255, 255, 255, 255};
             arc::Color green = {100, 255, 100, 255};
+            arc::Color blue = {100, 100, 255, 255};
             arc::Color red = {255, 100, 100, 255};
 
-            lib.textures().load("player", {
+            lib.textures().load("player0", {
                 {'P', green}, green
+            });
+            lib.textures().load("player1", {
+                {'P', blue}, blue
             });
             lib.textures().load("hit", {
                 {'X', red}, red
