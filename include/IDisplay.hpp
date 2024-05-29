@@ -7,6 +7,7 @@
 
 #pragma once
 
+#include "Joystick.hpp"
 #include "IFontManager.hpp"
 #include "ITextureManager.hpp"
 
@@ -150,6 +151,14 @@ namespace arc {
          * @return false if there was no event
          */
         virtual bool pollEvent(Event& event) = 0;
+
+        /**
+         * @brief Gets the data relative to a certain joystick.
+         *
+         * @param id The id of the Joystick. 0 => P1, 1 => P2, ...
+         * @return A const reference to a `Joystick`.
+        */
+        virtual const Joystick& joystick(std::uint16_t id) const = 0;
 
         /**
          * @brief Updates the display. For instance, this could be used poll
