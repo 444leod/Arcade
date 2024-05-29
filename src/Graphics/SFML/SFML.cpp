@@ -11,6 +11,7 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio.hpp>
 #include <deque>
+#include <cmath>
 #include <memory>
 
 class SFMLTexture : public arc::ITexture {
@@ -486,6 +487,17 @@ public:
         sf::Event event;
         arc::Event e;
 
+        for (std::uint16_t id = 0; id < 2; id++) {
+            double x = sf::Joystick::getAxisPosition(id, sf::Joystick::X);
+            double y = sf::Joystick::getAxisPosition(id, sf::Joystick::Y);
+            double len = std::sqrt(x * x + y * y);
+            this->_joysticks[id].setAxis(x / len, y / len);
+            for (std::uint16_t i = 0; i < arc::Joystick::END; i++) {
+                bool pressed = sf::Joystick::isButtonPressed(id, i);
+                this->_joysticks[id].setButton(static_cast<arc::Joystick::JoystickButton>(i), pressed);
+            }
+        }
+
         while (this->_window.pollEvent(event)) {
             switch (event.type) {
             case sf::Event::Closed:
@@ -518,6 +530,11 @@ public:
         event = this->_events.front();
         this->_events.pop_front();
         return true;
+    }
+
+    virtual const arc::Joystick& joystick(std::uint16_t id) const
+    {
+        return this->_joysticks[id];
     }
 
     virtual void close()
@@ -599,6 +616,7 @@ private:
     std::size_t _height;
     std::size_t _tileSize;
     std::deque<arc::Event> _events;
+    arc::Joystick _joysticks[2];
 };
 
 class SFMLLibrary : public arc::ILibrary {
