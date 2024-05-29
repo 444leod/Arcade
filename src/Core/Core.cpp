@@ -166,12 +166,15 @@ class Core
 
 int main(int ac, char **av, char **env)
 {
+    std::string lib = "./lib/arcade_sfml.so";
     bool tty = true;
 
-    if (ac != 2) {
+    if (ac > 2) {
         std::cerr << "Wrong argument count" << std::endl;
         return 84;
     }
+    if (ac > 1)
+        lib = av[1];
     for (int i = 0; env[i]; i++) {
         if (!std::string(env[i]).starts_with("DISPLAY"))
             continue;
@@ -180,7 +183,7 @@ int main(int ac, char **av, char **env)
     }
 
     try {
-        Core core(av[1], tty);
+        Core core(lib, tty);
         core.run();
     }
     catch (const std::exception& e) {
