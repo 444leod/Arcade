@@ -40,8 +40,6 @@ void CoreMenu::initialize(arc::ILibrary &lib)
     lib.fonts().load("hs", hs);
     arc::FontSpecification game = {{255, 100, 100, 255}, 32, font};
     lib.fonts().load("game", game);
-    arc::FontSpecification library = {{100, 255, 100, 255}, 32, font};
-    lib.fonts().load("library", library);
 
     this->_running = true;
 }
@@ -69,12 +67,6 @@ void CoreMenu::onKeyPressed([[maybe_unused]] arc::ILibrary &lib, arc::KeyCode ke
         break;
     case arc::KeyCode::K:
         this->_game = this->_game ? (this->_game - 1) % _games.size() : _games.size() - 1;
-        break;
-    case arc::KeyCode::J:
-        this->_lib = (this->_lib + 1) % _libs.size();
-        break;
-    case arc::KeyCode::L:
-        this->_lib = this->_lib ? (this->_lib - 1) % _libs.size() : _libs.size() - 1;
         break;
     default:
         break;
@@ -113,10 +105,8 @@ void CoreMenu::draw(arc::ILibrary &lib)
         hs += "NONE";
     this->printCenteredText(lib, hs, "hs", 5);
 
-    auto x = lib.display().width() / 2;
     auto y = lib.display().height() / 2;
-    this->drawRoulette(lib, "game", this->_games, this->_game, 0, y);
-    this->drawRoulette(lib, "library", this->_libs, this->_lib, x, y);
+    this->drawRoulette(lib, "game", this->_games, this->_game, y);
 
     lib.display().flush();
 }
@@ -136,16 +126,14 @@ void CoreMenu::printCenteredText(arc::ILibrary& lib, const std::string& string, 
 void CoreMenu::drawRoulette(
     arc::ILibrary &lib, const std::string& font,
     const std::vector<std::shared_ptr<LibraryObject>>& values,
-    int index, int x, int y
+    int index, int y
 ) const
 {
     for (int i = index - 1; i <= index + 1; i++)
     {
         auto l = i < 0 ? values.back() : values.at(i % values.size());
         auto _font = i == index ? font : std::string("normal");
-        auto size = lib.display().measure(l->name(), lib.fonts().get(_font), 0, 0).width;
-        auto _x = (lib.display().width() / 2 - size) / 2;
         auto _y = (index - i + 1) * 2;
-        lib.display().print(l->name(), lib.fonts().get(_font), x + _x, y + _y);
+        this->printCenteredText(lib, l->name(), _font, y + _y);
     }
 }

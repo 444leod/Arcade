@@ -96,51 +96,8 @@ class Core
             }
         }
 
-        void switch_graphic_lib()
-        {
-            if (this->_menu->lib() == this->_lib_handler)
-                return;
-
-            std::string title = this->_cur_lib->display().title();
-            uint32_t framerate = this->_cur_lib->display().framerate();
-            std::size_t tileSize = this->_cur_lib->display().tileSize();
-            std::size_t width = this->_cur_lib->display().width();
-            std::size_t height = this->_cur_lib->display().height();
-
-            auto textures = this->_cur_lib->textures().dump();
-            auto fonts = this->_cur_lib->fonts().dump();
-            auto sounds = this->_cur_lib->sounds().dump();
-            auto musics = this->_cur_lib->musics().dump();
-
-            this->_lib_handler.reset();
-            this->_lib_handler = this->_menu->lib();
-            this->_cur_lib.reset();
-            this->_cur_lib = this->_lib_handler->get<arc::ILibrary>();
-            if (this->_cur_lib == nullptr)
-                throw CoreException("Object failed to load library");
-
-            this->_cur_lib->display().setTitle(title);
-            this->_cur_lib->display().setFramerate(framerate);
-            this->_cur_lib->display().setTileSize(tileSize);
-            this->_cur_lib->display().setWidth(width);
-            this->_cur_lib->display().setHeight(height);
-
-            for (const auto& texture : textures)
-                this->_cur_lib->textures().load(texture.first, texture.second);
-
-            for (const auto& font : fonts)
-                this->_cur_lib->fonts().load(font.first, font.second);
-
-            for (const auto& sound : sounds)
-                this->_cur_lib->sounds().load(sound.first, sound.second);
-
-            for (const auto& music : musics)
-                this->_cur_lib->musics().load(music.first, music.second);
-        }
-
         void run()
         {
-            auto lib_switch = false;
             auto enter_game = false;
             auto escape_game = false;
             auto before = std::chrono::high_resolution_clock::now();
@@ -152,11 +109,6 @@ class Core
                 float deltaTime = std::chrono::duration_cast<std::chrono::duration<float, std::milli>>(now - before).count() / 1000.0;
                 before = now;
 
-                if (lib_switch) {
-                    this->switch_graphic_lib();
-                    lib_switch = false;
-                    continue;
-                }
                 if (enter_game) {
                     this->start_game();
                     enter_game = false;
@@ -171,12 +123,6 @@ class Core
                 this->_cur_lib->display().update(deltaTime);
 
                 while (_cur_lib->display().pollEvent(event)) {
-                    if (event.type == arc::EventType::MOUSE_BUTTON_PRESSED) {
-                        this->_cur_game->onMouseButtonPressed(*_cur_lib, event.mouse.button, event.mouse.x, event.mouse.y);
-                        continue;
-                    }
-                    if (event.key.code == arc::KeyCode::J || event.key.code == arc::KeyCode::L)
-                        lib_switch = true;
                     if (event.key.code == arc::KeyCode::I || event.key.code == arc::KeyCode::K)
                         enter_game = !this->_menu->running();
                     if (event.type == arc::EventType::KEY_PRESSED && event.key.code == arc::KeyCode::ENTER)

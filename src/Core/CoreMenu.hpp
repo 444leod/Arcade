@@ -37,7 +37,7 @@ private:
     void drawRoulette(
         arc::ILibrary &lib, const std::string& name,
         const std::vector<std::shared_ptr<LibraryObject>>& values,
-        int index, int x, int y) const;
+        int index, int y) const;
     void printCenteredText(arc::ILibrary& lib, const std::string& string, const std::string& font, int y) const;
     void printCenteredText(arc::ILibrary& lib, const std::string& string, const std::string& font, int x, int y, int w) const;
 private:
