@@ -56,12 +56,6 @@ graphicals_re:
 tests_run:
 	@exit 0
 
-bonus:
-	@make -s -C ./bonus re LIB_DIR=$(LIB_DIR) INC_DIR=$(INC_DIR)
-
-bonus_fclean:
-	@make -s -C ./bonus fclean LIB_DIR=$(LIB_DIR)
-
 init: install-hooks install-mango
 
 install-hooks:
