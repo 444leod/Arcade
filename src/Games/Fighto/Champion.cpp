@@ -31,8 +31,7 @@ void Champion::input(float xaxis, int yaxis)
 {
     if (!this->_alive) return;
 
-    if (xaxis != 0)
-        this->_velocity.x = xaxis * this->_maxspeed;
+    this->_velocity.x = xaxis * this->_maxspeed;
     if (yaxis > 0 && this->_grounded)
         this->_velocity.y = this->_jumpforce;
     if (yaxis < 0 && this->_grounded)
