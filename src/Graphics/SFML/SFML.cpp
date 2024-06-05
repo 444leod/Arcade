@@ -490,8 +490,7 @@ public:
         for (std::uint16_t id = 0; id < 2; id++) {
             double x = sf::Joystick::getAxisPosition(id, sf::Joystick::X);
             double y = sf::Joystick::getAxisPosition(id, sf::Joystick::Y);
-            double len = std::sqrt(x * x + y * y);
-            this->_joysticks[id].setAxis(x / len, y / len);
+            this->_joysticks[id].setAxis(x / 100.0, y / -100.0);
             for (std::uint16_t i = 0; i < arc::Joystick::END; i++) {
                 bool pressed = sf::Joystick::isButtonPressed(id, i);
                 this->_joysticks[id].setButton(static_cast<arc::Joystick::JoystickButton>(i), pressed);
