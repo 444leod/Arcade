@@ -31,7 +31,6 @@ void Champion::input(float xaxis, int yaxis)
 {
     if (!this->_alive) return;
 
-    // todo: wait until end of lag
     if (xaxis != 0)
         this->_velocity.x = xaxis * this->_maxspeed;
     if (yaxis > 0 && this->_grounded)
@@ -59,7 +58,7 @@ void Champion::update(float dt)
     if (!this->_alive) return;
 
     this->_position.x += this->_velocity.x * dt;
-    this->_position.y -= this->_velocity.y * dt; // -= because down is technically inverted
+    this->_position.y -= this->_velocity.y * dt;
 
     this->_velocity.y -= GRAVITY; // falling faster and faster
     // do not fall under a certain height

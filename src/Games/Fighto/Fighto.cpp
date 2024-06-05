@@ -39,23 +39,11 @@ class Fighto : public arc::IGame
             });
         }
 
-        virtual void onKeyPressed(arc::ILibrary& lib, arc::KeyCode key, [[maybe_unused]] bool shift)
+        virtual void onKeyPressed(arc::ILibrary& lib, arc::KeyCode key, bool shift)
         {
             (void)lib;
-
-
-
-            if (key == arc::KeyCode::Q)     this->_champs.at(0).input(-1.f,  0);
-            if (key == arc::KeyCode::D)     this->_champs.at(0).input(+1.f,  0);
-            if (key == arc::KeyCode::Z)     this->_champs.at(0).input( 0.f, +1);
-            if (key == arc::KeyCode::S)     this->_champs.at(0).input( 0.f, -1);
-            if (key == arc::KeyCode::F)     this->_champs.at(0).input(this->_hits);
-
-            if (key == arc::KeyCode::LEFT)  this->_champs.at(1).input(-1.f,  0);
-            if (key == arc::KeyCode::RIGHT) this->_champs.at(1).input(+1.f,  0);
-            if (key == arc::KeyCode::UP)    this->_champs.at(1).input( 0.f, +1);
-            if (key == arc::KeyCode::DOWN)  this->_champs.at(1).input( 0.f, -1);
-            if (key == arc::KeyCode::N)     this->_champs.at(0).input(this->_hits);
+            (void)key;
+            (void)shift;
         }
 
         virtual void onMouseButtonPressed(arc::ILibrary& lib, arc::MouseButton button, int32_t x, int32_t y)
@@ -68,7 +56,12 @@ class Fighto : public arc::IGame
 
         virtual void update(arc::ILibrary& lib, float deltaTime)
         {
-            (void)lib;
+            arc::JoyAxis axis;
+            axis = lib.display().joystick(0).axis();
+            this->_champs.at(0).input(axis.x, axis.y);
+            axis = lib.display().joystick(1).axis();
+            this->_champs.at(1).input(axis.x, axis.y);
+
             this->_champs.at(0).update(deltaTime);
             this->_champs.at(1).update(deltaTime);
             this->_hits.resolve(this->_champs);
