@@ -8,7 +8,7 @@
 NAME = $(LIB_DIR)/arcade_sfml.so
 
 CPPFLAGS += -fPIC -iquote $(INC_DIR) -std=c++20 -Wall -Wextra -Werror
-CPPFLAGS += -DNO_JOY
+#CPPFLAGS += -DNO_JOY
 SHARED_FLAGS = -shared
 SFML_FLAGS = -lsfml-graphics -lsfml-window -lsfml-system -lsfml-audio
 
