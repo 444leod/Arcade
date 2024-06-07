@@ -5,10 +5,10 @@
 ** Fighto
 */
 
-#include "HitResolver.hpp"
 #include "Champion.hpp"
 #include "IGame.hpp"
 #include "SharedLibraryType.hpp"
+#include "HitSolver.cpp"
 
 class Fighto : public arc::IGame
 {
@@ -54,25 +54,35 @@ class Fighto : public arc::IGame
             (void)y;
         }
 
+        virtual void onJoystickButtonPressed(arc::ILibrary& lib, arc::JoystickButton button, std::uint32_t id)
+        {
+            (void)lib;
+            this->_champs.at(id).input(button);
+        }
+
         virtual void update(arc::ILibrary& lib, float deltaTime)
         {
             arc::JoyAxis axis;
             axis = lib.display().joystick(0).axis();
-            this->_champs.at(0).input(axis.x, axis.y);
+            this->_champs.at(0).input(dVector(axis.x, axis.y));
             axis = lib.display().joystick(1).axis();
-            this->_champs.at(1).input(axis.x, axis.y);
+            this->_champs.at(1).input(dVector(axis.x, axis.y));
 
             this->_champs.at(0).update(deltaTime);
             this->_champs.at(1).update(deltaTime);
-            this->_hits.resolve(this->_champs);
+
+            lib.display().clear(); // Debug only
+            this->_champs.at(0).debug(lib);
+            this->_champs.at(1).debug(lib);
+
+            HitSolver::solve(this->_champs);
         }
 
         virtual void draw(arc::ILibrary& lib)
         {
-            lib.display().clear();
+            //lib.display().clear();
             this->_champs.at(0).draw(lib);
             this->_champs.at(1).draw(lib);
-            this->_hits.debug(lib);
             lib.display().flush();
         }
 
@@ -83,9 +93,8 @@ class Fighto : public arc::IGame
 
 
     private:
-        HitResolver _hits;
         std::vector<Champion> _champs = {
-            Champion(0), Champion(1)
+            Champion({200, 100, 100, 0}), Champion({100, 200, 100, 0})
         };
 
 };
