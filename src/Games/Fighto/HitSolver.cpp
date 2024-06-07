@@ -35,7 +35,7 @@ class HitSolver {
                         double direction = c->position().x - champs.getById(move->owner())->position().x;
                         direction = direction / std::abs(direction);
                         dVector kb(move->knockback().x * direction, move->knockback().y);
-                        c->damage(move->damage(), kb * strength, 2.0);
+                        c->damage(move->damage(), kb * strength, FRAME(10) * strength);
                         move->addHit(c->id());
                         break;
                     }
