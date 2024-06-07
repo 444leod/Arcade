@@ -7,13 +7,17 @@
 
 NAME = $(LIB_DIR)/arcade_fighto.so
 
-CPPFLAGS = -fPIC -iquote $(INC_DIR) -std=c++20 -Wall -Wextra -Werror
+CPPFLAGS += -fPIC -iquote $(INC_DIR) -std=c++20 -Wall -Wextra -Werror
+CPPFLAGS += -I./ -I./Moves/
 SHARED_FLAGS = -shared
 
 SRC =	Fighto.cpp	\
 		Champion.cpp	\
-		Hit.cpp	\
-		HitResolver.cpp
+		HitBox.cpp \
+		HitSolver.cpp \
+		AMove.cpp \
+		Moves/Jab.cpp \
+		Moves/Kick.cpp \
 
 all: $(NAME)
 
