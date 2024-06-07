@@ -15,19 +15,17 @@ class Vector
         ~Vector() = default;
         T x;
         T y;
+
+    public:
+        Vector<T> operator+(const Vector<T>& b) const
+        { return Vector<T>(this->x + b.x, this->y + b.y); }
+
+        Vector<T> operator-(const Vector<T>& b) const
+        { return Vector<T>(this->x - b.x, this->y - b.y); }
+
+        Vector<T> operator*(double factor) const
+        { return Vector<T>(this->x * factor, this->y * factor); }
 };
 
-template<typename T>
-Vector<T> operator+(const Vector<T>& a, const Vector<T>& b)
-{
-    return {a.x + b.x, a.y + b.y};
-}
-
-template<typename T>
-Vector<T> operator-(const Vector<T>& a, const Vector<T>& b)
-{
-    return {a.x - b.x, a.y - b.y};
-}
-
 #define iVector Vector<int>
-#define fVector Vector<float>
+#define dVector Vector<double>
