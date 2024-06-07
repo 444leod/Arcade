@@ -123,16 +123,26 @@ class Core
                 this->_cur_lib->display().update(deltaTime);
 
                 while (_cur_lib->display().pollEvent(event)) {
-                    if (event.key.code == arc::KeyCode::I || event.key.code == arc::KeyCode::K)
-                        enter_game = !this->_menu->running();
-                    if (event.type == arc::EventType::KEY_PRESSED && event.key.code == arc::KeyCode::ENTER)
-                        enter_game = true;
-                    if (event.type == arc::EventType::KEY_PRESSED && event.key.code == arc::KeyCode::ESCAPE)
-                        escape_game = true;
-
-                    this->_cur_game->onKeyPressed(*_cur_lib, event.key.code, event.key.shift);
-                    if (!this->_menu->running())
-                        this->_menu->onKeyPressed(*_cur_lib, event.key.code, event.key.shift);
+                    switch (event.type)
+                    {
+                    case arc::EventType::KEY_PRESSED:
+                        if (!this->_menu->running())
+                            this->_menu->onKeyPressed(*this->_cur_lib, event.key.code, event.key.shift);
+                        if (event.key.code == arc::KeyCode::I || event.key.code == arc::KeyCode::K)
+                            enter_game = !this->_menu->running();
+                        if (event.key.code == arc::KeyCode::ENTER)
+                            enter_game = true;
+                        if (event.key.code == arc::KeyCode::ESCAPE)
+                            escape_game = true;
+                        this->_cur_game->onKeyPressed(*this->_cur_lib, event.key.code, event.key.shift);
+                        break;
+                    case arc::EventType::MOUSE_BUTTON_PRESSED:
+                        break;
+                    case arc::EventType::JOYSTICK_BUTTON_PRESSED:
+                        this->_cur_game->onJoystickButtonPressed(
+                            *this->_cur_lib, event.joystick.button, event.joystick.id);
+                        break;
+                    }
                 }
 
                 this->_cur_game->update(*_cur_lib, deltaTime);

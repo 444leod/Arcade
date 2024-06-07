@@ -81,6 +81,13 @@ void CoreMenu::onMouseButtonPressed(arc::ILibrary &lib, arc::MouseButton button,
     (void)y;
 }
 
+void CoreMenu::onJoystickButtonPressed(
+    [[maybe_unused]] arc::ILibrary& lib,
+    [[maybe_unused]] arc::JoystickButton button,
+    [[maybe_unused]] std::uint32_t id)
+{
+}
+
 void CoreMenu::update(arc::ILibrary &lib, float deltaTime)
 {
     (void)lib;
