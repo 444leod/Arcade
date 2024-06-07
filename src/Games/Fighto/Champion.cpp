@@ -11,18 +11,15 @@
 #include <cmath>
 #include <iostream>
 
-Champion::Champion(arc::Color color) : _color(color)
-{
-}
-
-Champion::~Champion()
+Champion::Champion(std::uint32_t id, const std::string& texture)
+    : _id(id), _texture(texture)
 {
 }
 
 void Champion::draw(arc::ILibrary& lib) const
 {
     if (!this->_alive) return;
-    lib.display().draw(lib.textures().get("player"), this->_position.x, this->_position.y);
+    lib.display().draw(lib.textures().get(this->_texture), this->_position.x, this->_position.y);
 
     const std::string& str = std::to_string(static_cast<int>(this->_lifepoints)) + "%";
     float width = lib.display().measure(str, lib.fonts().get("font"), 0, 0).width;
@@ -56,13 +53,13 @@ void Champion::input(arc::JoystickButton button)
                 this->_velocity.y = this->_jumpforce;
             break;
         case arc::JoystickButton::Square:
-            this->_moveQueue.push(std::make_shared<Jab>(this->_direction));
+            this->_moveQueue.push(std::make_shared<Jab>(this->_id, this->_direction));
             break;
         case arc::JoystickButton::Circle:
             if (this->_grounded)
-                this->_moveQueue.push(std::make_shared<Kick>(this->_direction));
+                this->_moveQueue.push(std::make_shared<Kick>(this->_id, this->_direction));
             else {
-                this->_moveQueue.push(std::make_shared<Spike>(this->_direction));
+                this->_moveQueue.push(std::make_shared<Spike>(this->_id, this->_direction));
                 this->_speed = this->_maxspeed * 0.1;
                 this->_velocity.y = GRAVITY * -5;
             }

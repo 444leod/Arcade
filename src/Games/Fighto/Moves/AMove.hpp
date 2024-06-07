@@ -23,6 +23,7 @@ class AMove {
         AMove(double dmg, dVector kb, bool air);
         ~AMove() = default;
 
+        std::uint32_t owner() const { return this->_owner; }
         double damage() const { return this->_damage; }
         dVector knockback() const { return this->_knockback; }
         bool aerian() const { return this->_aerian; }
@@ -68,6 +69,7 @@ class AMove {
         virtual bool hasHit(std::uint32_t id) const;
 
     protected:
+        std::uint32_t _owner = 0;
         double _direction = .0;
         std::vector<HitBox> _hitboxes = {};
 

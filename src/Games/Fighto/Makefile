@@ -13,9 +13,10 @@ SHARED_FLAGS = -shared
 
 SRC =	Fighto.cpp	\
 		Champion.cpp	\
+		ChampionManager.cpp \
 		HitBox.cpp \
 		HitSolver.cpp \
-		AMove.cpp \
+		Moves/AMove.cpp \
 		Moves/Jab.cpp \
 		Moves/Kick.cpp \
 

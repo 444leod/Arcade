@@ -5,47 +5,41 @@
 ** HitSolver
 */
 
-#include "Champion.hpp"
+#include "ChampionManager.hpp"
 
 class HitSolver {
     public:
-        static void solve(std::vector<Champion>& champions)
+        static void solve(ChampionManager& champs)
         {
-            std::vector<OwnedHit> hits = {};
+            std::vector<std::shared_ptr<AMove>> moves = {};
 
-            for (std::uint32_t i = 0; i < champions.size(); i++) {
-                auto m = champions.at(i).move();
+            // Gather all the moves
+            for (auto c : champs.champions()) {
+                auto m = c->move();
                 if (m == nullptr) continue;
-                HitBox hitbox;
-                while (m->poll(hitbox)) {
-                    hits.push_back({ i, m, hitbox });
-                }
+                moves.push_back(m);
             }
 
-            for (std::uint32_t i = 0; i < champions.size(); i++) {
-                auto& champ = champions.at(i);
-
-                for (auto& hit : hits) {
-                    if (hit.owner == i || hit.move->hasHit(i))
-                        continue;
-                    if (!hit.hit.overlaps(champ.position(), champ.size()))
+            // Solve all moves
+            for (auto c : champs.champions()) {
+                for (auto move : moves) {
+                    if (move->owner() == c->id() || move->hasHit(c->id()))
                         continue;
 
-                    double strength = 1.0 + (100.0 - champ.life()) * 0.01;
-                    double direction = champ.position().x - champions.at(hit.owner).position().x;
-                    direction = direction / std::abs(direction);
-                    dVector kb(hit.move->knockback().x * direction, hit.move->knockback().y);
-                    champ.damage(hit.move->damage(), kb * strength, 2.0);
-                    hit.move->addHit(i);
+                    HitBox hb;
+                    while (move->poll(hb)) {
+                        if (!hb.overlaps(c->position(), c->size()))
+                            continue;
+
+                        double strength = 1.0 + (100.0 - c->life()) * 0.01;
+                        double direction = c->position().x - champs.getById(move->owner())->position().x;
+                        direction = direction / std::abs(direction);
+                        dVector kb(move->knockback().x * direction, move->knockback().y);
+                        c->damage(move->damage(), kb * strength, 2.0);
+                        move->addHit(c->id());
+                        break;
+                    }
                 }
             }
         }
-
-    private:
-        struct OwnedHit
-        {
-            std::uint32_t owner;
-            std::shared_ptr<AMove> move;
-            HitBox hit;
-        };
 };
