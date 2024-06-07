@@ -83,7 +83,7 @@ void Champion::update(double dt)
     }
     // if approximately at ground level
     this->_grounded = std::abs(_position.y - FLOOR) < 0.01f;
-    this->_speed = this->_grounded ? this->_maxspeed : this->_maxspeed * 0.5;
+    this->_speed = this->_grounded ? this->_maxspeed : this->_maxspeed * 0.75;
 
     if (!this->_moveQueue.empty() && this->_stagger <= 0.0) {
 

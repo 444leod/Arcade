@@ -11,6 +11,7 @@ class HitSolver {
     public:
         static void solve(ChampionManager& champs)
         {
+            HitBox hb;
             std::vector<std::shared_ptr<AMove>> moves = {};
 
             // Gather all the moves
@@ -22,11 +23,10 @@ class HitSolver {
 
             // Solve all moves
             for (auto c : champs.champions()) {
+                if (!c->alive()) continue;
                 for (auto move : moves) {
                     if (move->owner() == c->id() || move->hasHit(c->id()))
                         continue;
-
-                    HitBox hb;
                     while (move->poll(hb)) {
                         if (!hb.overlaps(c->position(), c->size()))
                             continue;
@@ -41,5 +41,8 @@ class HitSolver {
                     }
                 }
             }
+
+            for (auto m : moves)
+                while (m->poll(hb)) ;
         }
 };

@@ -21,7 +21,7 @@ class Fighto : public arc::IGame
         {
             std::srand(std::time(nullptr));
             lib.display().setTitle("Fighto - Prototype");
-            lib.display().setTileSize(16);
+            lib.display().setTileSize(32);
             lib.display().setHeight(16);
             lib.display().setWidth(32);
             lib.display().setFramerate(60);
@@ -93,7 +93,6 @@ class Fighto : public arc::IGame
         {
             return 0;
         }
-
 
     private:
         ChampionManager _champs = ChampionManager(2);

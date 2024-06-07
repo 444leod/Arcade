@@ -28,6 +28,7 @@ class Champion {
         void damage(double damage, dVector knockback, double stagger);
 
         double id() const { return this->_id; }
+        bool alive() const { return this->_alive; }
         double life() const { return this->_lifepoints; }
         std::shared_ptr<AMove> move() const;
         double direction() const { return this->_direction; }
@@ -38,9 +39,9 @@ class Champion {
         dVector _position = dVector(10.0, 5.0);
         dVector _velocity = dVector(0.0, 0.0);
         double _speed = 0.0;
-        const double _maxspeed = 8.0;
-        const double _acceleration = 0.5f;
-        const double _jumpforce = 16.0;
+        const double _maxspeed = 12.0;
+        const double _acceleration = 0.5;
+        const double _jumpforce = 19.0;
         bool _grounded = false;
         dVector _input = dVector(0.0, 0.0);
         double _direction = 1.0;

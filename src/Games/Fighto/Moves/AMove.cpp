@@ -56,7 +56,8 @@ void AMove::debug(arc::ILibrary& lib) const
 
 void AMove::interrupt()
 {
-    this->_time = this->_startup + this->_active;
+    if (this->_time < this->_startup + this->_active)
+        this->_time = this->_startup + this->_active;
 }
 
 bool AMove::hasHit(std::uint32_t id) const
