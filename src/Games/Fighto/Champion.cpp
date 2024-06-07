@@ -56,13 +56,13 @@ void Champion::input(arc::JoystickButton button)
                 this->_velocity.y = this->_jumpforce;
             break;
         case arc::JoystickButton::Square:
-            this->_moveQueue.push(std::make_shared<Jab>());
+            this->_moveQueue.push(std::make_shared<Jab>(this->_direction));
             break;
         case arc::JoystickButton::Circle:
             if (this->_grounded)
-                this->_moveQueue.push(std::make_shared<Kick>());
+                this->_moveQueue.push(std::make_shared<Kick>(this->_direction));
             else {
-                this->_moveQueue.push(std::make_shared<Spike>());
+                this->_moveQueue.push(std::make_shared<Spike>(this->_direction));
                 this->_speed = this->_maxspeed * 0.1;
                 this->_velocity.y = GRAVITY * -5;
             }
@@ -92,8 +92,7 @@ void Champion::update(double dt)
 
         // Update attack move
         bool pop = !this->_moveQueue.front()->update(
-            this->_direction, this->_position + this->_size * 0.5,
-            this->_grounded, dt);
+            this->_position + this->_size * 0.5, this->_grounded, dt);
         if (pop) this->_moveQueue.pop();
 
     } else {

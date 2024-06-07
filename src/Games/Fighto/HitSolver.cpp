@@ -30,10 +30,12 @@ class HitSolver {
                         continue;
                     if (!hit.hit.overlaps(champ.position(), champ.size()))
                         continue;
-                    dVector knockback(
-                        hit.move->knockback() * -champ.direction(),
-                        hit.move->knockback());
-                    champ.damage(hit.move->damage(), knockback, 2.0);
+
+                    double strength = 1.0 + (100.0 - champ.life()) * 0.01;
+                    double direction = champ.position().x - champions.at(hit.owner).position().x;
+                    direction = direction / std::abs(direction);
+                    dVector kb(hit.move->knockback().x * direction, hit.move->knockback().y);
+                    champ.damage(hit.move->damage(), kb * strength, 2.0);
                     hit.move->addHit(i);
                 }
             }

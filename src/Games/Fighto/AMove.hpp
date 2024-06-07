@@ -18,26 +18,23 @@ class AMove {
         AMove() = default;
         /**
          * @param dmg DAMAGE - The amount of damage move inflicts
-         * @param kb KNOCKBACK - The amount of knockback move inflicts
-         * @param stu STARTUP - The time before the move takes effect
-         * @param act ACTIVE - The time the move takes effect
-         * @param lag ACTIVE - The time taken for the move to end (innactive)
+         * @param aerian AERIAN - Wether the move is aerian
         */
-        AMove(double dmg, double kb, double stu, double act, double lag, bool air);
+        AMove(double dmg, dVector kb, bool air);
         ~AMove() = default;
 
-        bool air() const { return this->_air; }
         double damage() const { return this->_damage; }
-        double knockback() const { return this->_knockback; }
+        dVector knockback() const { return this->_knockback; }
+        bool aerian() const { return this->_aerian; }
 
         /**
          * @brief Updates the attack move progress and its position.
-         * @param x The X position of the Champion doing the move
-         * @param y The Y position of the Champion doing the move
+         * @param pos The position of the character effecting to move
+         * @param grounded Wether the character is grounded this frame
          * @param dt The frame's delta-time.
          * @return `true` if the move is continuing. `false` if the move has ended.
         */
-        virtual bool update(double direction, dVector pos, bool grounded, double dt);
+        virtual bool update(dVector pos, bool grounded, double dt);
 
         /**
          * @brief Get the next hitbox in the hitbox poll of the move.
@@ -57,20 +54,41 @@ class AMove {
         */
         virtual void interrupt();
 
+        /**
+         * @brief Add a player id to the list of hit players
+         * @param id The player's ID
+        */
         virtual void addHit(std::uint32_t id)
             { this->_hitIds.push_back(id); }
+
+        /**
+         * @brief Check wether a player was already hit.
+         * @param id The player's ID
+        */
         virtual bool hasHit(std::uint32_t id) const;
 
     protected:
+        double _direction = .0;
         std::vector<HitBox> _hitboxes = {};
+
+    protected:
+        /**
+         * @brief Sets the timing frames of the move
+        */
+        void _setTimings(uint8_t stu, uint8_t act, uint8_t lag);
+
+    private:
+        double _damage = .0;
+        dVector _knockback;
+        bool _aerian = false;
+
     private:
         double _time = .0;
-        double _damage = .0;
-        double _knockback = .0;
         double _startup = .0;
         double _active = .0;
         double _lag = .0;
-        bool _air = false;
+
+    private:
         std::vector<HitBox> _poll = {};
         std::vector<std::uint32_t> _hitIds = {};
 };

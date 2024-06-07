@@ -24,6 +24,7 @@ class Champion {
         void update(double dt);
         void damage(double damage, dVector knockback, double stagger);
 
+        double life() const { return this->_lifepoints; }
         std::shared_ptr<AMove> move() const;
         double direction() const { return this->_direction; }
         const dVector position() const { return this->_position; }

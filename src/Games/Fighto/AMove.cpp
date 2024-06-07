@@ -7,12 +7,12 @@
 
 #include "AMove.hpp"
 
-AMove::AMove(double dmg, double kb, double stu, double act, double lag, bool air)
-    : _damage(dmg), _knockback(kb), _startup(stu), _active(act), _lag(lag), _air(air)
+AMove::AMove(double dmg, dVector kb, bool air)
+    : _damage(dmg), _knockback(kb), _aerian(air)
 {
 }
 
-bool AMove::update(double direction, dVector pos, bool grounded, double dt)
+bool AMove::update(dVector pos, bool grounded, double dt)
 {
     this->_time += dt;
     if (this->_time >= this->_startup + this->_active + this->_lag)
@@ -21,10 +21,10 @@ bool AMove::update(double direction, dVector pos, bool grounded, double dt)
         return true;
     if (this->_time <= this->_startup)
         return true;
-    if (grounded && this->_air)
+    if (grounded && this->_aerian)
         { this->interrupt(); return true; }
     for (const auto& hb : this->_hitboxes) {
-        dVector p(hb.position().x * direction, hb.position().y);
+        dVector p(hb.position().x * this->_direction, hb.position().y);
         this->_poll.push_back(HitBox(p + pos, hb.radius()));
     }
     return true;
@@ -64,3 +64,9 @@ bool AMove::hasHit(std::uint32_t id) const
     return f != this->_hitIds.end();
 }
 
+void AMove::_setTimings(uint8_t stu, uint8_t act, uint8_t lag)
+{
+    this->_startup = FRAME(stu);
+    this->_active = FRAME(act);
+    this->_lag = FRAME(lag);
+}

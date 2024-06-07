@@ -12,8 +12,10 @@
 */
 class Jab : public AMove {
     public:
-        Jab() : AMove(1.f, 4.f, FRAME(3), FRAME(5), FRAME(3), false)
+        Jab(double direction) : AMove(5.f, dVector(5, 2), false)
         {
+            this->_direction = direction;
+            this->_setTimings(3, 5, 3);
             this->_hitboxes.push_back(HitBox(dVector(0.8f, -0.25f), 0.3f));
         }
 
