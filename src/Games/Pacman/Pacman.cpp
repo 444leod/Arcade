@@ -69,6 +69,13 @@ public:
         _states[_currentState]->onMouseButtonPressed(lib, button, x, y);
     }
 
+    virtual void onJoystickButtonPressed(
+        [[maybe_unused]] arc::ILibrary& lib,
+        [[maybe_unused]] arc::JoystickButton button,
+        [[maybe_unused]] std::uint32_t id)
+    {
+    }
+
     virtual void update(arc::ILibrary& lib, float deltaTime)
     {
         if (_currentState != _oldState) {

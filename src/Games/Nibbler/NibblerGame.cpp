@@ -103,6 +103,13 @@ public:
     {
     }
 
+    virtual void onJoystickButtonPressed(
+        [[maybe_unused]] arc::ILibrary& lib,
+        [[maybe_unused]] arc::JoystickButton button,
+        [[maybe_unused]] std::uint32_t id)
+    {
+    }
+
     virtual void update([[maybe_unused]] arc::ILibrary& lib, float deltaTime)
     {
         if (_nibblerManager.checkWin(_nibbler)) {

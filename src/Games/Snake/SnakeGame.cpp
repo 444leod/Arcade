@@ -77,8 +77,14 @@ public:
         [[maybe_unused]] arc::ILibrary& lib,
         [[maybe_unused]] arc::MouseButton button,
         [[maybe_unused]] int32_t x,
-        [[maybe_unused]] int32_t y
-    )
+        [[maybe_unused]] int32_t y)
+    {
+    }
+
+    virtual void onJoystickButtonPressed(
+        [[maybe_unused]] arc::ILibrary& lib,
+        [[maybe_unused]] arc::JoystickButton button,
+        [[maybe_unused]] std::uint32_t id)
     {
     }
 
@@ -112,9 +118,9 @@ public:
             lib.display().print("Game Over", lib.fonts().get("Pokemon"), center, ARENA_HEIGHT / 2);
         }
         for (auto &part : _snakeManager.dump()) {
-                lib.display().draw(lib.textures().get(part.second), part.first.x, part.first.y);
-            }
-    
+            lib.display().draw(lib.textures().get(part.second), part.first.x, part.first.y);
+        }
+
         float textWidth = lib.display().measure(score.str(), lib.fonts().get("Pokemon"), 0, 0).width;
         float center = (width - textWidth) / 2;
         lib.display().print(score.str(), lib.fonts().get("Pokemon"), center, ARENA_HEIGHT + 2);
@@ -252,7 +258,7 @@ private:
         for (int y = 2; y < ARENA_HEIGHT + 1; y++)
             for (int x = 1; x < ARENA_WIDTH + 1; x++)
                 lib.display().draw(lib.textures().get("arena_0"), x, y);
-        
+
         // Menu background
         for (int x = 0; x < ARENA_WIDTH + 2; x++)
             lib.display().draw(lib.textures().get("arena_0"), x, ARENA_HEIGHT + 2);
