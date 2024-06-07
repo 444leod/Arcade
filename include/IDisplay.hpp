@@ -27,12 +27,17 @@ namespace arc {
         LEFT = 0, RIGHT, MIDDLE, UNKNOWN
     };
 
+    enum class JoystickButton {
+        Cross = 0, Square, Circle, Triangle, L1, R1, L2, R2, END
+    };
+
     /**
      * @brief Represents an even type
      */
     enum class EventType {
         KEY_PRESSED = 0,
-        MOUSE_BUTTON_PRESSED
+        MOUSE_BUTTON_PRESSED,
+        JOYSTICK_BUTTON_PRESSED
     };
 
     /**
@@ -50,6 +55,10 @@ namespace arc {
                 int32_t x;
                 int32_t y;
             } mouse;
+            struct {
+                JoystickButton button;
+                int32_t id;
+            } joystick;
         };
     };
 
@@ -181,6 +190,16 @@ namespace arc {
          * @param y the row to draw the texture at
          */
         virtual void draw(std::shared_ptr<ITexture> texture, float x, float y) = 0;
+
+        /**
+         * @brief Draws a texture to the display
+         *
+         * @param texture the texture to draw
+         * @param x the column to draw the texture at
+         * @param y the row to draw the texture at
+         * @param scale the scale at which the square should be displayed
+         */
+        virtual void draw(std::shared_ptr<ITexture> texture, float x, float y, float scale) = 0;
 
         /**td::shared_ptr<ITexture> g
          * @brief Draws a string to the display

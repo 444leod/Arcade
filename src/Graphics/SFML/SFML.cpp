@@ -487,14 +487,17 @@ public:
         sf::Event event;
         arc::Event e;
 
-        for (std::uint16_t id = 0; id < 2; id++) {
-            double x = sf::Joystick::getAxisPosition(id, sf::Joystick::X);
-            double y = sf::Joystick::getAxisPosition(id, sf::Joystick::Y);
-            this->_joysticks[id].setAxis(x / 100.0, y / -100.0);
-            for (std::uint16_t i = 0; i < arc::Joystick::END; i++) {
-                bool pressed = sf::Joystick::isButtonPressed(id, i);
-                this->_joysticks[id].setButton(static_cast<arc::Joystick::JoystickButton>(i), pressed);
-            }
+        for (std::uint32_t id = 0; id < sf::Joystick::Count; id++) {
+            #ifndef NO_JOY
+            if (!sf::Joystick::isConnected(id)) continue;
+            double x = sf::Joystick::getAxisPosition(id, sf::Joystick::Axis::X) / 100.0;
+            double y = sf::Joystick::getAxisPosition(id, sf::Joystick::Axis::Y) / 100.0;
+            #else
+            if (id != 0) break;
+            double x = sf::Keyboard::isKeyPressed(sf::Keyboard::D) - sf::Keyboard::isKeyPressed(sf::Keyboard::Q);
+            double y = sf::Keyboard::isKeyPressed(sf::Keyboard::S) - sf::Keyboard::isKeyPressed(sf::Keyboard::Z);
+            #endif
+            this->_joysticks[id].setAxis(x, y);
         }
 
         while (this->_window.pollEvent(event)) {
@@ -507,12 +510,24 @@ public:
                 e.key.code = SFMLDisplay::MapSFMLKey(event.key.code);
                 e.key.shift = event.key.shift;
                 this->_events.push_back(std::move(e));
+                #ifdef NO_JOY
+                e.type = arc::EventType::JOYSTICK_BUTTON_PRESSED;
+                e.joystick.button = static_cast<arc::JoystickButton>(e.key.code);
+                e.joystick.id = 0;
+                this->_events.push_back(std::move(e));
+                #endif
                 break;
             case sf::Event::MouseButtonPressed:
                 e.type = arc::EventType::MOUSE_BUTTON_PRESSED;
                 e.mouse.button = SFMLDisplay::MapSFMLMouseButton(event.mouseButton.button);
                 e.mouse.x = event.mouseButton.x / this->_tileSize;
                 e.mouse.y = event.mouseButton.y / this->_tileSize;
+                this->_events.push_back(std::move(e));
+                break;
+            case sf::Event::JoystickButtonPressed:
+                e.type = arc::EventType::JOYSTICK_BUTTON_PRESSED;
+                e.joystick.button = static_cast<arc::JoystickButton>(event.joystickButton.button);
+                e.joystick.id = event.joystickButton.joystickId;
                 this->_events.push_back(std::move(e));
                 break;
             default:
@@ -562,6 +577,21 @@ public:
         rect.setTexture(tex->raw().get());
         rect.setTextureRect(tex->subrect());
         rect.setPosition(x * this->_tileSize, y * this->_tileSize);
+        this->_window.draw(rect);
+    }
+
+    virtual void draw(std::shared_ptr<arc::ITexture> texture, float x, float y, float scale)
+    {
+        if (texture == nullptr)
+            return;
+
+        auto rect = sf::RectangleShape{sf::Vector2f{static_cast<float>(this->_tileSize), static_cast<float>(this->_tileSize)}};
+        auto tex = std::dynamic_pointer_cast<SFMLTexture>(texture);
+
+        rect.setTexture(tex->raw().get());
+        rect.setTextureRect(tex->subrect());
+        rect.setPosition(x * this->_tileSize, y * this->_tileSize);
+        rect.setScale(scale, scale);
         this->_window.draw(rect);
     }
 
@@ -615,7 +645,7 @@ private:
     std::size_t _height;
     std::size_t _tileSize;
     std::deque<arc::Event> _events;
-    arc::Joystick _joysticks[2];
+    arc::Joystick _joysticks[sf::Joystick::Count];
 };
 
 class SFMLLibrary : public arc::ILibrary {
