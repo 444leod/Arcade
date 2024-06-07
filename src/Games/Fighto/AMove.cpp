@@ -6,6 +6,7 @@
 */
 
 #include "AMove.hpp"
+#include <algorithm>
 
 AMove::AMove(double dmg, dVector kb, bool air)
     : _damage(dmg), _knockback(kb), _aerian(air)

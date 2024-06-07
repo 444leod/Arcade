@@ -10,7 +10,6 @@
 #include <vector>
 #include "HitBox.hpp"
 #include "ILibrary.hpp"
-#include <cstdint>
 
 #define FRAME(x) x / 60.0
 
