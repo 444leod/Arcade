@@ -7,40 +7,44 @@
 
 #pragma once
 
-#include "HitResolver.hpp"
-#include "Vector.hpp"
 #include "ILibrary.hpp"
-
-class HitResolver;
+#include "Vector.hpp"
+#include "MoveList.hpp"
+#include <queue>
 
 class Champion {
     public:
-        Champion(id_t id);
+        Champion(arc::Color color);
         ~Champion();
 
         void draw(arc::ILibrary& lib) const;
-        void input(float xaxis, int yaxis); // mouvement reserved
-        void input(HitResolver& hits); // combat reserved
-        void update(float dt);
-        void damage(float amount);
+        void debug(arc::ILibrary& lib) const;
+        void input(dVector input);
+        void input(arc::JoystickButton button);
+        void update(double dt);
+        void damage(double damage, dVector knockback, double stagger);
 
-        const fVector position() const { return this->_position; }
-        const fVector size() const { return this->_size; }
+        std::shared_ptr<AMove> move() const;
+        double direction() const { return this->_direction; }
+        const dVector position() const { return this->_position; }
+        const dVector size() const { return this->_size; }
 
-        bool operator==(const Champion& other) const { return this->_id == other._id; }
-
-    protected:
     private:
-        const id_t _id;
-        const float _maxspeed = 8.f;
-        const float _jumpforce = 16.f;
-        const fVector _size = {1.f, 1.f};
+        const double _acceleration = 0.5f;
+        const double _maxspeed = 8.0;
+        const double _jumpforce = 16.0;
+        const dVector _size = dVector(1.0, 1.0);
 
+    private:
         bool _alive = true;
-        float _inputlag = 0.f;
-        float _lifepoints = 100.f;
+        double _speed = 0.0;
+        double _lifepoints = 100.0;
         arc::Color _color = { 255, 0, 0, 255 };
-        fVector _position = {0.f, 0.f};
-        fVector _velocity = {0.f, 0.f};
+        dVector _position = dVector(10.0, 5.0);
+        dVector _velocity = dVector(0.0, 0.0);
+        mutable std::queue<std::shared_ptr<AMove>> _moveQueue = {};
         bool _grounded = false;
+        dVector _input = dVector(0.0, 0.0);
+        double _direction = 1.0;
+        double _stagger = 0.0;
 };
