@@ -55,6 +55,8 @@ private:
 
 private:
     sf::RenderWindow _window;
+    sf::VideoMode _mode;
+    sf::Vector2f _offset;
     std::string _title;
     uint32_t _framerate;
     std::size_t _width;

@@ -17,11 +17,9 @@ SFMLDisplay::SFMLDisplay()
     this->_framerate = 0;
     this->_title = "Arcade";
 
-    sf::VideoMode mode;
-    mode.width = this->_width * this->_tileSize;
-    mode.height = this->_height * this->_tileSize;
-    mode.bitsPerPixel = 32;
-    this->_window.create(mode, this->_title, sf::Style::Titlebar | sf::Style::Close);
+    this->_mode = sf::VideoMode::getFullscreenModes()[0];
+    this->_resizeWindow();
+    this->_window.create(this->_mode, this->_title, sf::Style::Fullscreen);
     this->_window.setKeyRepeatEnabled(false);
 }
 
@@ -136,7 +134,9 @@ void SFMLDisplay::draw(std::shared_ptr<arc::ITexture> texture, float x, float y)
 
     rect.setTexture(tex->raw().get());
     rect.setTextureRect(tex->subrect());
-    rect.setPosition(x * this->_tileSize, y * this->_tileSize);
+    rect.setPosition(
+        x * this->_tileSize + this->_offset.x,
+        y * this->_tileSize + this->_offset.y);
     this->_window.draw(rect);
 }
 
@@ -150,7 +150,9 @@ void SFMLDisplay::draw(std::shared_ptr<arc::ITexture> texture, float x, float y,
 
     rect.setTexture(tex->raw().get());
     rect.setTextureRect(tex->subrect());
-    rect.setPosition(x * this->_tileSize, y * this->_tileSize);
+    rect.setPosition(
+        x * this->_tileSize + this->_offset.x,
+        y * this->_tileSize + this->_offset.y);
     rect.setScale(scale, scale);
     this->_window.draw(rect);
 }
@@ -163,7 +165,9 @@ void SFMLDisplay::print(const std::string &string, std::shared_ptr<arc::IFont> f
     auto attr = std::dynamic_pointer_cast<SFMLFont>(font);
     auto text = sf::Text(sf::String(string), attr->font(), attr->size());
     text.setFillColor(attr->color());
-    text.setPosition(x * this->_tileSize, y * this->_tileSize);
+    text.setPosition(
+        x * this->_tileSize + this->_offset.x,
+        y * this->_tileSize + this->_offset.y);
     this->_window.draw(text);
 }
 
@@ -175,7 +179,7 @@ arc::Rect<float> SFMLDisplay::measure(const std::string &string, std::shared_ptr
     auto attr = std::dynamic_pointer_cast<SFMLFont>(font);
     auto text = sf::Text(sf::String(string), attr->font(), attr->size());
     text.setFillColor(attr->color());
-    text.setPosition(x, y);
+    text.setPosition(x + this->_offset.x, y + this->_offset.y);
     auto bounds = text.getLocalBounds();
     return {bounds.left, bounds.top, bounds.width / this->_tileSize, bounds.height / this->_tileSize};
 }
@@ -231,10 +235,6 @@ sf::Mouse::Button SFMLDisplay::_mapArcMouseButton(arc::MouseButton button)
 
 void SFMLDisplay::_resizeWindow()
 {
-    sf::Vector2u size;
-    size.x = this->_width * this->_tileSize;
-    size.y = this->_height * this->_tileSize;
-
-    this->_window.setSize(size);
-    this->_window.setView(sf::View(sf::FloatRect(0, 0, size.x, size.y)));
+    this->_offset.x = (this->_mode.width - this->_width * this->_tileSize) / 2.f;
+    this->_offset.y = (this->_mode.height - this->_height * this->_tileSize) / 2.f;
 }
