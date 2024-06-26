@@ -102,7 +102,7 @@ public:
         score << "Score: " << _snake.getScore();
         std::size_t width = lib.display().width();
 
-        lib.display().clear(arc::Color{0, 0, 255, 0});
+        lib.display().clear(arc::Color{0, 0, 0, 255});
         draw_arena(lib);
         if (_snake.getAlive()) {
             for (auto &part : _snake.dump()) {
@@ -236,10 +236,7 @@ private:
     void draw_arena(arc::ILibrary& lib)
     {
         // Edges
-        lib.display().draw(lib.textures().get("arena_north_edge_solid"), 0, 0);
-        lib.display().draw(lib.textures().get("arena_north_edge_solid"), ARENA_WIDTH + 1, 0);
         for (int x = 1; x < ARENA_WIDTH + 1; x++) {
-            lib.display().draw(lib.textures().get("arena_north_edge_solid"), x, 0);
             lib.display().draw(lib.textures().get("arena_north_edge"), x, 1);
             lib.display().draw(lib.textures().get("arena_south_edge"), x, ARENA_HEIGHT + 1);
         }
@@ -258,10 +255,6 @@ private:
         for (int y = 2; y < ARENA_HEIGHT + 1; y++)
             for (int x = 1; x < ARENA_WIDTH + 1; x++)
                 lib.display().draw(lib.textures().get("arena_0"), x, y);
-
-        // Menu background
-        for (int x = 0; x < ARENA_WIDTH + 2; x++)
-            lib.display().draw(lib.textures().get("arena_0"), x, ARENA_HEIGHT + 2);
     }
 
 private:
