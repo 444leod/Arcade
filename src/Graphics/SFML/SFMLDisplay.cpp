@@ -82,100 +82,102 @@ void SFMLDisplay::update([[maybe_unused]] float deltaTime)
     {
         switch (event.type)
         {
-        case sf::Event::Closed:
-        {
-            this->_window.close();
-            break;
-        }
-        case sf::Event::KeyPressed:
-        {
-            e.eventType = arc::EventType::PRESSED;
-            e.keyType = arc::KeyType::KEY;
-            e.key.code = SFMLDisplay::_mapSFMLKey(event.key.code);
-            e.key.shift = event.key.shift;
+            case sf::Event::Closed:
+            {
+                this->_window.close();
+                break;
+            }
+            case sf::Event::KeyPressed:
+            {
+                e.eventType = arc::EventType::PRESSED;
+                e.keyType = arc::KeyType::KEY;
+                e.key.code = SFMLDisplay::_mapSFMLKey(event.key.code);
+                e.key.shift = event.key.shift;
 
-            this->_events.push_back(std::move(e));
-            float delay = 0;
-            if (this->_keyDownDelays.find(e.key.code) != this->_keyDownDelays.end())
-                delay = this->_keyDownDelays[e.key.code];
-            this->_downKeys.push_back({e.key.code, delay, elapsed});
-            break;
-        }
-        case sf::Event::KeyReleased:
-        {
-            e.eventType = arc::EventType::RELEASED;
-            e.keyType = arc::KeyType::KEY;
-            e.key.code = SFMLDisplay::_mapSFMLKey(event.key.code);
-            e.key.shift = event.key.shift;
-            this->_events.push_back(std::move(e));
-            for (auto it = this->_downKeys.begin(); it != this->_downKeys.end(); it++)
-            {
-                if (std::get<0>(*it) == e.key.code)
-                {
-                    this->_downKeys.erase(it);
-                    break;
-                }
+                this->_events.push_back(std::move(e));
+                float delay = 0;
+                if (this->_keyDownDelays.find(e.key.code) != this->_keyDownDelays.end())
+                    delay = this->_keyDownDelays[e.key.code];
+                this->_downKeys.push_back({e.key.code, delay, elapsed});
+                break;
             }
-            break;
-        }
-        case sf::Event::MouseButtonPressed:
-        {
-            e.eventType = arc::EventType::PRESSED;
-            e.keyType = arc::KeyType::MOUSE_BUTTON;
-            e.mouse.button = SFMLDisplay::_mapSFMLMouseButton(event.mouseButton.button);
-            e.mouse.x = event.mouseButton.x;
-            e.mouse.y = event.mouseButton.y;
-            this->_events.push_back(std::move(e));
-            break;
-        }
-        case sf::Event::MouseButtonReleased:
-        {
-            e.eventType = arc::EventType::RELEASED;
-            e.keyType = arc::KeyType::MOUSE_BUTTON;
-            e.mouse.button = SFMLDisplay::_mapSFMLMouseButton(event.mouseButton.button);
-            e.mouse.x = event.mouseButton.x;
-            e.mouse.y = event.mouseButton.y;
-            this->_events.push_back(std::move(e));
-            for (auto it = this->_downMouseButtons.begin(); it != this->_downMouseButtons.end(); it++)
+            case sf::Event::KeyReleased:
             {
-                if (std::get<0>(*it) == e.mouse.button)
+                e.eventType = arc::EventType::RELEASED;
+                e.keyType = arc::KeyType::KEY;
+                e.key.code = SFMLDisplay::_mapSFMLKey(event.key.code);
+                e.key.shift = event.key.shift;
+                this->_events.push_back(std::move(e));
+                for (auto it = this->_downKeys.begin(); it != this->_downKeys.end(); it++)
                 {
-                    this->_downMouseButtons.erase(it);
-                    break;
+                    if (std::get<0>(*it) == e.key.code)
+                    {
+                        this->_downKeys.erase(it);
+                        break;
+                    }
                 }
+                break;
             }
-            break;
-        }
-        case sf::Event::JoystickButtonPressed:
-        {
-            e.eventType = arc::EventType::PRESSED;
-            e.keyType = arc::KeyType::JOYSTICK_BUTTON;
-            e.joystick.button = static_cast<arc::JoystickButton>(event.joystickButton.button);
-            e.joystick.id = event.joystickButton.joystickId;
-            this->_events.push_back(std::move(e));
-            break;
-        }
-        case sf::Event::JoystickButtonReleased:
-        {
-            e.eventType = arc::EventType::RELEASED;
-            e.keyType = arc::KeyType::JOYSTICK_BUTTON;
-            e.joystick.button = static_cast<arc::JoystickButton>(event.joystickButton.button);
-            e.joystick.id = event.joystickButton.joystickId;
-            this->_events.push_back(std::move(e));
-            for (auto it = this->_downJoystickButtons.begin(); it != this->_downJoystickButtons.end(); it++)
+            case sf::Event::MouseButtonPressed:
             {
-                if (std::get<0>(*it) == e.joystick.button && std::get<1>(*it) == e.joystick.id)
-                {
-                    this->_downJoystickButtons.erase(it);
-                    break;
-                }
+                e.eventType = arc::EventType::PRESSED;
+                e.keyType = arc::KeyType::MOUSE_BUTTON;
+                e.mouse.button = SFMLDisplay::_mapSFMLMouseButton(event.mouseButton.button);
+                e.mouse.x = event.mouseButton.x;
+                e.mouse.y = event.mouseButton.y;
+                this->_events.push_back(std::move(e));
+                _downMouseButtons.push_back({e.mouse.button, elapsed, 0});
+                break;
             }
-            break;
-        }
-        default:
-        {
-            break;
-        }
+            case sf::Event::MouseButtonReleased:
+            {
+                e.eventType = arc::EventType::RELEASED;
+                e.keyType = arc::KeyType::MOUSE_BUTTON;
+                e.mouse.button = SFMLDisplay::_mapSFMLMouseButton(event.mouseButton.button);
+                e.mouse.x = event.mouseButton.x;
+                e.mouse.y = event.mouseButton.y;
+                this->_events.push_back(std::move(e));
+                for (auto it = this->_downMouseButtons.begin(); it != this->_downMouseButtons.end(); it++)
+                {
+                    if (std::get<0>(*it) == e.mouse.button)
+                    {
+                        this->_downMouseButtons.erase(it);
+                        break;
+                    }
+                }
+                break;
+            }
+            case sf::Event::JoystickButtonPressed:
+            {
+                e.eventType = arc::EventType::PRESSED;
+                e.keyType = arc::KeyType::JOYSTICK_BUTTON;
+                e.joystick.button = static_cast<arc::JoystickButton>(event.joystickButton.button);
+                e.joystick.id = event.joystickButton.joystickId;
+                this->_events.push_back(std::move(e));
+                _downJoystickButtons.push_back({e.joystick.button, e.joystick.id, elapsed, 0});
+                break;
+            }
+            case sf::Event::JoystickButtonReleased:
+            {
+                e.eventType = arc::EventType::RELEASED;
+                e.keyType = arc::KeyType::JOYSTICK_BUTTON;
+                e.joystick.button = static_cast<arc::JoystickButton>(event.joystickButton.button);
+                e.joystick.id = event.joystickButton.joystickId;
+                this->_events.push_back(std::move(e));
+                for (auto it = this->_downJoystickButtons.begin(); it != this->_downJoystickButtons.end(); it++)
+                {
+                    if (std::get<0>(*it) == e.joystick.button && std::get<1>(*it) == e.joystick.id)
+                    {
+                        this->_downJoystickButtons.erase(it);
+                        break;
+                    }
+                }
+                break;
+            }
+            default:
+            {
+                break;
+            }
         }
     }
     auto mousePos = sf::Mouse::getPosition();
