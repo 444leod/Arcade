@@ -12,6 +12,7 @@
 #include <SFML/Audio.hpp>
 #include <deque>
 #include <cmath>
+#include <iostream>
 #include <memory>
 
 class SFMLTexture : public arc::ITexture {
@@ -527,12 +528,6 @@ public:
                     if (this->_keyDownDelays.find(e.key.code) != this->_keyDownDelays.end())
                         delay = this->_keyDownDelays[e.key.code];
                     this->_downKeys.push_back({e.key.code, delay, elapsed});
-                    #ifdef NO_JOY
-                    e.type = arc::EventType::JOYSTICK_BUTTON_PRESSED;
-                    e.joystick.button = static_cast<arc::JoystickButton>(e.key.code);
-                    e.joystick.id = 0;
-                    this->_events.push_back(std::move(e));
-                    #endif
                     break;
                 }
                 case sf::Event::KeyReleased: {
@@ -575,6 +570,7 @@ public:
                 }
                 case sf::Event::JoystickButtonPressed:
                 {
+                    std::cout << "Button id: " << static_cast<int>(e.joystick.button) << std::endl;
                     e.eventType = arc::EventType::PRESSED;
                     e.keyType = arc::KeyType::JOYSTICK_BUTTON;
                     e.joystick.button = static_cast<arc::JoystickButton>(event.joystickButton.button);
