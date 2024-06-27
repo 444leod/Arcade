@@ -123,25 +123,94 @@ class Core
                 this->_cur_lib->display().update(deltaTime);
 
                 while (_cur_lib->display().pollEvent(event)) {
-                    switch (event.type)
+                    switch (event.eventType)
                     {
-                    case arc::EventType::KEY_PRESSED:
-                        if (!this->_menu->running())
-                            this->_menu->onKeyPressed(*this->_cur_lib, event.key.code, event.key.shift);
-                        if (event.key.code == arc::KeyCode::I || event.key.code == arc::KeyCode::K)
-                            enter_game = !this->_menu->running();
-                        if (event.key.code == arc::KeyCode::ENTER)
-                            enter_game = true;
-                        if (event.key.code == arc::KeyCode::ESCAPE)
-                            escape_game = true;
-                        this->_cur_game->onKeyPressed(*this->_cur_lib, event.key.code, event.key.shift);
-                        break;
-                    case arc::EventType::MOUSE_BUTTON_PRESSED:
-                        break;
-                    case arc::EventType::JOYSTICK_BUTTON_PRESSED:
-                        this->_cur_game->onJoystickButtonPressed(
-                            *this->_cur_lib, event.joystick.button, event.joystick.id);
-                        break;
+                        case arc::EventType::PRESSED:
+                        {
+                            switch (event.keyType) {
+                                case arc::KeyType::KEY:
+                                {
+                                    if (event.key.code == arc::KeyCode::I || event.key.code == arc::KeyCode::K)
+                                        enter_game = !this->_menu->running();
+                                    if (event.key.code == arc::KeyCode::ENTER)
+                                        enter_game = true;
+                                    if (event.key.code == arc::KeyCode::ESCAPE)
+                                        escape_game = true;
+                                    if (!this->_menu->running()) {
+                                        this->_menu->onKeyPressed(*this->_cur_lib, event.key.code, event.key.shift);
+                                    }
+                                    this->_cur_game->onKeyPressed(*this->_cur_lib, event.key.code, event.key.shift);
+                                    break;
+                                }
+                                case arc::KeyType::MOUSE_BUTTON:
+                                {
+                                    this->_cur_game->onMouseButtonPressed(*this->_cur_lib, event.mouse.button, event.mouse.x, event.mouse.y);
+                                    break;
+                                }
+                                case arc::KeyType::JOYSTICK_BUTTON:
+                                {
+                                    if (!this->_menu->running()) {
+                                        enter_game = true;
+                                    }
+                                    this->_cur_game->onJoystickButtonPressed(*this->_cur_lib, event.joystick.button, event.joystick.id);
+                                    break;
+                                }
+                                default:
+                                    break;
+                            }
+                            break;
+                        }
+                        case arc::EventType::DOWN:
+                        {
+                            switch (event.keyType) {
+                                case arc::KeyType::KEY:
+                                {
+                                    this->_cur_game->onKeyDown(*this->_cur_lib, event.key.code);
+                                    break;
+                                }
+                                case arc::KeyType::MOUSE_BUTTON:
+                                {
+                                    this->_cur_game->onMouseButtonDown(*this->_cur_lib, event.mouse.button, event.mouse.x, event.mouse.y);
+                                    break;
+                                }
+                                case arc::KeyType::JOYSTICK_BUTTON:
+                                {
+                                    this->_cur_game->onJoystickButtonDown(*this->_cur_lib, event.joystick.button, event.joystick.id);
+                                    break;
+                                }
+                                default:
+                                    break;
+                            }
+                            break;
+                        }
+                        case arc::EventType::RELEASED:
+                        {
+                            switch (event.keyType) {
+                                case arc::KeyType::KEY:
+                                {
+                                    this->_cur_game->onKeyReleased(*this->_cur_lib, event.key.code);
+                                    break;
+                                }
+                                case arc::KeyType::MOUSE_BUTTON:
+                                {
+                                    this->_cur_game->onMouseButtonReleased(*this->_cur_lib, event.mouse.button, event.mouse.x, event.mouse.y);
+                                    break;
+                                }
+                                case arc::KeyType::JOYSTICK_BUTTON:
+                                {
+                                    this->_cur_game->onJoystickButtonReleased(*this->_cur_lib, event.joystick.button, event.joystick.id);
+                                    break;
+                                }
+                                default:
+                                    break;
+                            }
+                            break;
+                        }
+                        case arc::EventType::MOVE:
+                        {
+                            this->_cur_game->onJoystickMove(*this->_cur_lib, event.joystick.axis, event.joystick.id);
+                            break;
+                        }
                     }
                 }
 

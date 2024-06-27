@@ -73,11 +73,38 @@ public:
             lib.sounds().play("woosh", 30.0f);
     }
 
+    virtual void onKeyDown([[maybe_unused]] arc::ILibrary& lib, [[maybe_unused]] arc::KeyCode key)
+    {
+    }
+
+    virtual void onKeyReleased([[maybe_unused]] arc::ILibrary& lib, [[maybe_unused]] arc::KeyCode key)
+    {
+    }
+
     virtual void onMouseButtonPressed(
         [[maybe_unused]] arc::ILibrary& lib,
         [[maybe_unused]] arc::MouseButton button,
         [[maybe_unused]] int32_t x,
-        [[maybe_unused]] int32_t y)
+        [[maybe_unused]] int32_t y
+    )
+    {
+    }
+
+    virtual void onMouseButtonDown(
+        [[maybe_unused]] arc::ILibrary& lib,
+        [[maybe_unused]] arc::MouseButton button,
+        [[maybe_unused]] int32_t x,
+        [[maybe_unused]] int32_t y
+    )
+    {
+    }
+
+    virtual void onMouseButtonReleased(
+        [[maybe_unused]] arc::ILibrary& lib,
+        [[maybe_unused]] arc::MouseButton button,
+        [[maybe_unused]] int32_t x,
+        [[maybe_unused]] int32_t y
+    )
     {
     }
 
@@ -86,6 +113,31 @@ public:
         [[maybe_unused]] arc::JoystickButton button,
         [[maybe_unused]] std::uint32_t id)
     {
+    }
+
+    virtual void onJoystickButtonDown(
+        [[maybe_unused]] arc::ILibrary& lib,
+        [[maybe_unused]] arc::JoystickButton button,
+        [[maybe_unused]] std::uint32_t id)
+    {
+    }
+
+    virtual void onJoystickButtonReleased(
+        [[maybe_unused]] arc::ILibrary& lib,
+        [[maybe_unused]] arc::JoystickButton button,
+        [[maybe_unused]] std::uint32_t id)
+    {
+    }
+
+    virtual void onJoystickMove(
+        [[maybe_unused]] arc::ILibrary& lib,
+        arc::JoystickAxis axis,
+        uint32_t id)
+    {
+        if (id != 0)
+            return;
+        if (axis.x != 0 && axis.y != 0)
+            _snake.setDirection({axis.x, axis.y});
     }
 
     virtual void update([[maybe_unused]] arc::ILibrary& lib, float deltaTime)

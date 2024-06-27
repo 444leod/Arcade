@@ -73,7 +73,31 @@ void CoreMenu::onKeyPressed([[maybe_unused]] arc::ILibrary &lib, arc::KeyCode ke
     }
 }
 
+void CoreMenu::onKeyDown([[maybe_unused]] arc::ILibrary &lib, [[maybe_unused]] arc::KeyCode key)
+{
+}
+
+void CoreMenu::onKeyReleased([[maybe_unused]] arc::ILibrary &lib, [[maybe_unused]] arc::KeyCode key)
+{
+}
+
 void CoreMenu::onMouseButtonPressed(arc::ILibrary &lib, arc::MouseButton button, int32_t x, int32_t y)
+{
+    (void)lib;
+    (void)button;
+    (void)x;
+    (void)y;
+}
+
+void CoreMenu::onMouseButtonDown(arc::ILibrary &lib, arc::MouseButton button, int32_t x, int32_t y)
+{
+    (void)lib;
+    (void)button;
+    (void)x;
+    (void)y;
+}
+
+void CoreMenu::onMouseButtonReleased(arc::ILibrary &lib, arc::MouseButton button, int32_t x, int32_t y)
 {
     (void)lib;
     (void)button;
@@ -86,6 +110,33 @@ void CoreMenu::onJoystickButtonPressed(
     [[maybe_unused]] arc::JoystickButton button,
     [[maybe_unused]] std::uint32_t id)
 {
+}
+
+void CoreMenu::onJoystickButtonDown(
+    [[maybe_unused]] arc::ILibrary& lib,
+    [[maybe_unused]] arc::JoystickButton button,
+    [[maybe_unused]] std::uint32_t id)
+{
+}
+
+void CoreMenu::onJoystickButtonReleased(
+    [[maybe_unused]] arc::ILibrary& lib,
+    [[maybe_unused]] arc::JoystickButton button,
+    [[maybe_unused]] std::uint32_t id)
+{
+}
+
+void CoreMenu::onJoystickMove(
+    [[maybe_unused]] arc::ILibrary& lib,
+    arc::JoystickAxis axis,
+    uint32_t id)
+{
+    if (id != 0)
+        return;
+    if (axis.y == 1)
+        this->_game = (this->_game + 1) % _games.size();
+    else if (axis.y == -1)
+        this->_game = this->_game ? (this->_game - 1) % _games.size() : _games.size() - 1;
 }
 
 void CoreMenu::update(arc::ILibrary &lib, float deltaTime)

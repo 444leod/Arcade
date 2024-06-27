@@ -14,7 +14,7 @@ void GameOver::onKeyPressed([[maybe_unused]]arc::ILibrary &lib, arc::KeyCode key
 {
     switch (key) {
         case arc::KeyCode::W:
-            _currentState = IGameState::State::GAME;
+            _currentState = AScene::Scene::GAME;
             break;
         default:
             break;
@@ -48,10 +48,10 @@ void GameOver::draw(arc::ILibrary &lib)
     }
 }
 
-void GameOver::onEnter([[maybe_unused]]IGameState::State lastState, [[maybe_unused]] arc::ILibrary& lib)
+void GameOver::onEnter([[maybe_unused]]AScene::Scene previousScene, [[maybe_unused]] arc::ILibrary& lib)
 {
 }
 
-void GameOver::onExit([[maybe_unused]]IGameState::State nextState, [[maybe_unused]] arc::ILibrary& lib)
+void GameOver::onExit([[maybe_unused]]AScene::Scene nextScene, [[maybe_unused]] arc::ILibrary& lib)
 {
 }

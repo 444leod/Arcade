@@ -34,17 +34,38 @@ namespace arc {
     /**
      * @brief Represents an even type
      */
+    // enum class EventType {
+    //     KEY_PRESSED = 0,
+    //     MOUSE_BUTTON_PRESSED,
+    //     JOYSTICK_BUTTON_PRESSED,
+    //     KEY_DOWN,
+    //     MOUSE_BUTTON_DOWN,
+    //     JOYSTICK_BUTTON_DOWN,
+    //     KEY_RELEASED,
+
+    // };
+
+    enum class KeyType {
+        KEY,
+        MOUSE_BUTTON,
+        JOYSTICK,
+        JOYSTICK_BUTTON,
+    };
+
     enum class EventType {
-        KEY_PRESSED = 0,
-        MOUSE_BUTTON_PRESSED,
-        JOYSTICK_BUTTON_PRESSED
+        PRESSED,
+        DOWN,
+        RELEASED,
+        MOVE
     };
 
     /**
      * @brief Represents an event
      */
     struct Event {
-        EventType type;
+        EventType eventType;
+        KeyType keyType;
+
         union {
             struct {
                 KeyCode code;
@@ -56,7 +77,10 @@ namespace arc {
                 int32_t y;
             } mouse;
             struct {
-                JoystickButton button;
+                union {
+                    arc::JoystickAxis axis;
+                    arc::JoystickButton button;
+                };
                 int32_t id;
             } joystick;
         };
@@ -103,6 +127,13 @@ namespace arc {
          * @param height the number of tiles per column
          */
         virtual void setHeight(std::size_t height) = 0;
+
+        /**
+         * @brief Sets the delay between key down events
+         *
+         * @param delay the delay between key down events
+         */
+        virtual void setKeyDownDelay(arc::KeyCode key, float delay) = 0;
 
         /**
          * @brief Returns the title of the display
@@ -160,6 +191,13 @@ namespace arc {
          * @return false if there was no event
          */
         virtual bool pollEvent(Event& event) = 0;
+
+        /**
+         * @brief Returns the position of the mouse
+         *
+         * @return const std::pair<int32_t, int32_t>& the position of the mouse
+         */
+        virtual const std::pair<int32_t, int32_t> mousePosition() const = 0;
 
         /**
          * @brief Gets the data relative to a certain joystick.

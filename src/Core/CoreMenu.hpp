@@ -18,9 +18,21 @@ public:
     ~CoreMenu();
 
     virtual void initialize(arc::ILibrary &lib);
+
     virtual void onKeyPressed([[maybe_unused]] arc::ILibrary &lib, arc::KeyCode key, bool shift);
+    virtual void onKeyDown([[maybe_unused]] arc::ILibrary &lib, arc::KeyCode key);
+    virtual void onKeyReleased([[maybe_unused]] arc::ILibrary &lib, arc::KeyCode key);
+
     virtual void onMouseButtonPressed(arc::ILibrary &lib, arc::MouseButton button, int32_t x, int32_t y);
+    virtual void onMouseButtonDown(arc::ILibrary &lib, arc::MouseButton button, int32_t x, int32_t y);
+    virtual void onMouseButtonReleased(arc::ILibrary &lib, arc::MouseButton button, int32_t x, int32_t y);
+
     virtual void onJoystickButtonPressed(arc::ILibrary& lib, arc::JoystickButton button, std::uint32_t id);
+    virtual void onJoystickButtonDown(arc::ILibrary& lib, arc::JoystickButton button, std::uint32_t id);
+    virtual void onJoystickButtonReleased(arc::ILibrary& lib, arc::JoystickButton button, std::uint32_t id);
+
+    virtual void onJoystickMove(arc::ILibrary& lib, arc::JoystickAxis axis, uint32_t id);
+
     virtual void update(arc::ILibrary &lib, float deltaTime);
     virtual void draw(arc::ILibrary &lib);
     virtual uint64_t score() const { return 0; }

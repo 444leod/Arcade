@@ -7,12 +7,12 @@
 
 #pragma once
 
-#include "../IGameState.hpp"
+#include "../AScene.hpp"
 #include <iostream>
 
-class GameOver : public IGameState {
+class GameOver : public AScene {
     public:
-        GameOver(IGameState::State &currentState, uint64_t &score) : _currentState(currentState), _score(score) {}
+        GameOver(AScene::Scene &currentState, uint64_t &score) : _currentState(currentState), _score(score) {}
         ~GameOver() = default;
 
         virtual void initialize(arc::ILibrary& lib) override;
@@ -20,11 +20,11 @@ class GameOver : public IGameState {
         virtual void onMouseButtonPressed(arc::ILibrary& lib, arc::MouseButton button, int32_t x, int32_t y) override;
         virtual void update(arc::ILibrary& lib, float deltaTime) override;
         virtual void draw(arc::ILibrary& lib) override;
-        virtual void onEnter(IGameState::State lastState, arc::ILibrary& lib) override;
-        virtual void onExit(IGameState::State nextState, arc::ILibrary& lib) override;
+        virtual void onEnter(AScene::Scene previousScene, arc::ILibrary& lib) override;
+        virtual void onExit(AScene::Scene nextScene, arc::ILibrary& lib) override;
 
     protected:
     private:
-        IGameState::State& _currentState;
+        AScene::Scene& _currentState;
         uint64_t &_score;
 };

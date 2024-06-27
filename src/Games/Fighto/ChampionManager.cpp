@@ -49,9 +49,8 @@ void ChampionManager::input(std::uint32_t id, arc::JoystickButton button)
 
 void ChampionManager::update(arc::ILibrary& lib, double dt)
 {
+    (void) lib;
     for (auto c : this->_champions) {
-        auto axis = lib.display().joystick(c->id()).axis();
-        c->input(dVector(axis.x, axis.y));
         c->update(dt);
     }
 }

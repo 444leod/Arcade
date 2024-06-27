@@ -58,7 +58,35 @@ class Fighto : public arc::IGame
             (void)shift;
         }
 
+        virtual void onKeyDown(arc::ILibrary& lib, arc::KeyCode key)
+        {
+            (void)lib;
+            (void)key;
+        }
+
+        virtual void onKeyReleased(arc::ILibrary& lib, arc::KeyCode key)
+        {
+            (void)lib;
+            (void)key;
+        }
+
         virtual void onMouseButtonPressed(arc::ILibrary& lib, arc::MouseButton button, int32_t x, int32_t y)
+        {
+            (void)lib;
+            (void)button;
+            (void)x;
+            (void)y;
+        }
+
+        virtual void onMouseButtonDown(arc::ILibrary& lib, arc::MouseButton button, int32_t x, int32_t y)
+        {
+            (void)lib;
+            (void)button;
+            (void)x;
+            (void)y;
+        }
+
+        virtual void onMouseButtonReleased(arc::ILibrary& lib, arc::MouseButton button, int32_t x, int32_t y)
         {
             (void)lib;
             (void)button;
@@ -70,6 +98,31 @@ class Fighto : public arc::IGame
         {
             (void)lib;
             this->_champs.input(id, button);
+        }
+
+        virtual void onJoystickButtonDown(arc::ILibrary& lib, arc::JoystickButton button, std::uint32_t id)
+        {
+            (void)lib;
+            (void)button;
+            (void)id;
+        }
+
+        virtual void onJoystickButtonReleased(arc::ILibrary& lib, arc::JoystickButton button, std::uint32_t id)
+        {
+            (void)lib;
+            (void)button;
+            (void)id;
+        }
+
+        virtual void onJoystickMove(arc::ILibrary& lib, arc::JoystickAxis axis, std::uint32_t id)
+        {
+            (void)lib;
+            if (id > 1)
+                return;
+            auto champ = this->_champs.getById(id);
+            if (champ == nullptr)
+                return;
+            champ->input(dVector(axis.x, axis.y));
         }
 
         virtual void update(arc::ILibrary& lib, float deltaTime)

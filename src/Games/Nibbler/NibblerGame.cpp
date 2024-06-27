@@ -94,7 +94,33 @@ public:
         }
     }
 
+    virtual void onKeyDown([[maybe_unused]] arc::ILibrary& lib, [[maybe_unused]] arc::KeyCode key)
+    {
+    }
+
+    virtual void onKeyReleased([[maybe_unused]] arc::ILibrary& lib, [[maybe_unused]] arc::KeyCode key)
+    {
+    }
+
     virtual void onMouseButtonPressed(
+        [[maybe_unused]] arc::ILibrary& lib,
+        [[maybe_unused]] arc::MouseButton button,
+        [[maybe_unused]] int32_t x,
+        [[maybe_unused]] int32_t y
+    )
+    {
+    }
+
+    virtual void onMouseButtonDown(
+        [[maybe_unused]] arc::ILibrary& lib,
+        [[maybe_unused]] arc::MouseButton button,
+        [[maybe_unused]] int32_t x,
+        [[maybe_unused]] int32_t y
+    )
+    {
+    }
+
+    virtual void onMouseButtonReleased(
         [[maybe_unused]] arc::ILibrary& lib,
         [[maybe_unused]] arc::MouseButton button,
         [[maybe_unused]] int32_t x,
@@ -110,8 +136,33 @@ public:
     {
     }
 
+    virtual void onJoystickButtonDown(
+        [[maybe_unused]] arc::ILibrary& lib,
+        [[maybe_unused]] arc::JoystickButton button,
+        [[maybe_unused]] std::uint32_t id)
+    {
+    }
+
+    virtual void onJoystickButtonReleased(
+        [[maybe_unused]] arc::ILibrary& lib,
+        [[maybe_unused]] arc::JoystickButton button,
+        [[maybe_unused]] std::uint32_t id)
+    {
+    }
+
+    virtual void onJoystickMove(
+        [[maybe_unused]] arc::ILibrary& lib,
+        [[maybe_unused]] arc::JoystickAxis axis,
+        [[maybe_unused]] uint32_t id)
+    {
+    }
+
     virtual void update([[maybe_unused]] arc::ILibrary& lib, float deltaTime)
     {
+        auto axis = lib.display().joystick(0).axis();
+        std::cout << axis.x << " " << axis.y << std::endl;
+        _nibbler.setDirectionQueue({axis.x, axis.y});
+
         if (_nibblerManager.checkWin(_nibbler)) {
             nextMap(deltaTime, lib);
             return;
