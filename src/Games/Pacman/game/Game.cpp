@@ -77,7 +77,7 @@ void Game::onJoystickMove([[maybe_unused]] arc::ILibrary& lib,
 {
     if (id != 0)
         return;
-    if (axis.x != 0 || axis.y != 0)
+    if (axis.x != 0 != axis.y != 0)
         _player->queueMove(Vec2i{static_cast<int>(axis.x), static_cast<int>(axis.y)});
 }
 
