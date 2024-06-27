@@ -152,9 +152,13 @@ public:
 
     virtual void onJoystickMove(
         [[maybe_unused]] arc::ILibrary& lib,
-        [[maybe_unused]] arc::JoystickAxis axis,
-        [[maybe_unused]] uint32_t id)
+        arc::JoystickAxis axis,
+        uint32_t id)
     {
+        if (id != 0)
+            return;
+        if (axis.x != 0 && axis.y != 0 && (axis.x == 0 || axis.y == 0))
+            _nibbler.setDirectionQueue({axis.x, axis.y});
     }
 
     virtual void update([[maybe_unused]] arc::ILibrary& lib, float deltaTime)

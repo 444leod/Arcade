@@ -34,6 +34,8 @@ class Game : public AScene {
         virtual void initialize(arc::ILibrary& lib) override;
         virtual void onKeyPressed(arc::ILibrary& lib, arc::KeyCode key) override;
         virtual void onMouseButtonPressed(arc::ILibrary& lib, arc::MouseButton button, int32_t x, int32_t y) override;
+        virtual void onJoystickButtonPressed(arc::ILibrary& lib, arc::JoystickButton button, std::uint32_t id) override;
+        virtual void onJoystickMove(arc::ILibrary& lib, arc::JoystickAxis axis, std::uint32_t id) override;
         virtual void update(arc::ILibrary& lib, float deltaTime) override;
         virtual void draw(arc::ILibrary& lib) override;
         virtual void onEnter(AScene::Scene previousScene, arc::ILibrary& lib) override;

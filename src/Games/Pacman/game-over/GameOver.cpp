@@ -10,15 +10,16 @@
 void GameOver::initialize([[maybe_unused]]arc::ILibrary &lib)
 {}
 
-void GameOver::onKeyPressed([[maybe_unused]]arc::ILibrary &lib, arc::KeyCode key)
+void GameOver::onKeyPressed([[maybe_unused]]arc::ILibrary &lib, [[maybe_unused]] arc::KeyCode key)
 {
-    switch (key) {
-        case arc::KeyCode::W:
-            _currentState = AScene::Scene::GAME;
-            break;
-        default:
-            break;
-    }
+    _currentState = AScene::Scene::GAME;
+}
+
+void GameOver::onJoystickButtonPressed([[maybe_unused]]arc::ILibrary &lib, [[maybe_unused]]arc::JoystickButton button, [[maybe_unused]]std::uint32_t id)
+{
+    if (id != 0)
+        return;
+    _currentState = AScene::Scene::GAME;
 }
 
 void GameOver::onMouseButtonPressed([[maybe_unused]]arc::ILibrary &lib, [[maybe_unused]]arc::MouseButton button, [[maybe_unused]]int32_t x, [[maybe_unused]]int32_t y)
@@ -36,7 +37,7 @@ void GameOver::draw(arc::ILibrary &lib)
     std::vector<std::string> strings = {
         "Game Over!",
         "Your score was: " + std::to_string(_score),
-        "Press W to retry"
+        "Press any to retry"
     };
 
     for (size_t i = 0; i < strings.size(); i++) {

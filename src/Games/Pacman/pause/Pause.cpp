@@ -21,6 +21,14 @@ void Pause::onKeyPressed([[maybe_unused]]arc::ILibrary &lib, arc::KeyCode key)
     }
 }
 
+void Pause::onJoystickButtonPressed([[maybe_unused]]arc::ILibrary &lib, [[maybe_unused]] arc::JoystickButton button, std::uint32_t id)
+{
+    if (id != 0)
+        return;
+    if (button == arc::JoystickButton::Cross)
+        _currentState = AScene::Scene::GAME;
+}
+
 void Pause::onMouseButtonPressed([[maybe_unused]]arc::ILibrary &lib, [[maybe_unused]]arc::MouseButton button, [[maybe_unused]]int32_t x, [[maybe_unused]]int32_t y)
 {
 }

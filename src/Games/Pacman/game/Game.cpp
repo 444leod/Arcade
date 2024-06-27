@@ -71,6 +71,31 @@ void Game::onKeyPressed([[maybe_unused]] arc::ILibrary& lib, arc::KeyCode key)
     }
 }
 
+void Game::onJoystickMove([[maybe_unused]] arc::ILibrary& lib,
+    arc::JoystickAxis axis,
+    uint32_t id)
+{
+    if (id != 0)
+        return;
+    if (axis.x != 0 && axis.y != 0 && (axis.x == 0 || axis.y == 0))
+        _player->queueMove(Vec2i{static_cast<int>(axis.x), static_cast<int>(axis.y)});
+}
+
+void Game::onJoystickButtonPressed([[maybe_unused]] arc::ILibrary& lib,
+    arc::JoystickButton button,
+    std::uint32_t id)
+{
+    if (id != 0)
+        return;
+    switch (button) {
+        case arc::JoystickButton::Cross:
+            _currentState = AScene::Scene::PAUSE;
+            break;
+        default:
+            break;
+    }
+}
+
 void Game::onMouseButtonPressed(
     [[maybe_unused]] arc::ILibrary& lib,
     [[maybe_unused]] arc::MouseButton button,
