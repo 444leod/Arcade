@@ -61,6 +61,7 @@ class Core
 
         void start_game()
         {
+            this->_enterTimer = 0.0;
             for (const auto& sound : this->_cur_lib->musics().dump()) {
                 this->_cur_lib->musics().stop(sound.first);
             }
@@ -79,6 +80,7 @@ class Core
 
         void leave_game()
         {
+            this->_exitTimer = 0.0;
             for (const auto& sound : this->_cur_lib->musics().dump()) {
                 this->_cur_lib->musics().stop(sound.first);
             }
@@ -98,8 +100,6 @@ class Core
 
         void run()
         {
-            auto enter_game = false;
-            auto escape_game = false;
             auto before = std::chrono::high_resolution_clock::now();
 
             this->_cur_game->initialize(*_cur_lib);
@@ -109,14 +109,12 @@ class Core
                 float deltaTime = std::chrono::duration_cast<std::chrono::duration<float, std::milli>>(now - before).count() / 1000.0;
                 before = now;
 
-                if (enter_game) {
+                if (this->_enterTimer > 1.0) {
                     this->start_game();
-                    enter_game = false;
                     continue;
                 }
-                if (escape_game) {
+                if (this->_exitTimer > 2.0) {
                     this->leave_game();
-                    escape_game = false;
                     continue;
                 }
 
@@ -130,15 +128,6 @@ class Core
                             switch (event.keyType) {
                                 case arc::KeyType::KEY:
                                 {
-                                    if (event.key.code == arc::KeyCode::I || event.key.code == arc::KeyCode::K)
-                                        enter_game = !this->_menu->running();
-                                    if (event.key.code == arc::KeyCode::ENTER)
-                                        enter_game = true;
-                                    if (event.key.code == arc::KeyCode::ESCAPE)
-                                        escape_game = true;
-                                    if (!this->_menu->running()) {
-                                        this->_menu->onKeyPressed(*this->_cur_lib, event.key.code, event.key.shift);
-                                    }
                                     this->_cur_game->onKeyPressed(*this->_cur_lib, event.key.code, event.key.shift);
                                     break;
                                 }
@@ -149,9 +138,6 @@ class Core
                                 }
                                 case arc::KeyType::JOYSTICK_BUTTON:
                                 {
-                                    if (!this->_menu->running()) {
-                                        enter_game = true;
-                                    }
                                     this->_cur_game->onJoystickButtonPressed(*this->_cur_lib, event.joystick.button, event.joystick.id);
                                     break;
                                 }
@@ -165,6 +151,10 @@ class Core
                             switch (event.keyType) {
                                 case arc::KeyType::KEY:
                                 {
+                                    if (event.key.code == arc::KeyCode::ENTER)
+                                        this->_enterTimer += deltaTime;
+                                    if (event.key.code == arc::KeyCode::ESCAPE)
+                                        this->_exitTimer += deltaTime;
                                     this->_cur_game->onKeyDown(*this->_cur_lib, event.key.code);
                                     break;
                                 }
@@ -175,6 +165,10 @@ class Core
                                 }
                                 case arc::KeyType::JOYSTICK_BUTTON:
                                 {
+                                    if (event.joystick.button == arc::JoystickButton::R1)
+                                        this->_enterTimer += deltaTime;
+                                    if (event.joystick.button == arc::JoystickButton::R2)
+                                        this->_exitTimer += deltaTime;
                                     this->_cur_game->onJoystickButtonDown(*this->_cur_lib, event.joystick.button, event.joystick.id);
                                     break;
                                 }
@@ -188,6 +182,10 @@ class Core
                             switch (event.keyType) {
                                 case arc::KeyType::KEY:
                                 {
+                                    if (event.key.code == arc::KeyCode::ENTER)
+                                        this->_enterTimer = 0.0;
+                                    if (event.key.code == arc::KeyCode::ESCAPE)
+                                        this->_exitTimer = 0.0;
                                     this->_cur_game->onKeyReleased(*this->_cur_lib, event.key.code);
                                     break;
                                 }
@@ -198,6 +196,10 @@ class Core
                                 }
                                 case arc::KeyType::JOYSTICK_BUTTON:
                                 {
+                                    if (event.joystick.button == arc::JoystickButton::R1)
+                                        this->_enterTimer = 0.0;
+                                    if (event.joystick.button == arc::JoystickButton::R2)
+                                        this->_exitTimer = 0.0;
                                     this->_cur_game->onJoystickButtonReleased(*this->_cur_lib, event.joystick.button, event.joystick.id);
                                     break;
                                 }
@@ -233,6 +235,7 @@ class Core
             stream.close();
         }
 
+    private:
         std::shared_ptr<CoreMenu> _menu = nullptr;
         std::shared_ptr<arc::IGame> _cur_game = nullptr;
         std::shared_ptr<arc::ILibrary> _cur_lib = nullptr;
@@ -241,6 +244,8 @@ class Core
 
         std::map<std::string, arc::Score> _scores = {};
         LibraryLoader _loader;
+        double _enterTimer = 0.0;
+        double _exitTimer = 0.0;
 };
 
 int main(int ac, char **av, char **env)
