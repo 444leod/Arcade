@@ -157,7 +157,7 @@ public:
     {
         if (id != 0)
             return;
-        if (axis.x != 0 != axis.y != 0)
+        if ((axis.x != 0) != (axis.y != 0))
             _nibbler.setDirectionQueue({axis.x, axis.y});
     }
 

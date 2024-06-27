@@ -44,7 +44,7 @@ OBJ_V2 = $(SRC:.c=_v2.o)
 
 CC = g++
 
-all: $(NAME) $(V2_NAME)
+all: $(NAME)
 
 clean:
 	@rm -f $(OBJ)
