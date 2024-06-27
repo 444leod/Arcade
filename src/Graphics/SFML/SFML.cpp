@@ -13,6 +13,7 @@
 #include <deque>
 #include <cmath>
 #include <memory>
+#include <iostream>
 
 class SFMLTexture : public arc::ITexture {
 public:
@@ -505,12 +506,12 @@ public:
             double x = sf::Keyboard::isKeyPressed(sf::Keyboard::D) - sf::Keyboard::isKeyPressed(sf::Keyboard::Q);
             double y = sf::Keyboard::isKeyPressed(sf::Keyboard::S) - sf::Keyboard::isKeyPressed(sf::Keyboard::Z);
             #endif
-            if (_oldAxis.x == x && _oldAxis.y == y) continue;
-            _oldAxis = {x, y};
+            if (_joystickAxis[id].x == x && _joystickAxis[id].y == y) continue;
+            _joystickAxis[id] = {x, y};
             e.eventType = arc::EventType::MOVE;
             e.keyType = arc::KeyType::JOYSTICK;
             e.joystick.id = id;
-            e.joystick.axis = _oldAxis;
+            e.joystick.axis = {x, y};
             this->_events.push_back(std::move(e));
         }
 
@@ -759,7 +760,7 @@ private:
     std::vector<std::tuple<arc::KeyCode, float, float>> _downKeys = {};
     std::vector<std::tuple<arc::MouseButton, float, float>> _downMouseButtons = {};
     std::vector<std::tuple<arc::JoystickButton, int32_t, float, float>> _downJoystickButtons = {};
-    arc::JoystickAxis _oldAxis = {0, 0};
+    std::map<uint32_t, arc::JoystickAxis> _joystickAxis = {};
     std::map<arc::KeyCode, float> _keyDownDelays = {};
 };
 
