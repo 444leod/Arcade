@@ -133,9 +133,9 @@ void CoreMenu::onJoystickMove(
 {
     if (id != 0)
         return;
-    if (axis.y == 1)
+    if (axis.y == -1.f)
         this->_game = (this->_game + 1) % _games.size();
-    else if (axis.y == -1)
+    else if (axis.y == 1.f)
         this->_game = this->_game ? (this->_game - 1) % _games.size() : _games.size() - 1;
 }
 
