@@ -5,6 +5,7 @@
 ** Fighto
 */
 
+#include "Physics.hpp"
 #include "ChampionManager.hpp"
 #include "IGame.hpp"
 #include "SharedLibraryType.hpp"
@@ -35,6 +36,10 @@ class Fighto : public arc::IGame
             lib.fonts().load("font", {
                 white, 16, "assets/regular.ttf"
             });
+
+            // Ground
+            arc::Color grey = {85, 85, 85, 255};
+            lib.textures().load("ground", {{'M', grey}, grey });
 
             // Setup player colors
             arc::Color red = {255, 85, 85, 255};
@@ -137,8 +142,13 @@ class Fighto : public arc::IGame
 
         virtual void draw(arc::ILibrary& lib)
         {
-            //lib.display().clear();
             this->_champs.draw(lib);
+
+            auto ground = lib.textures().get("ground");
+            for (uint32_t x = 0; x < lib.display().width(); x++)
+                for (uint32_t y = FLOOR + 1; y < lib.display().height(); y++)
+                lib.display().draw(ground, x, y);
+
             lib.display().flush();
         }
 

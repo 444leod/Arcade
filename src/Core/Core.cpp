@@ -109,11 +109,11 @@ class Core
                 float deltaTime = std::chrono::duration_cast<std::chrono::duration<float, std::milli>>(now - before).count() / 1000.0;
                 before = now;
 
-                if (this->_enterTimer > 1.0) {
+                if (this->_enterTimer > 0.3) {
                     this->start_game();
                     continue;
                 }
-                if (this->_exitTimer > 2.0) {
+                if (this->_exitTimer > 1.2) {
                     this->leave_game();
                     continue;
                 }
