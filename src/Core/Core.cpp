@@ -100,8 +100,6 @@ class Core
 
         void run()
         {
-            auto enter_game = false;
-            auto escape_game = false;
             auto before = std::chrono::high_resolution_clock::now();
 
             this->_cur_game->initialize(*_cur_lib);
@@ -111,14 +109,12 @@ class Core
                 float deltaTime = std::chrono::duration_cast<std::chrono::duration<float, std::milli>>(now - before).count() / 1000.0;
                 before = now;
 
-                if (enter_game || this->_enterTimer > 1.0) {
+                if (this->_enterTimer > 1.0) {
                     this->start_game();
-                    enter_game = false;
                     continue;
                 }
-                if (escape_game || this->_exitTimer > 2.0) {
+                if (this->_exitTimer > 2.0) {
                     this->leave_game();
-                    escape_game = false;
                     continue;
                 }
 
@@ -132,11 +128,6 @@ class Core
                             switch (event.keyType) {
                                 case arc::KeyType::KEY:
                                 {
-                                    if (event.key.code == arc::KeyCode::I || event.key.code == arc::KeyCode::K)
-                                        enter_game = !this->_menu->running();
-                                    if (!this->_menu->running()) {
-                                        this->_menu->onKeyPressed(*this->_cur_lib, event.key.code, event.key.shift);
-                                    }
                                     this->_cur_game->onKeyPressed(*this->_cur_lib, event.key.code, event.key.shift);
                                     break;
                                 }
