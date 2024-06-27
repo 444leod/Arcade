@@ -13,7 +13,6 @@
 #include <deque>
 #include <cmath>
 #include <memory>
-#include <iostream>
 
 class SFMLTexture : public arc::ITexture {
 public:
@@ -496,16 +495,12 @@ public:
         elapsed += deltaTime;
 
         for (std::uint32_t id = 0; id < sf::Joystick::Count; id++) {
-            #ifndef NO_JOY
-            if (!sf::Joystick::isConnected(id)) continue;
+            if (!sf::Joystick::isConnected(id))
+                continue;
+
             double x = sf::Joystick::getAxisPosition(id, sf::Joystick::Axis::X) / 100.0;
             double y = sf::Joystick::getAxisPosition(id, sf::Joystick::Axis::Y) / 100.0;
 
-            #else
-            if (id != 0) break;
-            double x = sf::Keyboard::isKeyPressed(sf::Keyboard::D) - sf::Keyboard::isKeyPressed(sf::Keyboard::Q);
-            double y = sf::Keyboard::isKeyPressed(sf::Keyboard::S) - sf::Keyboard::isKeyPressed(sf::Keyboard::Z);
-            #endif
             if (_joystickAxis[id].x == x && _joystickAxis[id].y == y) continue;
             _joystickAxis[id] = {x, y};
             e.eventType = arc::EventType::MOVE;
