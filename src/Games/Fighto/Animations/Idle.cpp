@@ -6,6 +6,7 @@
 */
 
 #include "AAnimation.hpp"
+#include <iostream>
 
 /**
  * @brief Idle animation is a basic animation when the champion is not moving.
@@ -21,18 +22,17 @@ class Idle : public AAnimation {
 
         void update(double dt) override
         {
-            static double dtSum = 0;
-
-            if (dtSum > 0.1) {
+            if (_dt_sum > 0.1) {
                     _frameIndex++;
                 if (_frameIndex == 10)
                     _frameIndex = 0;
                 _frame = _texture + std::to_string(_frameIndex);
-                dtSum -= 0.1;
+                _dt_sum -= 0.1;
             }
-            dtSum += dt;
+            _dt_sum += dt;
         }
 
     protected:
     private:
+        double _dt_sum = 0;
 };
