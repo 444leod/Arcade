@@ -8,6 +8,7 @@
 #include "SFMLDisplay.hpp"
 #include "SFMLTexture.hpp"
 #include "SFMLFont.hpp"
+#include <iostream>
 
 SFMLDisplay::SFMLDisplay()
 {
@@ -17,10 +18,26 @@ SFMLDisplay::SFMLDisplay()
     this->_framerate = 0;
     this->_title = "Arcade";
 
+
+    #ifdef ARCADE
     this->_mode = sf::VideoMode::getFullscreenModes()[0];
     this->_resizeWindow();
     this->_window.create(this->_mode, this->_title, sf::Style::Fullscreen);
+    #else
+    sf::VideoMode mode;
+    mode.width = this->_width * this->_tileSize;
+    mode.height = this->_height * this->_tileSize;
+    mode.bitsPerPixel = 32;
+    this->_window.create(mode, this->_title, sf::Style::Titlebar | sf::Style::Close);
+    #endif
     this->_window.setKeyRepeatEnabled(false);
+
+    if (sf::Joystick::isConnected(0))
+    {
+        auto joy = sf::Joystick::getIdentification(0);
+        std::cout << "Joystick connected: " << joy.name.toAnsiString() << std::endl;
+        std::cout << "Number of buttons: " << sf::Joystick::getButtonCount(0) << std::endl;
+    }
 }
 
 void SFMLDisplay::setTitle(const std::string &title)
@@ -68,9 +85,12 @@ void SFMLDisplay::update([[maybe_unused]] float deltaTime)
         double x = sf::Joystick::getAxisPosition(id, sf::Joystick::Axis::X) / 100.0;
         double y = sf::Joystick::getAxisPosition(id, sf::Joystick::Axis::Y) / 100.0;
 
-        if (_joystickAxis[id].x == x && _joystickAxis[id].y == y)
+        x = x > 0.5 ? 1 : x < -0.5 ? -1 : 0;
+        y = y > 0.5 ? 1 : y < -0.5 ? -1 : 0;
+
+        if (_joysticks[id].axis().x == x && _joysticks[id].axis().y == y)
             continue;
-        _joystickAxis[id] = {x, y};
+        _joysticks[id].setAxis(x, y);
         e.eventType = arc::EventType::MOVE;
         e.keyType = arc::KeyType::JOYSTICK;
         e.joystick.id = id;
@@ -254,13 +274,19 @@ void SFMLDisplay::draw(std::shared_ptr<arc::ITexture> texture, float x, float y)
 
     rect.setTexture(tex->raw().get());
     rect.setTextureRect(tex->subrect());
+    #ifdef ARCADE
     rect.setPosition(
-        x * this->_tileSize + this->_offset.x,
-        y * this->_tileSize + this->_offset.y);
+        x * this->_tileSize  + this->_offset.x,
+        y * this->_tileSize  + this->_offset.y);
+    #else
+    rect.setPosition(
+        x * this->_tileSize,
+        y * this->_tileSize);
+    #endif
     this->_window.draw(rect);
 }
 
-void SFMLDisplay::draw(std::shared_ptr<arc::ITexture> texture, float x, float y, float scale)
+void SFMLDisplay::draw(std::shared_ptr<arc::ITexture> texture, float x, float y, float scaleX, float scaleY)
 {
     if (texture == nullptr)
         return;
@@ -270,10 +296,16 @@ void SFMLDisplay::draw(std::shared_ptr<arc::ITexture> texture, float x, float y,
 
     rect.setTexture(tex->raw().get());
     rect.setTextureRect(tex->subrect());
+    #ifdef ARCADE
     rect.setPosition(
-        x * this->_tileSize + this->_offset.x,
-        y * this->_tileSize + this->_offset.y);
-    rect.setScale(scale, scale);
+        x * this->_tileSize  + this->_offset.x,
+        y * this->_tileSize  + this->_offset.y);
+    #else
+    rect.setPosition(
+        x * this->_tileSize,
+        y * this->_tileSize);
+    #endif
+    rect.setScale(scaleX, scaleY);
     this->_window.draw(rect);
 }
 
@@ -285,9 +317,13 @@ void SFMLDisplay::print(const std::string &string, std::shared_ptr<arc::IFont> f
     auto attr = std::dynamic_pointer_cast<SFMLFont>(font);
     auto text = sf::Text(sf::String(string), attr->font(), attr->size());
     text.setFillColor(attr->color());
+    #ifdef ARCADE
     text.setPosition(
         x * this->_tileSize + this->_offset.x,
         y * this->_tileSize + this->_offset.y);
+    #else
+    text.setPosition(x * this->_tileSize, y * this->_tileSize);
+    #endif
     this->_window.draw(text);
 }
 
@@ -299,7 +335,13 @@ arc::Rect<float> SFMLDisplay::measure(const std::string &string, std::shared_ptr
     auto attr = std::dynamic_pointer_cast<SFMLFont>(font);
     auto text = sf::Text(sf::String(string), attr->font(), attr->size());
     text.setFillColor(attr->color());
-    text.setPosition(x + this->_offset.x, y + this->_offset.y);
+    #ifdef ARCADE
+    text.setPosition(
+        x * this->_tileSize + this->_offset.x,
+        y * this->_tileSize + this->_offset.y);
+    #else
+    text.setPosition(x, y);
+    #endif
     auto bounds = text.getLocalBounds();
     return {bounds.left, bounds.top, bounds.width / this->_tileSize, bounds.height / this->_tileSize};
 }
@@ -379,6 +421,15 @@ sf::Mouse::Button SFMLDisplay::_mapArcMouseButton(arc::MouseButton button)
 
 void SFMLDisplay::_resizeWindow()
 {
+    #ifdef ARCADE
     this->_offset.x = (this->_mode.width - this->_width * this->_tileSize) / 2.f;
     this->_offset.y = (this->_mode.height - this->_height * this->_tileSize) / 2.f;
+    #else
+    sf::Vector2u size;
+    size.x = this->_width * this->_tileSize;
+    size.y = this->_height * this->_tileSize;
+
+    this->_window.setSize(size);
+    this->_window.setView(sf::View(sf::FloatRect(0, 0, size.x, size.y)));
+    #endif
 }

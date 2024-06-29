@@ -39,7 +39,7 @@ public:
     virtual void clear(arc::Color color);
 
     virtual void draw(std::shared_ptr<arc::ITexture> texture, float x, float y);
-    virtual void draw(std::shared_ptr<arc::ITexture> texture, float x, float y, float scale);
+    virtual void draw(std::shared_ptr<arc::ITexture> texture, float x, float y, float scaleX, float scaleY);
 
     virtual void print(const std::string& string, std::shared_ptr<arc::IFont> font, float x, float y);
     virtual arc::Rect<float> measure(const std::string& string, std::shared_ptr<arc::IFont> font, float x, float y);
@@ -67,7 +67,7 @@ private:
 private:
     sf::RenderWindow _window;
     sf::VideoMode _mode;
-    sf::Vector2f _offset;
+    sf::Vector2f _offset = {0, 0};
     std::string _title;
     uint32_t _framerate;
     std::size_t _width;
