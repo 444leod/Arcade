@@ -111,10 +111,12 @@ class Core
 
                 if (this->_enterTimer > 0.3) {
                     this->start_game();
+                    this->_enterTimer = 0.0;
                     continue;
                 }
                 if (this->_exitTimer > 1.2) {
                     this->leave_game();
+                    this->_exitTimer = 0.0;
                     continue;
                 }
 

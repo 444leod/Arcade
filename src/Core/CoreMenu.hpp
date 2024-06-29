@@ -60,6 +60,10 @@ private:
     std::string _player = "GUEST";
     int _game = 0;
     int _lib = 0;
+    arc::JoystickAxis _axis = {0, 0};
+    arc::JoystickAxis _oldAxis = {0, 0};
+    double _axisTime = 0;
+    double _rollTime = 0;
     std::vector<std::shared_ptr<LibraryObject>> _games = {};
     std::vector<std::shared_ptr<LibraryObject>> _libs = {};
     std::map<std::string, arc::Score> _scores = {};
