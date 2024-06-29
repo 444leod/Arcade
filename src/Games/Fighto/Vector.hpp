@@ -28,5 +28,5 @@ class Vector
         { return Vector<T>(this->x * factor, this->y * factor); }
 };
 
-#define iVector Vector<int>
-#define dVector Vector<double>
+using dVector = Vector<double>;
+using iVector = Vector<int>;

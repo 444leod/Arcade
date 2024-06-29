@@ -54,6 +54,15 @@ class Fighto : public arc::IGame
             lib.textures().load("cyan", {{'X', cyan}, cyan });
             arc::Color purple = {255, 85, 255, 255};
             lib.textures().load("purple", {{'X', purple}, purple });
+
+            arc::TextureSpecification spec;
+            arc::TextureImage image;
+            image.path = "assets/fighto/character1.png";
+            for (uint32_t i = 0; i < 10; i++) {
+                image.subrect = {i * 320, 0, 320, 320};
+                spec.graphical = image;
+                lib.textures().load("character1_idle_" + std::to_string(i), spec);
+            }
         }
 
         virtual void onKeyPressed(arc::ILibrary& lib, arc::KeyCode key, bool shift)
@@ -132,6 +141,10 @@ class Fighto : public arc::IGame
 
         virtual void update(arc::ILibrary& lib, float deltaTime)
         {
+            //change scene to winner scene
+            // if (this->_champs.count() == 1 || this->_champs.count() == 0)
+            //     return;
+
             this->_champs.update(lib, deltaTime);
 
             lib.display().clear(); // Debug only

@@ -28,7 +28,7 @@ namespace arc {
     };
 
     enum class JoystickButton {
-        Cross = 0, Square, Circle, Triangle, L1, R1, L2, R2, END
+        Cross = 0, Circle, Triangle, Square, L1, R1, L2, R2, SHARE, START, UNKNOWN, LEFT_JOYSTICK, RIGHT_JOYSTICK, END
     };
 
     /**
@@ -235,9 +235,10 @@ namespace arc {
          * @param texture the texture to draw
          * @param x the column to draw the texture at
          * @param y the row to draw the texture at
-         * @param scale the scale at which the square should be displayed
+         * @param scaleX the scale on the x axis
+         * @param scaleY the scale on the y axis
          */
-        virtual void draw(std::shared_ptr<ITexture> texture, float x, float y, float scale) = 0;
+        virtual void draw(std::shared_ptr<ITexture> texture, float x, float y, float scaleX, float scaleY) = 0;
 
         /**td::shared_ptr<ITexture> g
          * @brief Draws a string to the display

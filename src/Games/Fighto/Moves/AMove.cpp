@@ -47,10 +47,11 @@ bool AMove::poll(HitBox& hitbox)
 void AMove::debug(arc::ILibrary& lib) const
 {
     for (const auto& hb : this->_poll) {
+        auto scale = hb.radius() * 2.f;
         lib.display().draw(lib.textures().get("hit"),
             hb.position().x - hb.radius(),
             hb.position().y - hb.radius(),
-            hb.radius() * 2.f);
+            scale, scale);
     }
 }
 
