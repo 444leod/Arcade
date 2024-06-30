@@ -15,10 +15,10 @@ ChampionManager::ChampionManager(std::uint32_t count)
     : _count(count)
 {
     for (std::uint32_t i = 0; i < count; i++) {
-        auto index = std::rand() % this->_textures.size();
-        auto color = this->_textures.at(index);
-        this->_textures.erase(std::next(this->_textures.begin(), index));
-        this->_champions.push_back(std::make_shared<Champion>(i, color));
+        // auto index = std::rand() % this->_textures.size();
+        // auto color = this->_textures.at(index);
+        // this->_textures.erase(std::next(this->_textures.begin(), index));
+        this->_champions.push_back(std::make_shared<Champion>(i, "character1"));
     }
 }
 
@@ -49,10 +49,13 @@ void ChampionManager::input(std::uint32_t id, arc::JoystickButton button)
 
 void ChampionManager::update(arc::ILibrary& lib, double dt)
 {
+    (void) lib;
     for (auto c : this->_champions) {
-        auto axis = lib.display().joystick(c->id()).axis();
-        c->input(dVector(axis.x, axis.y));
         c->update(dt);
+        if (!c->alive()) {
+            this->_champions.erase(std::find(this->_champions.begin(), this->_champions.end(), c));
+            _count--;
+        }
     }
 }
 

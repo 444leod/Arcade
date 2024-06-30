@@ -5,6 +5,7 @@
 ** Fighto
 */
 
+#include "Physics.hpp"
 #include "ChampionManager.hpp"
 #include "IGame.hpp"
 #include "SharedLibraryType.hpp"
@@ -36,6 +37,10 @@ class Fighto : public arc::IGame
                 white, 16, "assets/regular.ttf"
             });
 
+            // Ground
+            arc::Color grey = {85, 85, 85, 255};
+            lib.textures().load("ground", {{'M', grey}, grey });
+
             // Setup player colors
             arc::Color red = {255, 85, 85, 255};
             lib.textures().load("red", {{'X', red}, red });
@@ -49,6 +54,15 @@ class Fighto : public arc::IGame
             lib.textures().load("cyan", {{'X', cyan}, cyan });
             arc::Color purple = {255, 85, 255, 255};
             lib.textures().load("purple", {{'X', purple}, purple });
+
+            arc::TextureSpecification spec;
+            arc::TextureImage image;
+            image.path = "assets/fighto/character1.png";
+            for (uint32_t i = 0; i < 10; i++) {
+                image.subrect = {i * 320, 0, 320, 320};
+                spec.graphical = image;
+                lib.textures().load("character1_idle_" + std::to_string(i), spec);
+            }
         }
 
         virtual void onKeyPressed(arc::ILibrary& lib, arc::KeyCode key, bool shift)
@@ -58,7 +72,35 @@ class Fighto : public arc::IGame
             (void)shift;
         }
 
+        virtual void onKeyDown(arc::ILibrary& lib, arc::KeyCode key)
+        {
+            (void)lib;
+            (void)key;
+        }
+
+        virtual void onKeyReleased(arc::ILibrary& lib, arc::KeyCode key)
+        {
+            (void)lib;
+            (void)key;
+        }
+
         virtual void onMouseButtonPressed(arc::ILibrary& lib, arc::MouseButton button, int32_t x, int32_t y)
+        {
+            (void)lib;
+            (void)button;
+            (void)x;
+            (void)y;
+        }
+
+        virtual void onMouseButtonDown(arc::ILibrary& lib, arc::MouseButton button, int32_t x, int32_t y)
+        {
+            (void)lib;
+            (void)button;
+            (void)x;
+            (void)y;
+        }
+
+        virtual void onMouseButtonReleased(arc::ILibrary& lib, arc::MouseButton button, int32_t x, int32_t y)
         {
             (void)lib;
             (void)button;
@@ -72,8 +114,37 @@ class Fighto : public arc::IGame
             this->_champs.input(id, button);
         }
 
+        virtual void onJoystickButtonDown(arc::ILibrary& lib, arc::JoystickButton button, std::uint32_t id)
+        {
+            (void)lib;
+            (void)button;
+            (void)id;
+        }
+
+        virtual void onJoystickButtonReleased(arc::ILibrary& lib, arc::JoystickButton button, std::uint32_t id)
+        {
+            (void)lib;
+            (void)button;
+            (void)id;
+        }
+
+        virtual void onJoystickMove(arc::ILibrary& lib, arc::JoystickAxis axis, std::uint32_t id)
+        {
+            (void)lib;
+            if (id > 1)
+                return;
+            auto champ = this->_champs.getById(id);
+            if (champ == nullptr)
+                return;
+            champ->input(dVector(axis.x, axis.y));
+        }
+
         virtual void update(arc::ILibrary& lib, float deltaTime)
         {
+            //change scene to winner scene
+            // if (this->_champs.count() == 1 || this->_champs.count() == 0)
+            //     return;
+
             this->_champs.update(lib, deltaTime);
 
             lib.display().clear(); // Debug only
@@ -84,8 +155,13 @@ class Fighto : public arc::IGame
 
         virtual void draw(arc::ILibrary& lib)
         {
-            //lib.display().clear();
             this->_champs.draw(lib);
+
+            auto ground = lib.textures().get("ground");
+            for (uint32_t x = 0; x < lib.display().width(); x++)
+                for (uint32_t y = FLOOR + 1; y < lib.display().height(); y++)
+                lib.display().draw(ground, x, y);
+
             lib.display().flush();
         }
 

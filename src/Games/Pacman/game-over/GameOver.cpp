@@ -10,15 +10,16 @@
 void GameOver::initialize([[maybe_unused]]arc::ILibrary &lib)
 {}
 
-void GameOver::onKeyPressed([[maybe_unused]]arc::ILibrary &lib, arc::KeyCode key)
+void GameOver::onKeyPressed([[maybe_unused]]arc::ILibrary &lib, [[maybe_unused]] arc::KeyCode key)
 {
-    switch (key) {
-        case arc::KeyCode::W:
-            _currentState = IGameState::State::GAME;
-            break;
-        default:
-            break;
-    }
+    _currentState = AScene::Scene::GAME;
+}
+
+void GameOver::onJoystickButtonPressed([[maybe_unused]]arc::ILibrary &lib, [[maybe_unused]]arc::JoystickButton button, [[maybe_unused]]std::uint32_t id)
+{
+    if (id != 0)
+        return;
+    _currentState = AScene::Scene::GAME;
 }
 
 void GameOver::onMouseButtonPressed([[maybe_unused]]arc::ILibrary &lib, [[maybe_unused]]arc::MouseButton button, [[maybe_unused]]int32_t x, [[maybe_unused]]int32_t y)
@@ -36,7 +37,7 @@ void GameOver::draw(arc::ILibrary &lib)
     std::vector<std::string> strings = {
         "Game Over!",
         "Your score was: " + std::to_string(_score),
-        "Press W to retry"
+        "Press any to retry"
     };
 
     for (size_t i = 0; i < strings.size(); i++) {
@@ -48,10 +49,10 @@ void GameOver::draw(arc::ILibrary &lib)
     }
 }
 
-void GameOver::onEnter([[maybe_unused]]IGameState::State lastState, [[maybe_unused]] arc::ILibrary& lib)
+void GameOver::onEnter([[maybe_unused]]AScene::Scene previousScene, [[maybe_unused]] arc::ILibrary& lib)
 {
 }
 
-void GameOver::onExit([[maybe_unused]]IGameState::State nextState, [[maybe_unused]] arc::ILibrary& lib)
+void GameOver::onExit([[maybe_unused]]AScene::Scene nextScene, [[maybe_unused]] arc::ILibrary& lib)
 {
 }

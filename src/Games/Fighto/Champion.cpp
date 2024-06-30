@@ -7,19 +7,21 @@
 
 #include "Champion.hpp"
 #include "Physics.hpp"
+#include "Animations/AnimationsList.hpp"
 
 #include <cmath>
 #include <iostream>
 
 Champion::Champion(std::uint32_t id, const std::string& texture)
-    : _id(id), _texture(texture)
+    : _id(id), _texture(texture), _animation(std::make_shared<Idle>(texture))
 {
 }
 
 void Champion::draw(arc::ILibrary& lib) const
 {
     if (!this->_alive) return;
-    lib.display().draw(lib.textures().get(this->_texture), this->_position.x, this->_position.y);
+    _animation->draw(lib, this->_position, this->_direction);
+    // lib.display().draw(lib.textures().get(this->_texture + std::to_string(frame)), this->_position.x, this->_position.y, (this->_direction < 0) ? -1 : 1);
 
     const std::string& str = std::to_string(static_cast<int>(this->_lifepoints)) + "%";
     float width = lib.display().measure(str, lib.fonts().get("font"), 0, 0).width;
@@ -36,7 +38,7 @@ void Champion::debug(arc::ILibrary& lib) const
 
 void Champion::input(dVector input)
 {
-    if (!this->_alive || !this->_moveQueue.empty() || this->_stagger > 0)
+    if (!this->_alive || this->_stagger > 0.0)
         return;
     this->_input = input;
     if (input.x != 0.0) this->_direction = input.x;
@@ -73,6 +75,8 @@ void Champion::update(double dt)
     if (!this->_alive) return;
     if (this->_stagger > 0) this->_stagger -= dt;
 
+    this->_animation->update(dt);
+
     // Can always fall
     this->_position.y -= this->_velocity.y * dt;
     this->_velocity.y -= GRAVITY; // falling faster and faster
@@ -86,14 +90,12 @@ void Champion::update(double dt)
     this->_speed = this->_grounded ? this->_maxspeed : this->_maxspeed * 0.75;
 
     if (!this->_moveQueue.empty() && this->_stagger <= 0.0) {
-
         // Update attack move
         bool pop = !this->_moveQueue.front()->update(
             this->_position + this->_size * 0.5, this->_grounded, dt);
         if (pop) this->_moveQueue.pop();
 
     } else {
-
         double t = this->_acceleration;
         if (this->_stagger > 0 && this->_grounded)  t = 0.10;
         else if (this->_stagger > 0)                t = 0.01;

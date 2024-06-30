@@ -16,6 +16,8 @@ SRC =	Fighto.cpp	\
 		ChampionManager.cpp \
 		HitBox.cpp \
 		HitSolver.cpp \
+		Animations/AAnimation.cpp \
+		Animations/Idle.cpp \
 		Moves/AMove.cpp \
 		Moves/Jab.cpp \
 		Moves/Kick.cpp \

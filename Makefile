@@ -53,6 +53,33 @@ graphicals:
 graphicals_re:
 	@make -s -C src/Graphics/SFML re 	LIB_DIR=$(LIB_DIR) INC_DIR=$(INC_DIR)
 
+pacman:
+	@make -s -C src/Games/Pacman 		LIB_DIR=$(LIB_DIR) INC_DIR=$(INC_DIR)
+
+pacman_re:
+	@make -s -C src/Games/Pacman re 	LIB_DIR=$(LIB_DIR) INC_DIR=$(INC_DIR)
+
+fighto:
+	@make -s -C src/Games/Fighto 		LIB_DIR=$(LIB_DIR) INC_DIR=$(INC_DIR)
+
+fighto_re:
+	@make -s -C src/Games/Fighto re 	LIB_DIR=$(LIB_DIR) INC_DIR=$(INC_DIR)
+
+snake:
+	@make -s -C src/Games/Snake 		LIB_DIR=$(LIB_DIR) INC_DIR=$(INC_DIR)
+
+snake_re:
+	@make -s -C src/Games/Snake re 		LIB_DIR=$(LIB_DIR) INC_DIR=$(INC_DIR)
+
+nibbler:
+	@make -s -C src/Games/Nibbler 		LIB_DIR=$(LIB_DIR) INC_DIR=$(INC_DIR)
+
+nibbler_re:
+	@make -s -C src/Games/Nibbler re 	LIB_DIR=$(LIB_DIR) INC_DIR=$(INC_DIR)
+
+sfml:
+	@make -s -C src/Graphics/SFML 		LIB_DIR=$(LIB_DIR) INC_DIR=$(INC_DIR)
+
 tests_run:
 	@exit 0
 

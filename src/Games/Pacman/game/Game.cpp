@@ -9,7 +9,7 @@
 
 void Game::initialize(arc::ILibrary &lib)
 {
-    onEnter(IGameState::State::GAME, lib);
+    onEnter(AScene::Scene::GAME, lib);
     _map->initTextures(lib.textures());
 
     arc::FontSpecification text {
@@ -65,9 +65,34 @@ void Game::onKeyPressed([[maybe_unused]] arc::ILibrary& lib, arc::KeyCode key)
             _player->queueMove({1, 0});
             break;
         case arc::KeyCode::P:
-            _currentState = IGameState::State::PAUSE;
+            _currentState = AScene::Scene::PAUSE;
             break;
         default: break;
+    }
+}
+
+void Game::onJoystickMove([[maybe_unused]] arc::ILibrary& lib,
+    arc::JoystickAxis axis,
+    uint32_t id)
+{
+    if (id != 0)
+        return;
+    if ((axis.x != 0) != (axis.y != 0))
+        _player->queueMove(Vec2i{static_cast<int>(axis.x), static_cast<int>(axis.y)});
+}
+
+void Game::onJoystickButtonPressed([[maybe_unused]] arc::ILibrary& lib,
+    arc::JoystickButton button,
+    std::uint32_t id)
+{
+    if (id != 0)
+        return;
+    switch (button) {
+        case arc::JoystickButton::Cross:
+            _currentState = AScene::Scene::PAUSE;
+            break;
+        default:
+            break;
     }
 }
 
@@ -116,7 +141,7 @@ void Game::update([[maybe_unused]] arc::ILibrary& lib, float deltaTime)
     updateStatuses();
 
     if (_player->getStatus() == pacman::entity::status::DEAD) {
-        _currentState = IGameState::State::LOSE;
+        _currentState = AScene::Scene::LOSE;
     }
 }
 
@@ -144,7 +169,8 @@ void Game::draw(arc::ILibrary& lib)
             texture += "_";
         }
         #endif
-        lib.display().draw(lib.textures().get(texture), entity->getPosf().x, entity->getPosf().y);
+        auto pos = entity->getPosf();
+        lib.display().draw(lib.textures().get(texture), pos.x, pos.y);
     }
 
     std::stringstream score;
@@ -155,20 +181,20 @@ void Game::draw(arc::ILibrary& lib)
     lib.display().print(score.str(), lib.fonts().get("emulogic"), center, _map->getMapSizeY() + 1);
 
     if (_player->getStatus() == pacman::entity::status::DEAD) {
-        _currentState = IGameState::State::LOSE;
+        _currentState = AScene::Scene::LOSE;
     } else if (_map->getCoinCount() == 0 && _map->getFruitCount() == 0) {
-        _currentState = IGameState::State::WIN;
+        _currentState = AScene::Scene::WIN;
     }
 }
 
-void Game::onEnter(IGameState::State lastState, arc::ILibrary& lib)
+void Game::onEnter(AScene::Scene previousScene, arc::ILibrary& lib)
 {
     lib.musics().play("main-theme", 50.0f);
-    if (lastState == IGameState::State::PAUSE)
+    if (previousScene == AScene::Scene::PAUSE)
         return;
 
     std::string map_path;
-    if (lastState == IGameState::State::WIN)
+    if (previousScene == AScene::Scene::WIN)
         map_path = "assets/pacman/second_map.csv";
     else
         map_path = "assets/pacman/first_map.csv";
@@ -196,7 +222,7 @@ void Game::onEnter(IGameState::State lastState, arc::ILibrary& lib)
     _elapsed1 = 0;
 }
 
-void Game::onExit([[maybe_unused]]IGameState::State nextState, arc::ILibrary& lib)
+void Game::onExit([[maybe_unused]]AScene::Scene nextScene, arc::ILibrary& lib)
 {
     lib.musics().stop("main-theme");
 }

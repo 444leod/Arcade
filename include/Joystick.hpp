@@ -12,9 +12,9 @@
 
 namespace arc {
 
-    struct JoyAxis {
-        double x = .0;
-        double y = .0;
+    struct JoystickAxis {
+        double x;
+        double y;
     };
 
     class Joystick {
@@ -22,15 +22,15 @@ namespace arc {
             Joystick() = default;
             ~Joystick() = default;
 
-            JoyAxis axis() const { return this->_axis; }
+            JoystickAxis axis() const { return this->_axis; }
             double x() const { return this->_axis.x; }
             double y() const { return this->_axis.y; }
 
             void setAxis(double x, double y)
-                { this->_axis = (JoyAxis){x, y}; }
+                { this->_axis = (JoystickAxis){x, y}; }
 
         protected:
         private:
-            JoyAxis _axis;
+            JoystickAxis _axis = {0, 0};
     };
 }

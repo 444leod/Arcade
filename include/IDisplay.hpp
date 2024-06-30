@@ -28,23 +28,44 @@ namespace arc {
     };
 
     enum class JoystickButton {
-        Cross = 0, Square, Circle, Triangle, L1, R1, L2, R2, END
+        Cross = 0, Circle, Triangle, Square, L1, R1, L2, R2, SHARE, START, UNKNOWN, LEFT_JOYSTICK, RIGHT_JOYSTICK, END
     };
 
     /**
      * @brief Represents an even type
      */
+    // enum class EventType {
+    //     KEY_PRESSED = 0,
+    //     MOUSE_BUTTON_PRESSED,
+    //     JOYSTICK_BUTTON_PRESSED,
+    //     KEY_DOWN,
+    //     MOUSE_BUTTON_DOWN,
+    //     JOYSTICK_BUTTON_DOWN,
+    //     KEY_RELEASED,
+
+    // };
+
+    enum class KeyType {
+        KEY,
+        MOUSE_BUTTON,
+        JOYSTICK,
+        JOYSTICK_BUTTON,
+    };
+
     enum class EventType {
-        KEY_PRESSED = 0,
-        MOUSE_BUTTON_PRESSED,
-        JOYSTICK_BUTTON_PRESSED
+        PRESSED,
+        DOWN,
+        RELEASED,
+        MOVE
     };
 
     /**
      * @brief Represents an event
      */
     struct Event {
-        EventType type;
+        EventType eventType;
+        KeyType keyType;
+
         union {
             struct {
                 KeyCode code;
@@ -56,7 +77,10 @@ namespace arc {
                 int32_t y;
             } mouse;
             struct {
-                JoystickButton button;
+                union {
+                    arc::JoystickAxis axis;
+                    arc::JoystickButton button;
+                };
                 int32_t id;
             } joystick;
         };
@@ -103,6 +127,13 @@ namespace arc {
          * @param height the number of tiles per column
          */
         virtual void setHeight(std::size_t height) = 0;
+
+        /**
+         * @brief Sets the delay between key down events
+         *
+         * @param delay the delay between key down events
+         */
+        virtual void setKeyDownDelay(arc::KeyCode key, float delay) = 0;
 
         /**
          * @brief Returns the title of the display
@@ -162,6 +193,13 @@ namespace arc {
         virtual bool pollEvent(Event& event) = 0;
 
         /**
+         * @brief Returns the position of the mouse
+         *
+         * @return const std::pair<int32_t, int32_t>& the position of the mouse
+         */
+        virtual const std::pair<int32_t, int32_t> mousePosition() const = 0;
+
+        /**
          * @brief Gets the data relative to a certain joystick.
          *
          * @param id The id of the Joystick. 0 => P1, 1 => P2, ...
@@ -197,9 +235,10 @@ namespace arc {
          * @param texture the texture to draw
          * @param x the column to draw the texture at
          * @param y the row to draw the texture at
-         * @param scale the scale at which the square should be displayed
+         * @param scaleX the scale on the x axis
+         * @param scaleY the scale on the y axis
          */
-        virtual void draw(std::shared_ptr<ITexture> texture, float x, float y, float scale) = 0;
+        virtual void draw(std::shared_ptr<ITexture> texture, float x, float y, float scaleX, float scaleY) = 0;
 
         /**td::shared_ptr<ITexture> g
          * @brief Draws a string to the display

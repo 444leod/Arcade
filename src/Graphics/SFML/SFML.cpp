@@ -7,12 +7,6 @@
 
 #include "SFML.hpp"
 
-#include <SFML/Graphics.hpp>
-#include <SFML/Audio.hpp>
-#include <deque>
-#include <cmath>
-#include <memory>
-
 extern "C" arc::ILibrary *entrypoint()
 {
     return new SFMLLibrary;

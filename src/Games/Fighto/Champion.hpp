@@ -10,11 +10,12 @@
 #include "ILibrary.hpp"
 #include "Vector.hpp"
 #include "MoveList.hpp"
+#include "Animations/AAnimation.hpp"
 #include <queue>
 
 class Champion {
     public:
-        Champion() = default;
+        Champion() = delete;
         Champion(std::uint32_t id, const std::string& texture);
         ~Champion() = default;
 
@@ -56,4 +57,5 @@ class Champion {
     private: // Display related
         std::string _texture;
         const dVector _size = dVector(1.0, 1.0);
+        std::shared_ptr<AAnimation> _animation;
 };
