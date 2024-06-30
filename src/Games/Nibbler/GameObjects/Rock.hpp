@@ -13,7 +13,7 @@
 class Rock : public AGameObject{
     public:
     Rock(Vec2i pos);
-        
+
     ~Rock() = default;
 
     protected:

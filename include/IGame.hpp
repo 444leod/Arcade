@@ -25,19 +25,34 @@ namespace arc {
          */
         virtual void initialize(ILibrary& lib) = 0;
 
-        //? No need for deinitalize, the destructor will do the job
-
         /**
          * @brief Called when a key is pressed
-         * @param event the event
          */
         virtual void onKeyPressed(ILibrary& lib, KeyCode key, bool shift) = 0;
 
+        virtual void onKeyDown(ILibrary& lib, KeyCode key) = 0;
+
+        virtual void onKeyReleased(ILibrary& lib, KeyCode key) = 0;
+
         /**
          * @brief Called when a mouse button is pressed
-         * @param event the event
          */
         virtual void onMouseButtonPressed(ILibrary& lib, MouseButton button, int32_t x, int32_t y) = 0;
+
+        virtual void onMouseButtonDown(ILibrary& lib, MouseButton button, int32_t x, int32_t y) = 0;
+
+        virtual void onMouseButtonReleased(ILibrary& lib, MouseButton button, int32_t x, int32_t y) = 0;
+
+        /**
+         * @brief Called when a joystick button is pressed
+        */
+        virtual void onJoystickButtonPressed(arc::ILibrary& lib, arc::JoystickButton button, std::uint32_t id) = 0;
+
+        virtual void onJoystickButtonDown(arc::ILibrary& lib, arc::JoystickButton button, std::uint32_t id) = 0;
+
+        virtual void onJoystickButtonReleased(arc::ILibrary& lib, arc::JoystickButton button, std::uint32_t id) = 0;
+
+        virtual void onJoystickMove(arc::ILibrary& lib, arc::JoystickAxis axis, uint32_t id) = 0;
 
         /**
          * @brief Updates the game. It should be used to update the game state.

@@ -73,6 +73,14 @@ public:
             lib.sounds().play("woosh", 30.0f);
     }
 
+    virtual void onKeyDown([[maybe_unused]] arc::ILibrary& lib, [[maybe_unused]] arc::KeyCode key)
+    {
+    }
+
+    virtual void onKeyReleased([[maybe_unused]] arc::ILibrary& lib, [[maybe_unused]] arc::KeyCode key)
+    {
+    }
+
     virtual void onMouseButtonPressed(
         [[maybe_unused]] arc::ILibrary& lib,
         [[maybe_unused]] arc::MouseButton button,
@@ -80,6 +88,59 @@ public:
         [[maybe_unused]] int32_t y
     )
     {
+    }
+
+    virtual void onMouseButtonDown(
+        [[maybe_unused]] arc::ILibrary& lib,
+        [[maybe_unused]] arc::MouseButton button,
+        [[maybe_unused]] int32_t x,
+        [[maybe_unused]] int32_t y
+    )
+    {
+    }
+
+    virtual void onMouseButtonReleased(
+        [[maybe_unused]] arc::ILibrary& lib,
+        [[maybe_unused]] arc::MouseButton button,
+        [[maybe_unused]] int32_t x,
+        [[maybe_unused]] int32_t y
+    )
+    {
+    }
+
+    virtual void onJoystickButtonPressed(
+        [[maybe_unused]] arc::ILibrary& lib,
+        [[maybe_unused]] arc::JoystickButton button,
+        [[maybe_unused]] std::uint32_t id)
+    {
+    }
+
+    virtual void onJoystickButtonDown(
+        [[maybe_unused]] arc::ILibrary& lib,
+        [[maybe_unused]] arc::JoystickButton button,
+        [[maybe_unused]] std::uint32_t id)
+    {
+    }
+
+    virtual void onJoystickButtonReleased(
+        [[maybe_unused]] arc::ILibrary& lib,
+        [[maybe_unused]] arc::JoystickButton button,
+        [[maybe_unused]] std::uint32_t id)
+    {
+    }
+
+    virtual void onJoystickMove(
+        [[maybe_unused]] arc::ILibrary& lib,
+        arc::JoystickAxis axis,
+        uint32_t id)
+    {
+        if (id != 0)
+            return;
+        if ((axis.x != 0) != (axis.y != 0)) {
+            _snake.setDirection({axis.x, axis.y});
+            lib.sounds().play("woosh", 30.0f);
+        }
+
     }
 
     virtual void update([[maybe_unused]] arc::ILibrary& lib, float deltaTime)
@@ -96,7 +157,7 @@ public:
         score << "Score: " << _snake.getScore();
         std::size_t width = lib.display().width();
 
-        lib.display().clear(arc::Color{0, 0, 255, 0});
+        lib.display().clear(arc::Color{0, 0, 0, 255});
         draw_arena(lib);
         if (_snake.getAlive()) {
             for (auto &part : _snake.dump()) {
@@ -112,9 +173,9 @@ public:
             lib.display().print("Game Over", lib.fonts().get("Pokemon"), center, ARENA_HEIGHT / 2);
         }
         for (auto &part : _snakeManager.dump()) {
-                lib.display().draw(lib.textures().get(part.second), part.first.x, part.first.y);
-            }
-    
+            lib.display().draw(lib.textures().get(part.second), part.first.x, part.first.y);
+        }
+
         float textWidth = lib.display().measure(score.str(), lib.fonts().get("Pokemon"), 0, 0).width;
         float center = (width - textWidth) / 2;
         lib.display().print(score.str(), lib.fonts().get("Pokemon"), center, ARENA_HEIGHT + 2);
@@ -230,10 +291,7 @@ private:
     void draw_arena(arc::ILibrary& lib)
     {
         // Edges
-        lib.display().draw(lib.textures().get("arena_north_edge_solid"), 0, 0);
-        lib.display().draw(lib.textures().get("arena_north_edge_solid"), ARENA_WIDTH + 1, 0);
         for (int x = 1; x < ARENA_WIDTH + 1; x++) {
-            lib.display().draw(lib.textures().get("arena_north_edge_solid"), x, 0);
             lib.display().draw(lib.textures().get("arena_north_edge"), x, 1);
             lib.display().draw(lib.textures().get("arena_south_edge"), x, ARENA_HEIGHT + 1);
         }
@@ -252,10 +310,6 @@ private:
         for (int y = 2; y < ARENA_HEIGHT + 1; y++)
             for (int x = 1; x < ARENA_WIDTH + 1; x++)
                 lib.display().draw(lib.textures().get("arena_0"), x, y);
-        
-        // Menu background
-        for (int x = 0; x < ARENA_WIDTH + 2; x++)
-            lib.display().draw(lib.textures().get("arena_0"), x, ARENA_HEIGHT + 2);
     }
 
 private:

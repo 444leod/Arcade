@@ -18,8 +18,21 @@ public:
     ~CoreMenu();
 
     virtual void initialize(arc::ILibrary &lib);
+
     virtual void onKeyPressed([[maybe_unused]] arc::ILibrary &lib, arc::KeyCode key, bool shift);
+    virtual void onKeyDown([[maybe_unused]] arc::ILibrary &lib, arc::KeyCode key);
+    virtual void onKeyReleased([[maybe_unused]] arc::ILibrary &lib, arc::KeyCode key);
+
     virtual void onMouseButtonPressed(arc::ILibrary &lib, arc::MouseButton button, int32_t x, int32_t y);
+    virtual void onMouseButtonDown(arc::ILibrary &lib, arc::MouseButton button, int32_t x, int32_t y);
+    virtual void onMouseButtonReleased(arc::ILibrary &lib, arc::MouseButton button, int32_t x, int32_t y);
+
+    virtual void onJoystickButtonPressed(arc::ILibrary& lib, arc::JoystickButton button, std::uint32_t id);
+    virtual void onJoystickButtonDown(arc::ILibrary& lib, arc::JoystickButton button, std::uint32_t id);
+    virtual void onJoystickButtonReleased(arc::ILibrary& lib, arc::JoystickButton button, std::uint32_t id);
+
+    virtual void onJoystickMove(arc::ILibrary& lib, arc::JoystickAxis axis, uint32_t id);
+
     virtual void update(arc::ILibrary &lib, float deltaTime);
     virtual void draw(arc::ILibrary &lib);
     virtual uint64_t score() const { return 0; }
@@ -37,7 +50,7 @@ private:
     void drawRoulette(
         arc::ILibrary &lib, const std::string& name,
         const std::vector<std::shared_ptr<LibraryObject>>& values,
-        int index, int x, int y) const;
+        int index, int y) const;
     void printCenteredText(arc::ILibrary& lib, const std::string& string, const std::string& font, int y) const;
     void printCenteredText(arc::ILibrary& lib, const std::string& string, const std::string& font, int x, int y, int w) const;
 private:
@@ -47,6 +60,10 @@ private:
     std::string _player = "GUEST";
     int _game = 0;
     int _lib = 0;
+    arc::JoystickAxis _axis = {0, 0};
+    arc::JoystickAxis _oldAxis = {0, 0};
+    double _axisTime = 0;
+    double _rollTime = 0;
     std::vector<std::shared_ptr<LibraryObject>> _games = {};
     std::vector<std::shared_ptr<LibraryObject>> _libs = {};
     std::map<std::string, arc::Score> _scores = {};
