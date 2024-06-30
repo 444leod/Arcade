@@ -164,7 +164,6 @@ public:
     virtual void update([[maybe_unused]] arc::ILibrary& lib, float deltaTime)
     {
         auto axis = lib.display().joystick(0).axis();
-        std::cout << axis.x << " " << axis.y << std::endl;
         _nibbler.setDirectionQueue({axis.x, axis.y});
 
         if (_nibblerManager.checkWin(_nibbler)) {

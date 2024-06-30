@@ -109,14 +109,16 @@ class Core
                 float deltaTime = std::chrono::duration_cast<std::chrono::duration<float, std::milli>>(now - before).count() / 1000.0;
                 before = now;
 
-                if (this->_enterTimer > 0.3) {
+
+                this->_enterTimer = this->_enterDown ? this->_enterTimer + deltaTime : 0.0;
+                this->_exitTimer = this->_exitDown ? this->_exitTimer + deltaTime : 0.0;
+
+                if (this->_enterTimer > 0.7) {
                     this->start_game();
-                    this->_enterTimer = 0.0;
                     continue;
                 }
-                if (this->_exitTimer > 1.2) {
+                if (this->_exitTimer > 1.4) {
                     this->leave_game();
-                    this->_exitTimer = 0.0;
                     continue;
                 }
 
@@ -130,6 +132,8 @@ class Core
                             switch (event.keyType) {
                                 case arc::KeyType::KEY:
                                 {
+                                    if (event.key.code == arc::KeyCode::ENTER)  this->_enterDown = true;
+                                    if (event.key.code == arc::KeyCode::ESCAPE) this->_exitDown = true;
                                     this->_cur_game->onKeyPressed(*this->_cur_lib, event.key.code, event.key.shift);
                                     break;
                                 }
@@ -140,6 +144,8 @@ class Core
                                 }
                                 case arc::KeyType::JOYSTICK_BUTTON:
                                 {
+                                    if (event.joystick.button == arc::JoystickButton::R1)   this->_enterDown = true;
+                                    if (event.joystick.button == arc::JoystickButton::R2)   this->_exitDown = true;
                                     this->_cur_game->onJoystickButtonPressed(*this->_cur_lib, event.joystick.button, event.joystick.id);
                                     break;
                                 }
@@ -153,10 +159,6 @@ class Core
                             switch (event.keyType) {
                                 case arc::KeyType::KEY:
                                 {
-                                    if (event.key.code == arc::KeyCode::ENTER)
-                                        this->_enterTimer += deltaTime;
-                                    if (event.key.code == arc::KeyCode::ESCAPE)
-                                        this->_exitTimer += deltaTime;
                                     this->_cur_game->onKeyDown(*this->_cur_lib, event.key.code);
                                     break;
                                 }
@@ -167,10 +169,6 @@ class Core
                                 }
                                 case arc::KeyType::JOYSTICK_BUTTON:
                                 {
-                                    if (event.joystick.button == arc::JoystickButton::R1)
-                                        this->_enterTimer += deltaTime;
-                                    if (event.joystick.button == arc::JoystickButton::R2)
-                                        this->_exitTimer += deltaTime;
                                     this->_cur_game->onJoystickButtonDown(*this->_cur_lib, event.joystick.button, event.joystick.id);
                                     break;
                                 }
@@ -184,10 +182,8 @@ class Core
                             switch (event.keyType) {
                                 case arc::KeyType::KEY:
                                 {
-                                    if (event.key.code == arc::KeyCode::ENTER)
-                                        this->_enterTimer = 0.0;
-                                    if (event.key.code == arc::KeyCode::ESCAPE)
-                                        this->_exitTimer = 0.0;
+                                    if (event.key.code == arc::KeyCode::ENTER)  this->_enterDown = false;
+                                    if (event.key.code == arc::KeyCode::ESCAPE) this->_exitDown = false;
                                     this->_cur_game->onKeyReleased(*this->_cur_lib, event.key.code);
                                     break;
                                 }
@@ -198,10 +194,8 @@ class Core
                                 }
                                 case arc::KeyType::JOYSTICK_BUTTON:
                                 {
-                                    if (event.joystick.button == arc::JoystickButton::R1)
-                                        this->_enterTimer = 0.0;
-                                    if (event.joystick.button == arc::JoystickButton::R2)
-                                        this->_exitTimer = 0.0;
+                                    if (event.joystick.button == arc::JoystickButton::R1)   this->_enterDown = false;
+                                    if (event.joystick.button == arc::JoystickButton::R2)   this->_exitDown = false;
                                     this->_cur_game->onJoystickButtonReleased(*this->_cur_lib, event.joystick.button, event.joystick.id);
                                     break;
                                 }
@@ -246,6 +240,9 @@ class Core
 
         std::map<std::string, arc::Score> _scores = {};
         LibraryLoader _loader;
+
+        bool _enterDown = false;
+        bool _exitDown = false;
         double _enterTimer = 0.0;
         double _exitTimer = 0.0;
 };
