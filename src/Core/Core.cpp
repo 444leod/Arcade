@@ -7,8 +7,8 @@
 
 #include "LibraryLoader.hpp"
 #include "IGame.hpp"
-#include "CoreMenu.hpp"
 #include "Score.hpp"
+#include "GameSwitcher.hpp"
 #include <iostream>
 #include <vector>
 #include <fstream>
@@ -30,101 +30,34 @@ class Core
         {
             if (!this->_loader.contains(path, arc::SharedLibraryType::LIBRARY))
                 throw CoreException("File " + path + " is not a valid graphical library.");
-            this->_lib_handler = this->_loader.load(path);
-            if (!this->_lib_handler)
+
+            auto lib_object = this->_loader.get(path);
+            if (lib_object == nullptr)
                 throw CoreException("Could not open " + path + ".");
-            this->_cur_lib = this->_lib_handler->get<arc::ILibrary>();
+            this->_lib = lib_object->get<arc::ILibrary>();
+
             if (!this->_loader.contains(arc::SharedLibraryType::GAME))
                 throw CoreException("No game library found.");
-            this->_menu = std::make_shared<CoreMenu>(this->_loader.libs(), this->_lib_handler);
-            this->_cur_game = std::static_pointer_cast<arc::IGame>(this->_menu);
-
-            std::ifstream rstream(".scores");
-            if (!rstream.is_open())
-                return;
-            std::string tmp = "";
-            while (std::getline(rstream, tmp)) {
-                if (tmp.empty()) break;
-                arc::Score score;
-                tmp >> score;
-                this->_scores[score.game] = score;
-            }
-            rstream.close();
-            this->_menu->updateScores(this->_scores);
+            this->_switcher.init(this->_loader, *this->_lib);
         }
 
-        ~Core()
-        {
-            if (this->_cur_game != this->_menu)
-                this->saveScore();
-        }
-
-        void start_game()
-        {
-            this->_enterTimer = 0.0;
-            for (const auto& sound : this->_cur_lib->musics().dump()) {
-                this->_cur_lib->musics().stop(sound.first);
-            }
-            for (const auto& sound : this->_cur_lib->sounds().dump()) {
-                this->_cur_lib->sounds().stop(sound.first);
-            }
-            this->_menu->setRunning(false);
-            this->_game_handler.reset();
-            this->_game_handler = this->_menu->game();
-            this->_cur_game.reset();
-            this->_cur_game = this->_game_handler->get<arc::IGame>();
-            if (this->_cur_game == nullptr)
-                throw CoreException("Object failed to load game");
-            this->_cur_game->initialize(*_cur_lib);
-        }
-
-        void leave_game()
-        {
-            this->_exitTimer = 0.0;
-            for (const auto& sound : this->_cur_lib->musics().dump()) {
-                this->_cur_lib->musics().stop(sound.first);
-            }
-            for (const auto& sound : this->_cur_lib->sounds().dump()) {
-                this->_cur_lib->sounds().stop(sound.first);
-            }
-            if (this->_menu->running()) {
-                this->_cur_lib->display().close();
-            } else {
-                this->saveScore();
-                this->_cur_game.reset();
-                this->_cur_game = this->_menu;
-                this->_menu->initialize(*_cur_lib);
-                this->_menu->updateScores(this->_scores);
-            }
-        }
+        ~Core() = default;
 
         void run()
         {
             auto before = std::chrono::high_resolution_clock::now();
 
-            this->_cur_game->initialize(*_cur_lib);
-            while (this->_cur_lib->display().opened()) {
+            while (this->_lib->display().opened()) {
                 arc::Event event = {};
                 auto now = std::chrono::high_resolution_clock::now();
                 float deltaTime = std::chrono::duration_cast<std::chrono::duration<float, std::milli>>(now - before).count() / 1000.0;
                 before = now;
 
+                auto game = this->_switcher.current();
+                this->_switcher.update(*this->_lib, deltaTime);
+                this->_lib->display().update(deltaTime);
 
-                this->_enterTimer = this->_enterDown ? this->_enterTimer + deltaTime : 0.0;
-                this->_exitTimer = this->_exitDown ? this->_exitTimer + deltaTime : 0.0;
-
-                if (this->_enterTimer > 0.7) {
-                    this->start_game();
-                    continue;
-                }
-                if (this->_exitTimer > 1.4) {
-                    this->leave_game();
-                    continue;
-                }
-
-                this->_cur_lib->display().update(deltaTime);
-
-                while (_cur_lib->display().pollEvent(event)) {
+                while (_lib->display().pollEvent(event)) {
                     switch (event.eventType)
                     {
                         case arc::EventType::PRESSED:
@@ -132,21 +65,23 @@ class Core
                             switch (event.keyType) {
                                 case arc::KeyType::KEY:
                                 {
-                                    if (event.key.code == arc::KeyCode::ENTER)  this->_enterDown = true;
-                                    if (event.key.code == arc::KeyCode::ESCAPE) this->_exitDown = true;
-                                    this->_cur_game->onKeyPressed(*this->_cur_lib, event.key.code, event.key.shift);
+                                    if (event.key.code == arc::KeyCode::ENTER)  this->_switcher.setPressingStart(true);
+                                    if (event.key.code == arc::KeyCode::ESCAPE) this->_switcher.setPressingExit(true);
+                                    if (event.key.code == arc::KeyCode::UP)     this->_switcher.previous();
+                                    if (event.key.code == arc::KeyCode::DOWN)   this->_switcher.next();
+                                    game->onKeyPressed(*this->_lib, event.key.code, event.key.shift);
                                     break;
                                 }
                                 case arc::KeyType::MOUSE_BUTTON:
                                 {
-                                    this->_cur_game->onMouseButtonPressed(*this->_cur_lib, event.mouse.button, event.mouse.x, event.mouse.y);
+                                    game->onMouseButtonPressed(*this->_lib, event.mouse.button, event.mouse.x, event.mouse.y);
                                     break;
                                 }
                                 case arc::KeyType::JOYSTICK_BUTTON:
                                 {
-                                    if (event.joystick.button == arc::JoystickButton::R1)   this->_enterDown = true;
-                                    if (event.joystick.button == arc::JoystickButton::R2)   this->_exitDown = true;
-                                    this->_cur_game->onJoystickButtonPressed(*this->_cur_lib, event.joystick.button, event.joystick.id);
+                                    if (event.joystick.button == arc::JoystickButton::R1)   this->_switcher.setPressingStart(true);
+                                    if (event.joystick.button == arc::JoystickButton::R2)   this->_switcher.setPressingExit(true);
+                                    game->onJoystickButtonPressed(*this->_lib, event.joystick.button, event.joystick.id);
                                     break;
                                 }
                                 default:
@@ -159,17 +94,17 @@ class Core
                             switch (event.keyType) {
                                 case arc::KeyType::KEY:
                                 {
-                                    this->_cur_game->onKeyDown(*this->_cur_lib, event.key.code);
+                                    game->onKeyDown(*this->_lib, event.key.code);
                                     break;
                                 }
                                 case arc::KeyType::MOUSE_BUTTON:
                                 {
-                                    this->_cur_game->onMouseButtonDown(*this->_cur_lib, event.mouse.button, event.mouse.x, event.mouse.y);
+                                    game->onMouseButtonDown(*this->_lib, event.mouse.button, event.mouse.x, event.mouse.y);
                                     break;
                                 }
                                 case arc::KeyType::JOYSTICK_BUTTON:
                                 {
-                                    this->_cur_game->onJoystickButtonDown(*this->_cur_lib, event.joystick.button, event.joystick.id);
+                                    game->onJoystickButtonDown(*this->_lib, event.joystick.button, event.joystick.id);
                                     break;
                                 }
                                 default:
@@ -182,21 +117,21 @@ class Core
                             switch (event.keyType) {
                                 case arc::KeyType::KEY:
                                 {
-                                    if (event.key.code == arc::KeyCode::ENTER)  this->_enterDown = false;
-                                    if (event.key.code == arc::KeyCode::ESCAPE) this->_exitDown = false;
-                                    this->_cur_game->onKeyReleased(*this->_cur_lib, event.key.code);
+                                    if (event.key.code == arc::KeyCode::ENTER)  this->_switcher.setPressingStart(false);
+                                    if (event.key.code == arc::KeyCode::ESCAPE) this->_switcher.setPressingExit(false);
+                                    game->onKeyReleased(*this->_lib, event.key.code);
                                     break;
                                 }
                                 case arc::KeyType::MOUSE_BUTTON:
                                 {
-                                    this->_cur_game->onMouseButtonReleased(*this->_cur_lib, event.mouse.button, event.mouse.x, event.mouse.y);
+                                    game->onMouseButtonReleased(*this->_lib, event.mouse.button, event.mouse.x, event.mouse.y);
                                     break;
                                 }
                                 case arc::KeyType::JOYSTICK_BUTTON:
                                 {
-                                    if (event.joystick.button == arc::JoystickButton::R1)   this->_enterDown = false;
-                                    if (event.joystick.button == arc::JoystickButton::R2)   this->_exitDown = false;
-                                    this->_cur_game->onJoystickButtonReleased(*this->_cur_lib, event.joystick.button, event.joystick.id);
+                                    if (event.joystick.button == arc::JoystickButton::R1)   this->_switcher.setPressingStart(false);
+                                    if (event.joystick.button == arc::JoystickButton::R2)   this->_switcher.setPressingExit(false);
+                                    game->onJoystickButtonReleased(*this->_lib, event.joystick.button, event.joystick.id);
                                     break;
                                 }
                                 default:
@@ -206,45 +141,21 @@ class Core
                         }
                         case arc::EventType::MOVE:
                         {
-                            this->_cur_game->onJoystickMove(*this->_cur_lib, event.joystick.axis, event.joystick.id);
+                            game->onJoystickMove(*this->_lib, event.joystick.axis, event.joystick.id);
                             break;
                         }
                     }
                 }
 
-                this->_cur_game->update(*_cur_lib, deltaTime);
-                this->_cur_game->draw(*_cur_lib);
+                game->update(*_lib, deltaTime);
+                game->draw(*_lib);
             }
         }
 
     private:
-        void saveScore()
-        {
-            std::ofstream stream(".scores");
-
-            if (!stream.is_open())
-                return;
-            if (!this->_scores.contains(this->_game_handler->name()) || this->_scores[this->_game_handler->name()].hs < this->_cur_game->score())
-                this->_scores[this->_game_handler->name()] = { this->_game_handler->name(), this->_menu->player(), this->_cur_game->score() };
-            for (auto entry : this->_scores)
-                stream << entry.second;
-            stream.close();
-        }
-
-    private:
-        std::shared_ptr<CoreMenu> _menu = nullptr;
-        std::shared_ptr<arc::IGame> _cur_game = nullptr;
-        std::shared_ptr<arc::ILibrary> _cur_lib = nullptr;
-        std::shared_ptr<LibraryObject> _game_handler = nullptr;
-        std::shared_ptr<LibraryObject> _lib_handler = nullptr;
-
-        std::map<std::string, arc::Score> _scores = {};
+        std::shared_ptr<arc::ILibrary> _lib;
         LibraryLoader _loader;
-
-        bool _enterDown = false;
-        bool _exitDown = false;
-        double _enterTimer = 0.0;
-        double _exitTimer = 0.0;
+        GameSwitcher _switcher;
 };
 
 int main(int ac, char **av, char **env)

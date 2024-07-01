@@ -7,12 +7,18 @@
 
 #include "LibraryLoader.hpp"
 
+/**============================================
+ *               OBEJCTS
+ *=============================================**/
+
 LibraryObject::LibraryObject(const std::string &path)
 {
     this->_path = path;
     this->_handle = dlopen(this->_path.c_str(), RTLD_LAZY);
     if (this->_handle == nullptr)
         return;
+
+    this->_entrypoint = dlsym(this->_handle, "entrypoint");
 
     auto nameHandle = reinterpret_cast<const char *(*)()>(dlsym(this->_handle, "name"));
     if (nameHandle == nullptr)
@@ -29,9 +35,13 @@ LibraryObject::LibraryObject(const std::string &path)
 
 LibraryObject::~LibraryObject()
 {
-    if (_handle != nullptr)
+    if (this->_handle != nullptr)
         dlclose(_handle);
 }
+
+/**============================================
+ *               LOADER
+ *=============================================**/
 
 LibraryLoader::LibraryLoader(const std::string &path, bool restrict_tty)
 {
@@ -48,22 +58,10 @@ LibraryLoader::LibraryLoader(const std::string &path, bool restrict_tty)
     }
 }
 
-LibraryLoader::~LibraryLoader()
-{
-}
-
 bool LibraryLoader::contains(const std::string &lib, arc::SharedLibraryType type) const
 {
     for (auto l : this->_libs)
-        if (path_cmp(lib, l->path()) && l->type() == type)
-            return true;
-    return false;
-}
-
-bool LibraryLoader::contains(const std::string &lib) const
-{
-    for (auto l : this->_libs)
-        if (path_cmp(lib, l->path()))
+        if (LibraryLoader::_path_cmp(lib, l->path()) && l->type() == type)
             return true;
     return false;
 }
@@ -76,34 +74,25 @@ bool LibraryLoader::contains(arc::SharedLibraryType type) const
     return false;
 }
 
-std::shared_ptr<LibraryObject> LibraryLoader::nextLib()
+std::shared_ptr<LibraryObject> LibraryLoader::get(const std::string &path) const
 {
-    this->_libIndex = (this->_libIndex + 1) % _libs.size();
-    while (this->_libs[this->_libIndex]->type() != arc::SharedLibraryType::LIBRARY)
-        this->_libIndex = (this->_libIndex + 1) % _libs.size();
-    return this->_libs[this->_libIndex];
+    for (auto lo : this->_libs)
+        if (LibraryLoader::_path_cmp(lo->path(), path))
+            return lo;
+    return nullptr;
 }
 
-std::shared_ptr<LibraryObject> LibraryLoader::nextGame()
+std::vector<std::shared_ptr<LibraryObject>> LibraryLoader::get(arc::SharedLibraryType type) const
 {
-    this->_gameIndex = (this->_gameIndex + 1) % _libs.size();
-    while (this->_libs[this->_gameIndex]->type() != arc::SharedLibraryType::GAME)
-        this->_gameIndex = (this->_gameIndex + 1) % _libs.size();
-    return this->_libs[this->_gameIndex];
+    std::vector<std::shared_ptr<LibraryObject>> libs;
+
+    for (auto lo : this->_libs)
+        if (lo->type() == type)
+            libs.push_back(lo);
+    return libs;
 }
 
-std::shared_ptr<LibraryObject> LibraryLoader::load(const std::string &path, arc::SharedLibraryType type)
-{
-    if (this->_libIndex < 0)
-        this->_libIndex = 0;
-    auto l = this->_libs[this->_libIndex];
-
-    while (!path_cmp(l->path(), path))
-        l = type == arc::SharedLibraryType::LIBRARY ? this->nextLib() : this->nextGame();
-    return l;
-}
-
-bool LibraryLoader::path_cmp(const std::string &a, const std::string& b) const
+bool LibraryLoader::_path_cmp(const std::string &a, const std::string& b)
 {
     std::string _a = a.starts_with(".") || a.starts_with("/") ? a : "./" + a;
     std::string _b = b.starts_with(".") || b.starts_with("/") ? b : "./" + b;
