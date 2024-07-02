@@ -13,19 +13,42 @@
 #include <vector>
 #include <fstream>
 
+/**
+ * @brief The exceptions thrown by the `Core`.
+ */
 class CoreException : public std::exception
 {
     public:
+        /**
+         * @brief Constructor for the `CoreException` class.
+         * @param msg The message of the error thrown.
+         */
         CoreException(const std::string& msg) : _msg(msg) {}
         ~CoreException() = default;
+
+        /**
+         * @brief Gets the message of the exception.
+         * @note Herited from `std::exception`.
+         * @return a `const char *`.
+         */
         virtual const char *what() const noexcept { return _msg.c_str(); }
     private:
         std::string _msg;
 };
 
+/**
+ * @brief The `Core` runs the library and the game and allows to switch those.
+ * It loads the shared librairies using a `LibraryLoader`,
+ * and is able to switch games using a `GameManager`.
+ */
 class Core
 {
     public:
+        /**
+         * @brief Constructor for the `Core` class.
+         * @param path The default graphics library to load.
+         * @param tty Whether the program was launched in a non-graphic way.
+         */
         Core(const std::string& path, bool tty) : _loader(LibraryLoader("./lib", tty))
         {
             if (!this->_loader.contains(path, arc::SharedLibraryType::LIBRARY))
@@ -38,25 +61,36 @@ class Core
 
             if (!this->_loader.contains(arc::SharedLibraryType::GAME))
                 throw CoreException("No game library found.");
-            this->_switcher.init(this->_loader, *this->_lib);
+            this->_games.init(this->_loader, *this->_lib);
         }
 
         ~Core() = default;
 
+        /**
+         * @brief The main function of the `Core`.
+         * Opens up the display with the graphical library and starts the game loop.
+         */
         void run()
         {
             auto before = std::chrono::high_resolution_clock::now();
 
             while (this->_lib->display().opened()) {
-                arc::Event event = {};
+
+                //* Delta time computation, may be off on the first frame.
                 auto now = std::chrono::high_resolution_clock::now();
                 float deltaTime = std::chrono::duration_cast<std::chrono::duration<float, std::milli>>(now - before).count() / 1000.0;
                 before = now;
 
-                auto game = this->_switcher.current();
-                this->_switcher.update(*this->_lib, deltaTime);
+                //* Loads libraries
+                auto game = this->_games.current();
+                this->_games.update(*this->_lib, deltaTime);
                 this->_lib->display().update(deltaTime);
 
+                //* Events polling
+                //! Looks aweful, probably needs a good ol' refactoring
+                //* Attempts at refactoring: 0
+                //* Increment this number with every try.
+                arc::Event event = {};
                 while (_lib->display().pollEvent(event)) {
                     switch (event.eventType)
                     {
@@ -65,10 +99,10 @@ class Core
                             switch (event.keyType) {
                                 case arc::KeyType::KEY:
                                 {
-                                    if (event.key.code == arc::KeyCode::ENTER)  this->_switcher.setPressingStart(true);
-                                    if (event.key.code == arc::KeyCode::ESCAPE) this->_switcher.setPressingExit(true);
-                                    if (event.key.code == arc::KeyCode::UP)     this->_switcher.previous();
-                                    if (event.key.code == arc::KeyCode::DOWN)   this->_switcher.next();
+                                    if (event.key.code == arc::KeyCode::ENTER)  this->_games.setPressingStart(true);
+                                    if (event.key.code == arc::KeyCode::ESCAPE) this->_games.setPressingExit(true);
+                                    if (event.key.code == arc::KeyCode::UP)     this->_games.previous();
+                                    if (event.key.code == arc::KeyCode::DOWN)   this->_games.next();
                                     game->onKeyPressed(*this->_lib, event.key.code, event.key.shift);
                                     break;
                                 }
@@ -79,8 +113,8 @@ class Core
                                 }
                                 case arc::KeyType::JOYSTICK_BUTTON:
                                 {
-                                    if (event.joystick.button == arc::JoystickButton::R1)   this->_switcher.setPressingStart(true);
-                                    if (event.joystick.button == arc::JoystickButton::R2)   this->_switcher.setPressingExit(true);
+                                    if (event.joystick.button == arc::JoystickButton::R1)   this->_games.setPressingStart(true);
+                                    if (event.joystick.button == arc::JoystickButton::R2)   this->_games.setPressingExit(true);
                                     game->onJoystickButtonPressed(*this->_lib, event.joystick.button, event.joystick.id);
                                     break;
                                 }
@@ -117,8 +151,8 @@ class Core
                             switch (event.keyType) {
                                 case arc::KeyType::KEY:
                                 {
-                                    if (event.key.code == arc::KeyCode::ENTER)  this->_switcher.setPressingStart(false);
-                                    if (event.key.code == arc::KeyCode::ESCAPE) this->_switcher.setPressingExit(false);
+                                    if (event.key.code == arc::KeyCode::ENTER)  this->_games.setPressingStart(false);
+                                    if (event.key.code == arc::KeyCode::ESCAPE) this->_games.setPressingExit(false);
                                     game->onKeyReleased(*this->_lib, event.key.code);
                                     break;
                                 }
@@ -129,8 +163,8 @@ class Core
                                 }
                                 case arc::KeyType::JOYSTICK_BUTTON:
                                 {
-                                    if (event.joystick.button == arc::JoystickButton::R1)   this->_switcher.setPressingStart(false);
-                                    if (event.joystick.button == arc::JoystickButton::R2)   this->_switcher.setPressingExit(false);
+                                    if (event.joystick.button == arc::JoystickButton::R1)   this->_games.setPressingStart(false);
+                                    if (event.joystick.button == arc::JoystickButton::R2)   this->_games.setPressingExit(false);
                                     game->onJoystickButtonReleased(*this->_lib, event.joystick.button, event.joystick.id);
                                     break;
                                 }
@@ -147,6 +181,7 @@ class Core
                     }
                 }
 
+                //* Game loop methods
                 game->update(*_lib, deltaTime);
                 game->draw(*_lib);
             }
@@ -155,7 +190,7 @@ class Core
     private:
         std::shared_ptr<arc::ILibrary> _lib;
         LibraryLoader _loader;
-        GameSwitcher _switcher;
+        GameManager _games;
 };
 
 int main(int ac, char **av, char **env)
