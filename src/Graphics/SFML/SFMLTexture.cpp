@@ -6,6 +6,7 @@
 */
 
 #include "SFMLTexture.hpp"
+#include <iostream>
 
 void SFMLTexture::load(
     const arc::TextureSpecification &spec,
@@ -50,8 +51,10 @@ bool SFMLTextureManager::load(const std::string &name, const arc::TextureSpecifi
         }
 
         auto sftex = std::make_shared<sf::Texture>();
-        if (!sftex->loadFromFile(image.path))
+        if (!sftex->loadFromFile(image.path)) {
+            std::cerr << "Failed to load texture: " << image.path << std::endl;
             return false;
+        }
 
         this->_cache[image.path] = sftex;
         texture->load(specification, sftex, image.subrect);
