@@ -5,7 +5,7 @@
 ** GameManager
 */
 
-#include "GameSwitcher.hpp"
+#include "GameManager.hpp"
 
 
 GameManager::~GameManager()

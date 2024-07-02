@@ -8,7 +8,7 @@
 #include "LibraryLoader.hpp"
 #include "IGame.hpp"
 #include "Score.hpp"
-#include "GameSwitcher.hpp"
+#include "GameManager.hpp"
 #include <iostream>
 #include <vector>
 #include <fstream>
