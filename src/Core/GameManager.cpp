@@ -2,18 +2,18 @@
 ** EPITECH PROJECT, 2024
 ** Arcade
 ** File description:
-** GameSwitcher
+** GameManager
 */
 
 #include "GameSwitcher.hpp"
 
 
-GameSwitcher::~GameSwitcher()
+GameManager::~GameManager()
 {
     this->_saveScores();
 }
 
-void GameSwitcher::init(const LibraryLoader& loader, arc::ILibrary& lib) noexcept
+void GameManager::init(const LibraryLoader& loader, arc::ILibrary& lib) noexcept
 {
     this->_games = loader.get(arc::SharedLibraryType::GAME);
     this->_menu = std::make_shared<CoreMenu>();
@@ -23,7 +23,7 @@ void GameSwitcher::init(const LibraryLoader& loader, arc::ILibrary& lib) noexcep
     this->_loadScores();
 }
 
-void GameSwitcher::update(arc::ILibrary& lib, double dt) noexcept
+void GameManager::update(arc::ILibrary& lib, double dt) noexcept
 {
     this->_start_timer = this->_pressing_start ? this->_start_timer + dt : .0;
     this->_exit_timer = this->_pressing_exit ? this->_exit_timer + dt : .0;
@@ -34,7 +34,7 @@ void GameSwitcher::update(arc::ILibrary& lib, double dt) noexcept
     this->_menu->setStartTimer(start_progress * 8);
 }
 
-void GameSwitcher::next() noexcept
+void GameManager::next() noexcept
 {
     if (this->_current != this->_menu)
         return;
@@ -42,7 +42,7 @@ void GameSwitcher::next() noexcept
     this->_menu->setGamesNames(this->_names());
 }
 
-void GameSwitcher::previous() noexcept
+void GameManager::previous() noexcept
 {
     if (this->_current != this->_menu)
         return;
@@ -53,7 +53,7 @@ void GameSwitcher::previous() noexcept
     this->_menu->setGamesNames(this->_names());
 }
 
-void GameSwitcher::_start(arc::ILibrary& lib) noexcept
+void GameManager::_start(arc::ILibrary& lib) noexcept
 {
     this->_start_timer = 0.0;
     auto so = this->_games[this->_selector_index];
@@ -61,7 +61,7 @@ void GameSwitcher::_start(arc::ILibrary& lib) noexcept
     this->_current->initialize(lib);
 }
 
-void GameSwitcher::_exit(arc::ILibrary& lib) noexcept
+void GameManager::_exit(arc::ILibrary& lib) noexcept
 {
     this->_exit_timer = 0.0;
     for (const auto& musics : lib.musics().dump())
@@ -78,7 +78,7 @@ void GameSwitcher::_exit(arc::ILibrary& lib) noexcept
     }
 }
 
-std::array<std::string, 3> GameSwitcher::_names() const noexcept
+std::array<std::string, 3> GameManager::_names() const noexcept
 {
     uint32_t prev = (this->_selector_index == 0 ? this->_games.size() : this->_selector_index) - 1;
     uint32_t next = (this->_selector_index + 1) % this->_games.size();
@@ -90,7 +90,7 @@ std::array<std::string, 3> GameSwitcher::_names() const noexcept
     };
 }
 
-void GameSwitcher::_loadScores() noexcept
+void GameManager::_loadScores() noexcept
 {
     this->_menu->updateScores(this->_scores);
 
@@ -108,7 +108,7 @@ void GameSwitcher::_loadScores() noexcept
     rstream.close();
 }
 
-void GameSwitcher::_saveScores() noexcept
+void GameManager::_saveScores() noexcept
 {
     std::shared_ptr<LibraryObject> game = this->_games[this->_selector_index];
     if (!this->_scores.contains(game->name()) || this->_scores[game->name()].hs < this->_current->score())

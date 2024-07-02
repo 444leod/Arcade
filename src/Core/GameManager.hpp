@@ -2,7 +2,7 @@
 ** EPITECH PROJECT, 2024
 ** Arcade
 ** File description:
-** GameSwitcher
+** GameManager
 */
 
 #pragma once
@@ -13,10 +13,10 @@
 #include <array>
 #include <map>
 
-class GameSwitcher {
+class GameManager {
     public:
-        GameSwitcher() = default;
-        ~GameSwitcher();
+        GameManager() = default;
+        ~GameManager();
 
         void init(const LibraryLoader& loader, arc::ILibrary& lib) noexcept;
         void update(arc::ILibrary& lib, double dt) noexcept;

@@ -14,7 +14,7 @@ CPPFLAGS	=	-fPIC -iquote $(INC_DIR) -std=c++20 \
 SRC	=	Core.cpp \
 		CoreMenu.cpp \
 		LibraryLoader.cpp \
-		GameSwitcher.cpp \
+		GameManager.cpp \
 
 CC = g++
 
