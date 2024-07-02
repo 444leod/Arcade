@@ -5,5 +5,5 @@
 ** Physics
 */
 
-#define FLOOR 14.f
+#define FLOOR 10.f
 #define GRAVITY 0.981f

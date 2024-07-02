@@ -18,6 +18,12 @@ SRC =	Fighto.cpp	\
 		HitSolver.cpp \
 		Animations/AAnimation.cpp \
 		Animations/Idle.cpp \
+		Animations/Run.cpp \
+		Animations/Jab.cpp \
+		Animations/Death.cpp \
+		Animations/Hurt.cpp \
+		Animations/Spike.cpp \
+		Animations/Jump.cpp \
 		Moves/AMove.cpp \
 		Moves/Jab.cpp \
 		Moves/Kick.cpp \

@@ -18,7 +18,7 @@ ChampionManager::ChampionManager(std::uint32_t count)
         // auto index = std::rand() % this->_textures.size();
         // auto color = this->_textures.at(index);
         // this->_textures.erase(std::next(this->_textures.begin(), index));
-        this->_champions.push_back(std::make_shared<Champion>(i, "character1"));
+        this->_champions.push_back(std::make_shared<Champion>(i, "template"));
     }
 }
 
@@ -52,7 +52,7 @@ void ChampionManager::update(arc::ILibrary& lib, double dt)
     (void) lib;
     for (auto c : this->_champions) {
         c->update(dt);
-        if (!c->alive()) {
+        if (!c->alive() && c->animationDone()) {
             this->_champions.erase(std::find(this->_champions.begin(), this->_champions.end(), c));
             _count--;
         }
