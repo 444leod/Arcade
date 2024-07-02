@@ -10,6 +10,8 @@
 #include <vector>
 #include "HitBox.hpp"
 #include "ILibrary.hpp"
+#include "Animations/AAnimation.hpp"
+#include "Animations/AnimationsList.hpp"
 
 #define FRAME(x) x / 60.0
 
@@ -27,6 +29,9 @@ class AMove {
         double damage() const { return this->_damage; }
         dVector knockback() const { return this->_knockback; }
         bool aerian() const { return this->_aerian; }
+
+        bool animate();
+        virtual std::shared_ptr<AAnimation> animation(const std::string& skin) = 0;
 
         /**
          * @brief Updates the attack move progress and its position.
@@ -89,6 +94,7 @@ class AMove {
         double _startup = .0;
         double _active = .0;
         double _lag = .0;
+        bool _animated = false;
 
     private:
         std::vector<HitBox> _poll = {};

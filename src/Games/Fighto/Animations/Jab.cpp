@@ -2,53 +2,52 @@
 ** EPITECH PROJECT, 2024
 ** Arcade
 ** File description:
-** Idle
+** Jab
 */
 
 #include "AAnimation.hpp"
 #include <iostream>
 
 /**
- * @brief Idle animation is a basic animation when the champion is not moving.
+ * @brief Jab animation is a basic animation when the champion punch
  */
 namespace animation {
-    class Idle : public AAnimation {
+    class Jab : public AAnimation {
         public:
-            Idle(const std::string& texture) : AAnimation(texture + "_idle_")
+            Jab(const std::string& texture, double direction) : AAnimation(texture + "_jab_")
             {
                 _frame = _texture + "0";
-                _frameIndex = 0;
+                _frameIndex = 1;
+                _direction = direction;
             }
-            ~Idle() = default;
+            ~Jab() = default;
 
             static void initialize(arc::ILibrary& lib)
             {
                 arc::TextureSpecification spec;
                 arc::TextureImage image = arc::TextureImage{
-                    .path = "assets/fighto/Player Idle/Player Idle 48x48.png",
+                    .path = "assets/fighto/Player Punch Jab/Player Jab 48x48.png",
                     .subrect = arc::Rect<uint32_t>{0, 0, 48, 48}
                 };
 
                 for (uint8_t i = 0; i < 10; i++) {
                     image.subrect->x = i * 48;
                     spec.graphical = image;
-                    lib.textures().load("template_idle_" + std::to_string(i), spec);
+                    lib.textures().load("template_jab_" + std::to_string(i), spec);
                 }
             }
 
             bool update(double dt) override
             {
-                if (_dt_sum > 0.1) {
+                if (_dt_sum > 0.016f) {
                     _frameIndex++;
-                    if (_frameIndex == 10) {
-                        _frameIndex = 0;
-                    }
+                    if (_frameIndex == 8)
+                        return true;
                     _frame = _texture + std::to_string(_frameIndex);
-                    _dt_sum -= 0.1;
-
+                    _dt_sum -= 0.016;
                 }
                 _dt_sum += dt;
-                return (_frameIndex >= 6);
+                return false;
             }
 
         protected:

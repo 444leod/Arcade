@@ -2,53 +2,51 @@
 ** EPITECH PROJECT, 2024
 ** Arcade
 ** File description:
-** Idle
+** Hurt
 */
 
 #include "AAnimation.hpp"
 #include <iostream>
 
 /**
- * @brief Idle animation is a basic animation when the champion is not moving.
+ * @brief Hurt animation is a basic animation when the champion is hurt
  */
 namespace animation {
-    class Idle : public AAnimation {
+    class Hurt : public AAnimation {
         public:
-            Idle(const std::string& texture) : AAnimation(texture + "_idle_")
+            Hurt(const std::string& texture) : AAnimation(texture + "_hurt_")
             {
                 _frame = _texture + "0";
                 _frameIndex = 0;
             }
-            ~Idle() = default;
+            ~Hurt() = default;
 
             static void initialize(arc::ILibrary& lib)
             {
                 arc::TextureSpecification spec;
                 arc::TextureImage image = arc::TextureImage{
-                    .path = "assets/fighto/Player Idle/Player Idle 48x48.png",
+                    .path = "assets/fighto/Player Hurt-Damaged/Player Hurt 48x48.png",
                     .subrect = arc::Rect<uint32_t>{0, 0, 48, 48}
                 };
 
-                for (uint8_t i = 0; i < 10; i++) {
+                for (uint8_t i = 0; i < 4; i++) {
                     image.subrect->x = i * 48;
                     spec.graphical = image;
-                    lib.textures().load("template_idle_" + std::to_string(i), spec);
+                    lib.textures().load("template_hurt_" + std::to_string(i), spec);
                 }
             }
 
             bool update(double dt) override
             {
-                if (_dt_sum > 0.1) {
-                    _frameIndex++;
-                    if (_frameIndex == 10) {
-                        _frameIndex = 0;
-                    }
+                if (_dt_sum > 0.015f) {
+                        _frameIndex++;
+                    if (_frameIndex == 4)
+                        return true;
                     _frame = _texture + std::to_string(_frameIndex);
-                    _dt_sum -= 0.1;
-
+                    _dt_sum -= 0.05f;
                 }
                 _dt_sum += dt;
-                return (_frameIndex >= 6);
+                return false;
             }
 
         protected:

@@ -47,11 +47,13 @@ bool AMove::poll(HitBox& hitbox)
 void AMove::debug(arc::ILibrary& lib) const
 {
     for (const auto& hb : this->_poll) {
-        auto scale = hb.radius() * 2.f;
-        lib.display().draw(lib.textures().get("hit"),
-            hb.position().x - hb.radius(),
-            hb.position().y - hb.radius(),
-            scale, scale);
+        auto pos = hb.position();
+        auto radius = hb.radius();
+        arc::shape::Circle circle = {
+            .radius = radius,
+            .color = arc::Color::RED
+        };
+        lib.display().draw(circle, pos.x - radius, pos.y - radius);
     }
 }
 
@@ -72,4 +74,12 @@ void AMove::_setTimings(uint8_t stu, uint8_t act, uint8_t lag)
     this->_startup = FRAME(stu);
     this->_active = FRAME(act);
     this->_lag = FRAME(lag);
+}
+
+bool AMove::animate()
+{
+    if (_animated)
+        return true;
+    this->_animated = true;
+    return false;
 }
