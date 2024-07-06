@@ -41,3 +41,6 @@ Geometry*
 geometry*
 .scores
 vgcore*
+*.aseprite
+.DS_Store
+test_particles.cpp
