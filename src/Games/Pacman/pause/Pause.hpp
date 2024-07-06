@@ -9,7 +9,7 @@
 
 #include "../AScene.hpp"
 
-class Pause : public AScene {
+class Pause : public pacman::AScene {
     public:
         Pause(AScene::Scene &currentState, uint64_t &score) : _currentState(currentState), _score(score) {}
         ~Pause() = default;

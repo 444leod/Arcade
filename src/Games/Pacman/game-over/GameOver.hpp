@@ -10,7 +10,7 @@
 #include "../AScene.hpp"
 #include <iostream>
 
-class GameOver : public AScene {
+class GameOver : public pacman::AScene {
     public:
         GameOver(AScene::Scene &currentState, uint64_t &score) : _currentState(currentState), _score(score) {}
         ~GameOver() = default;

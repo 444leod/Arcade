@@ -26,7 +26,7 @@
 #include <vector>
 #include <memory>
 
-class Game : public AScene {
+class Game : public pacman::AScene {
     public:
         Game(AScene::Scene &currentState, uint64_t &score) : _currentState(currentState), _score(score) {}
         ~Game() = default;

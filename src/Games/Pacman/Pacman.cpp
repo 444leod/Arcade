@@ -33,10 +33,10 @@ public:
         lib.display().setHeight(_height);
         lib.display().setWidth(_width);
         _scenes = {
-            {AScene::Scene::GAME,   std::make_shared<Game>(_currentScene, _score)},
-            {AScene::Scene::PAUSE,  std::make_shared<Pause>(_currentScene, _score)},
-            {AScene::Scene::WIN,    std::make_shared<Win>(_currentScene, _score)},
-            {AScene::Scene::LOSE,   std::make_shared<GameOver>(_currentScene, _score)}
+            {pacman::AScene::Scene::GAME,   std::make_shared<Game>(_currentScene, _score)},
+            {pacman::AScene::Scene::PAUSE,  std::make_shared<Pause>(_currentScene, _score)},
+            {pacman::AScene::Scene::WIN,    std::make_shared<Win>(_currentScene, _score)},
+            {pacman::AScene::Scene::LOSE,   std::make_shared<GameOver>(_currentScene, _score)}
         };
         arc::MusicSpecification musicSpec;
         #if V2
@@ -134,9 +134,9 @@ public:
     }
 
 private:
-    std::map<AScene::Scene, std::shared_ptr<AScene>> _scenes;
-    AScene::Scene _currentScene = AScene::Scene::GAME;
-    AScene::Scene _previousScene = AScene::Scene::GAME;
+    std::map<pacman::AScene::Scene, std::shared_ptr<pacman::AScene>> _scenes;
+    pacman::AScene::Scene _currentScene = pacman::AScene::Scene::GAME;
+    pacman::AScene::Scene _previousScene = pacman::AScene::Scene::GAME;
 
     uint64_t _score = 0;
     uint16_t _height = 24;

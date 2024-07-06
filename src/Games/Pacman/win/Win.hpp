@@ -9,7 +9,7 @@
 
 #include "../AScene.hpp"
 
-class Win : public AScene {
+class Win : public pacman::AScene {
     public:
         Win(AScene::Scene &currentState, uint64_t &score) : _currentState(currentState), _score(score) {}
         ~Win() = default;
