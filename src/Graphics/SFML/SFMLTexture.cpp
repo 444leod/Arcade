@@ -36,6 +36,9 @@ void SFMLTexture::load(
 
 bool SFMLTextureManager::load(const std::string &name, const arc::TextureSpecification &specification)
 {
+    static std::mutex mutex;
+
+    std::lock_guard<std::mutex> lock(mutex);
     auto texture = std::make_shared<SFMLTexture>();
 
     if (std::holds_alternative<arc::TextureImage>(specification.graphical))

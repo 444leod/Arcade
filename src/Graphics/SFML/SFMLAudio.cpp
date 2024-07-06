@@ -33,6 +33,9 @@ bool SFMLSound::init(const arc::SoundSpecification &spec)
 
 bool SFMLSoundManager::load(const std::string &name, const arc::SoundSpecification &spec)
 {
+    static std::mutex mutex;
+    std::lock_guard<std::mutex> lock(mutex);
+
     auto sound = std::make_shared<SFMLSound>();
 
     if (!sound->init(spec))

@@ -19,6 +19,9 @@ bool SFMLFont::init(const arc::FontSpecification &spec)
 
 bool SFMLFontManager::load(const std::string &name, const arc::FontSpecification &spec)
 {
+    static std::mutex mutex;
+    std::lock_guard<std::mutex> lock(mutex);
+
     auto attribute = std::make_shared<SFMLFont>();
 
     if (!attribute->init(spec))
