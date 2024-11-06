@@ -41,3 +41,7 @@ Geometry*
 geometry*
 .scores
 vgcore*
+*.aseprite
+__MACOSX
+.DS_Store
+test_particles.cpp

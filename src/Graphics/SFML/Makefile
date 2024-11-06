@@ -7,11 +7,16 @@
 
 NAME = $(LIB_DIR)/arcade_sfml.so
 
-CPPFLAGS = -fPIC -iquote $(INC_DIR) -std=c++20 -Wall -Wextra -Werror
+CPPFLAGS += -fPIC -iquote $(INC_DIR) -std=c++20 -Wall -Wextra -Werror
 SHARED_FLAGS = -shared
 SFML_FLAGS = -lsfml-graphics -lsfml-window -lsfml-system -lsfml-audio
 
-SRC = ./SFML.cpp
+SRC = \
+	SFML.cpp \
+	SFMLAudio.cpp \
+	SFMLDisplay.cpp \
+	SFMLFont.cpp \
+	SFMLTexture.cpp \
 
 all: $(NAME)
 

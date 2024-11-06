@@ -19,7 +19,7 @@ class Nibbler : public ASnakeObject {
         ~Nibbler() = default;
 
         Vec2i update(std::vector<Vec2i> objectsPos, float deltaTime) override;
-        
+
         Vec2i continueMove(void) override;
 
         void setDirectionQueue(std::pair<int, int> direction) {_directionQueue = direction;}
@@ -27,6 +27,6 @@ class Nibbler : public ASnakeObject {
         std::pair<int, int> getDirectionQueue() const {return _directionQueue;}
 
     protected:
-    private:        
+    private:
         std::pair<int, int> _directionQueue = std::make_pair(0, 0);
 };

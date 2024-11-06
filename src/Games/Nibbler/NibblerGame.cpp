@@ -52,8 +52,8 @@ public:
         lib.display().setTitle("Nibbler");
         lib.display().setFramerate(60);
         lib.display().setTileSize(40);
-        lib.display().setWidth(_currentMap[0].size());
-        lib.display().setHeight(_currentMap.size() + 1);
+        lib.display().setWidth(_currentMap[0].size() + 2);
+        lib.display().setHeight(_currentMap.size() + 4);
 
         // Textures
         initTextures(lib);
@@ -94,6 +94,14 @@ public:
         }
     }
 
+    virtual void onKeyDown([[maybe_unused]] arc::ILibrary& lib, [[maybe_unused]] arc::KeyCode key)
+    {
+    }
+
+    virtual void onKeyReleased([[maybe_unused]] arc::ILibrary& lib, [[maybe_unused]] arc::KeyCode key)
+    {
+    }
+
     virtual void onMouseButtonPressed(
         [[maybe_unused]] arc::ILibrary& lib,
         [[maybe_unused]] arc::MouseButton button,
@@ -103,8 +111,61 @@ public:
     {
     }
 
+    virtual void onMouseButtonDown(
+        [[maybe_unused]] arc::ILibrary& lib,
+        [[maybe_unused]] arc::MouseButton button,
+        [[maybe_unused]] int32_t x,
+        [[maybe_unused]] int32_t y
+    )
+    {
+    }
+
+    virtual void onMouseButtonReleased(
+        [[maybe_unused]] arc::ILibrary& lib,
+        [[maybe_unused]] arc::MouseButton button,
+        [[maybe_unused]] int32_t x,
+        [[maybe_unused]] int32_t y
+    )
+    {
+    }
+
+    virtual void onJoystickButtonPressed(
+        [[maybe_unused]] arc::ILibrary& lib,
+        [[maybe_unused]] arc::JoystickButton button,
+        [[maybe_unused]] std::uint32_t id)
+    {
+    }
+
+    virtual void onJoystickButtonDown(
+        [[maybe_unused]] arc::ILibrary& lib,
+        [[maybe_unused]] arc::JoystickButton button,
+        [[maybe_unused]] std::uint32_t id)
+    {
+    }
+
+    virtual void onJoystickButtonReleased(
+        [[maybe_unused]] arc::ILibrary& lib,
+        [[maybe_unused]] arc::JoystickButton button,
+        [[maybe_unused]] std::uint32_t id)
+    {
+    }
+
+    virtual void onJoystickMove(
+        [[maybe_unused]] arc::ILibrary& lib,
+        arc::JoystickAxis axis,
+        uint32_t id)
+    {
+        if (id != 0)
+            return;
+        if ((axis.x != 0) != (axis.y != 0))
+            _nibbler.setDirectionQueue({axis.x, axis.y});
+    }
+
     virtual void update([[maybe_unused]] arc::ILibrary& lib, float deltaTime)
     {
+        auto axis = lib.display().joystick(0).axis();
+        _nibbler.setDirectionQueue({axis.x, axis.y});
+
         if (_nibblerManager.checkWin(_nibbler)) {
             nextMap(deltaTime, lib);
             return;
@@ -133,11 +194,11 @@ public:
         score << "Score: " << _nibbler.getScore();
         std::size_t width = lib.display().width();
 
-        lib.display().clear(arc::Color{0, 0, 255, 0});
+        lib.display().clear(arc::Color{0, 0, 0, 255});
         draw_arena(lib);
         if (_nibbler.getAlive()) {
             for (auto &part : _nibbler.dump()) {
-                lib.display().draw(lib.textures().get(part.second), part.first.x, part.first.y);
+                lib.display().draw(lib.textures().get(part.second), part.first.x + 1, part.first.y);
             }
         }
         else {
@@ -149,12 +210,12 @@ public:
             lib.display().print("Game Over", lib.fonts().get("Pokemon"), center, _currentMap.size() / 2);
         }
         for (auto &part : _nibblerManager.dump()) {
-                lib.display().draw(lib.textures().get(part.second), part.first.x, part.first.y);
+                lib.display().draw(lib.textures().get(part.second), part.first.x + 1, part.first.y);
             }
 
         float textWidth = lib.display().measure(score.str(), lib.fonts().get("Pokemon"), 0, 0).width;
         float center = (width - textWidth) / 2;
-        lib.display().print(score.str(), lib.fonts().get("Pokemon"), center, _currentMap.size());
+        lib.display().print(score.str(), lib.fonts().get("Pokemon"), center, _currentMap.size() + 1);
         lib.display().flush();
     }
 
@@ -249,6 +310,23 @@ private:
         lib.textures().load("arena_0", spec);
 
         spec.textual.character = '+';
+        spec.graphical = arc::TextureImage{TILESET_CAVE, arc::Rect<uint32_t>{16, 160, 16, 16}};
+        lib.textures().load("top_edge", spec);
+        spec.graphical = arc::TextureImage{TILESET_CAVE, arc::Rect<uint32_t>{16, 192, 16, 16}};
+        lib.textures().load("bot_edge", spec);
+        spec.graphical = arc::TextureImage{TILESET_CAVE, arc::Rect<uint32_t>{0, 176, 16, 16}};
+        lib.textures().load("lft_edge", spec);
+        spec.graphical = arc::TextureImage{TILESET_CAVE, arc::Rect<uint32_t>{32, 176, 16, 16}};
+        lib.textures().load("rgt_edge", spec);
+
+        spec.graphical = arc::TextureImage{TILESET_CAVE, arc::Rect<uint32_t>{48, 192, 16, 16}};
+        lib.textures().load("tl_edge", spec);
+        spec.graphical = arc::TextureImage{TILESET_CAVE, arc::Rect<uint32_t>{64, 192, 16, 16}};
+        lib.textures().load("tr_edge", spec);
+        spec.graphical = arc::TextureImage{TILESET_CAVE, arc::Rect<uint32_t>{48, 160, 16, 16}};
+        lib.textures().load("bl_edge", spec);
+        spec.graphical = arc::TextureImage{TILESET_CAVE, arc::Rect<uint32_t>{62, 160, 16, 16}};
+        lib.textures().load("br_edge", spec);
         spec.graphical = arc::TextureImage{TILESET_CAVE, arc::Rect<uint32_t>{3*16, 6*16, 16, 16}};
         lib.textures().load("rock", spec);
 
@@ -262,11 +340,32 @@ private:
 
     void draw_arena(arc::ILibrary& lib)
     {
-        for (uint64_t i = 0; _currentMap.size() + 1 > i; i++) {
-            for (uint64_t j = 0; _currentMap[0].size() > j; j++) {
-                lib.display().draw(lib.textures().get("arena_0"), j, i);
+        auto height = _currentMap.size();
+        auto width = _currentMap[0].size();
+
+        auto top_edge = lib.textures().get("top_edge");
+        auto bot_edge = lib.textures().get("bot_edge");
+        auto lft_edge = lib.textures().get("lft_edge");
+        auto rgt_edge = lib.textures().get("rgt_edge");
+        auto bg = lib.textures().get("arena_0");
+
+        for (uint32_t x = 1; x < width + 1; x++) {
+            lib.display().draw(top_edge, x, 0);
+            lib.display().draw(bot_edge, x, height);
+        }
+        for (uint32_t y = 1; y < height; y++) {
+            lib.display().draw(lft_edge, 0, y);
+            lib.display().draw(rgt_edge, width + 1, y);
+        }
+        for (uint64_t i = 0; height - 1 > i; i++) {
+            for (uint64_t j = 0; width > j; j++) {
+                lib.display().draw(bg, j + 1, i + 1);
             }
         }
+        lib.display().draw(lib.textures().get("tl_edge"), 0, 0);
+        lib.display().draw(lib.textures().get("tr_edge"), width + 1, 0);
+        lib.display().draw(lib.textures().get("bl_edge"), 0, height);
+        lib.display().draw(lib.textures().get("br_edge"), width + 1, height);
     }
 
 private:
