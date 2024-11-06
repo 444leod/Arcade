@@ -5,6 +5,7 @@
 ** SFMLDisplay
 */
 
+#define ARCADE
 #include "SFMLDisplay.hpp"
 #include "SFMLTexture.hpp"
 #include "SFMLFont.hpp"

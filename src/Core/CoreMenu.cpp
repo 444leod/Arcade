@@ -5,6 +5,7 @@
 ** CoreMenu
 */
 
+#define ARCADE
 #include "CoreMenu.hpp"
 
 CoreMenu::CoreMenu(const std::vector<std::shared_ptr<LibraryObject>> &libs, std::shared_ptr<LibraryObject> start)
