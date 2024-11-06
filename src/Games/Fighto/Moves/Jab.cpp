@@ -10,18 +10,26 @@
 /**
  * @brief A Jab is a fast & short-range forwarded attack.
 */
-class Jab : public AMove {
-    public:
-        Jab(std::uint32_t owner, double direction) : AMove(5.f, dVector(5, 2), false)
-        {
-            this->_direction = direction;
-            this->_owner = owner;
-            this->_setTimings(3, 5, 3);
-            this->_hitboxes.push_back(HitBox(dVector(0.8f, -0.25f), 0.3f));
-        }
 
-        ~Jab() = default;
+namespace move {
+    class Jab : public AMove {
+        public:
+            Jab(std::uint32_t owner, double direction) : AMove(5.f, dVector(5, 2), false)
+            {
+                this->_direction = direction;
+                this->_owner = owner;
+                this->_setTimings(3, 5, 3);
+                this->_hitboxes.push_back(HitBox(dVector(0.8f, -0.25f), 0.3f));
+            }
 
-    protected:
-    private:
-};
+            std::shared_ptr<AAnimation> animation(const std::string& skin) override
+            {
+                return std::make_shared<animation::Jab>(skin, this->_direction);
+            }
+
+            ~Jab() = default;
+
+        protected:
+        private:
+    };
+}

@@ -10,19 +10,26 @@
 /**
  * @brief A Spike is a slow aerial downwards attack.
 */
-class Spike : public AMove {
-    public:
-        Spike(std::uint32_t owner, double direction) : AMove(15.f, dVector(10, 2), true)
-        {
-            this->_direction = direction;
-            this->_owner = owner;
-            this->_setTimings(7, 15, 15);
-            this->_hitboxes.push_back(HitBox(dVector(0.f, 0.8f), 0.3f));
-            this->_hitboxes.push_back(HitBox(dVector(0.f, 1.1f), 0.3f));
-        }
+namespace move {
+    class Spike : public AMove {
+        public:
+            Spike(std::uint32_t owner, double direction) : AMove(15.f, dVector(10, 2), true)
+            {
+                this->_direction = direction;
+                this->_owner = owner;
+                this->_setTimings(7, 15, 15);
+                this->_hitboxes.push_back(HitBox(dVector(0.f, 0.8f), 0.3f));
+                this->_hitboxes.push_back(HitBox(dVector(0.f, 1.1f), 0.3f));
+            }
 
-        ~Spike() = default;
+            std::shared_ptr<AAnimation> animation([[maybe_unused]] const std::string& skin) override
+            {
+                return std::make_shared<animation::Spike>(skin);
+            }
 
-    protected:
-    private:
-};
+            ~Spike() = default;
+
+        protected:
+        private:
+    };
+}

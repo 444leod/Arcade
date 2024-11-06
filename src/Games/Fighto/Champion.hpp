@@ -30,6 +30,7 @@ class Champion {
 
         double id() const { return this->_id; }
         bool alive() const { return this->_alive; }
+        bool animationDone() { return this->_animation ? this->_animation->update(0) : true; }
         double life() const { return this->_lifepoints; }
         std::shared_ptr<AMove> move() const;
         double direction() const { return this->_direction; }

@@ -10,6 +10,7 @@
 #include "IGame.hpp"
 #include "SharedLibraryType.hpp"
 #include "HitSolver.cpp"
+#include "Animations/AnimationsList.hpp"
 #include <ctime>
 
 class Fighto : public arc::IGame
@@ -22,14 +23,14 @@ class Fighto : public arc::IGame
         {
             std::srand(std::time(nullptr));
             lib.display().setTitle("Fighto - Prototype");
-            lib.display().setTileSize(32);
-            lib.display().setHeight(16);
-            lib.display().setWidth(32);
+            lib.display().setTileSize(64);
+            lib.display().setHeight(12);
+            lib.display().setWidth(25);
             lib.display().setFramerate(60);
 
             // Setup text and hit color
             arc::Color white = {255, 255, 255, 255};
-            arc::Color hit = {255, 50, 50, 255};
+            arc::Color hit = {255, 200, 50, 255};
             lib.textures().load("hit", {
                 {'X', hit}, hit
             });
@@ -55,14 +56,12 @@ class Fighto : public arc::IGame
             arc::Color purple = {255, 85, 255, 255};
             lib.textures().load("purple", {{'X', purple}, purple });
 
-            arc::TextureSpecification spec;
-            arc::TextureImage image;
-            image.path = "assets/fighto/character1.png";
-            for (uint32_t i = 0; i < 10; i++) {
-                image.subrect = {i * 320, 0, 320, 320};
-                spec.graphical = image;
-                lib.textures().load("character1_idle_" + std::to_string(i), spec);
-            }
+            animation::Death::initialize(lib);
+            animation::Hurt::initialize(lib);
+            animation::Idle::initialize(lib);
+            animation::Jab::initialize(lib);
+            animation::Jump::initialize(lib);
+            animation::Run::initialize(lib);
         }
 
         virtual void onKeyPressed(arc::ILibrary& lib, arc::KeyCode key, bool shift)

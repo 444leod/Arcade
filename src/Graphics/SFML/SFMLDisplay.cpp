@@ -310,6 +310,76 @@ void SFMLDisplay::draw(std::shared_ptr<arc::ITexture> texture, float x, float y,
     this->_window.draw(rect);
 }
 
+void SFMLDisplay::draw(arc::shape::Circle& circle, float x, float y, std::shared_ptr<arc::ITexture> texture)
+{
+    auto circleShape = sf::CircleShape(circle.radius * this->_tileSize);
+
+    circleShape.setFillColor(sf::Color(circle.color.red, circle.color.green, circle.color.blue, circle.color.alpha));
+    circleShape.setPosition(x * this->_tileSize, y * this->_tileSize);
+
+    if (circle.outline.thickness > 0) {
+        circleShape.setOutlineThickness(circle.outline.thickness);
+        circleShape.setOutlineColor(sf::Color(circle.outline.color.red, circle.outline.color.green, circle.outline.color.blue, circle.outline.color.alpha));
+    }
+    circleShape.setRotation(circle.rotation);
+
+    if (texture) {
+        auto tex = std::dynamic_pointer_cast<SFMLTexture>(texture);
+        circleShape.setTexture(tex->raw().get());
+        circleShape.setTextureRect(tex->subrect());
+    }
+    this->_window.draw(circleShape);
+}
+
+void SFMLDisplay::draw(arc::shape::Rectangle& rectangle, float x, float y, std::shared_ptr<arc::ITexture> texture)
+{
+    auto rect = sf::RectangleShape(sf::Vector2f(rectangle.width * this->_tileSize, rectangle.height * this->_tileSize));
+
+    rect.setFillColor(sf::Color(rectangle.color.red, rectangle.color.green, rectangle.color.blue, rectangle.color.alpha));
+    rect.setPosition(x * this->_tileSize, y * this->_tileSize);
+
+    if (rectangle.outline.thickness > 0) {
+        rect.setOutlineThickness(rectangle.outline.thickness);
+        rect.setOutlineColor(sf::Color(rectangle.outline.color.red, rectangle.outline.color.green, rectangle.outline.color.blue, rectangle.outline.color.alpha));
+    }
+    rect.setRotation(rectangle.rotation);
+
+    if (texture) {
+        auto tex = std::dynamic_pointer_cast<SFMLTexture>(texture);
+        rect.setTexture(tex->raw().get());
+        rect.setTextureRect(tex->subrect());
+    }
+    this->_window.draw(rect);
+}
+
+void SFMLDisplay::draw(arc::shape::Convex& polygon, float x, float y, std::shared_ptr<arc::ITexture> texture)
+{
+    if (polygon.points.size() < 3)
+        return;
+    auto convex = sf::ConvexShape(polygon.points.size());
+
+    for (std::size_t i = 0; i < polygon.points.size(); i++)
+    {
+        convex.setPoint(i, sf::Vector2f(polygon.points[i].x * this->_tileSize, polygon.points[i].y * this->_tileSize));
+    }
+
+    convex.setPosition(x * this->_tileSize, y * this->_tileSize);
+    convex.setFillColor(sf::Color(polygon.color.red, polygon.color.green, polygon.color.blue, polygon.color.alpha));
+    convex.setRotation(polygon.rotation);
+
+    if (polygon.outline.thickness > 0) {
+        convex.setOutlineThickness(polygon.outline.thickness);
+        convex.setOutlineColor(sf::Color(polygon.outline.color.red, polygon.outline.color.green, polygon.outline.color.blue, polygon.outline.color.alpha));
+    }
+
+    if (texture) {
+        auto tex = std::dynamic_pointer_cast<SFMLTexture>(texture);
+        convex.setTexture(tex->raw().get());
+        convex.setTextureRect(tex->subrect());
+    }
+    this->_window.draw(convex);
+}
+
 void SFMLDisplay::print(const std::string &string, std::shared_ptr<arc::IFont> font, float x, float y)
 {
     if (font == nullptr)
@@ -341,7 +411,7 @@ arc::Rect<float> SFMLDisplay::measure(const std::string &string, std::shared_ptr
         x * this->_tileSize + this->_offset.x,
         y * this->_tileSize + this->_offset.y);
     #else
-    text.setPosition(x, y);
+    text.setPosition(x * this->_tileSize, y * this->_tileSize);
     #endif
     auto bounds = text.getLocalBounds();
     return {bounds.left, bounds.top, bounds.width / this->_tileSize, bounds.height / this->_tileSize};

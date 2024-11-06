@@ -6,6 +6,7 @@
 */
 
 #include "AAnimation.hpp"
+#include <iostream>
 
 AAnimation::AAnimation(const std::string& texture)
     : _texture(texture)
@@ -15,10 +16,10 @@ AAnimation::AAnimation(const std::string& texture)
 
 void AAnimation::draw(arc::ILibrary& lib, const dVector& position, double direction) const
 {
-    if (direction < 0)
-        lib.display().draw(lib.textures().get(_frame), position.x + 1, position.y, -1, 1);
+    if (_direction.value_or(direction) < 0)
+        lib.display().draw(lib.textures().get(_frame), position.x + 2 - 0.5f, position.y - 1 + 0.3f, -2, 2);
     else
-        lib.display().draw(lib.textures().get(_frame), position.x, position.y, 1, 1);
+        lib.display().draw(lib.textures().get(_frame), position.x - 0.5f, position.y - 1 + 0.3f, 2, 2);
 }
 
 void AAnimation::debug([[maybe_unused]] arc::ILibrary& lib, [[maybe_unused]]const dVector& position) const
@@ -26,6 +27,7 @@ void AAnimation::debug([[maybe_unused]] arc::ILibrary& lib, [[maybe_unused]]cons
     // lib.display().draw(lib.textures().get("debug"), position.x, position.y, 1, 1);
 }
 
-void AAnimation::update([[maybe_unused]] double dt)
+bool AAnimation::update([[maybe_unused]] double dt)
 {
+    return true;
 }

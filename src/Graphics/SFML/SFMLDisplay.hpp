@@ -41,6 +41,10 @@ public:
     virtual void draw(std::shared_ptr<arc::ITexture> texture, float x, float y);
     virtual void draw(std::shared_ptr<arc::ITexture> texture, float x, float y, float scaleX, float scaleY);
 
+    virtual void draw(arc::shape::Circle& circle, float x, float y, std::shared_ptr<arc::ITexture> texture = nullptr);
+    virtual void draw(arc::shape::Rectangle& rectangle, float x, float y, std::shared_ptr<arc::ITexture> texture = nullptr);
+    virtual void draw(arc::shape::Convex& polygon, float x, float y, std::shared_ptr<arc::ITexture> texture = nullptr);
+
     virtual void print(const std::string& string, std::shared_ptr<arc::IFont> font, float x, float y);
     virtual arc::Rect<float> measure(const std::string& string, std::shared_ptr<arc::IFont> font, float x, float y);
 

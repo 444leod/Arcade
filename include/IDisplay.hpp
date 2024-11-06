@@ -10,6 +10,9 @@
 #include "Joystick.hpp"
 #include "IFontManager.hpp"
 #include "ITextureManager.hpp"
+#include "Circle.hpp"
+#include "Rect.hpp"
+#include "Convex.hpp"
 
 namespace arc {
     /**
@@ -240,7 +243,41 @@ namespace arc {
          */
         virtual void draw(std::shared_ptr<ITexture> texture, float x, float y, float scaleX, float scaleY) = 0;
 
-        /**td::shared_ptr<ITexture> g
+        /**
+         * @brief Draws a circle to the display
+         *
+         * @param circle the circle to draw
+         * @param x the column to draw the texture at
+         * @param y the row to draw the texture at
+         * @param texture the texture to use
+         */
+        virtual void draw(arc::shape::Circle& circle, float x, float y, std::shared_ptr<ITexture> texture = nullptr) = 0;
+
+        // virtual void draw(arc::shape::advanced::Circle& circle) = 0;
+
+        /**
+         * @brief Draws a rectangle to the display
+         *
+         * @param rectangle the rectangle to draw
+         * @param x the column to draw the texture at
+         * @param y the row to draw the texture at
+         * @param texture the texture to use
+         */
+        virtual void draw(arc::shape::Rectangle& rectangle, float x, float y, std::shared_ptr<ITexture> texture = nullptr) = 0;
+
+        // virtual void draw(arc::shape::advanced::Rectangle& rectangle) = 0;
+
+        /**
+         * @brief Draws a convex to the display
+         *
+         * @param polygon the convex to draw
+         * @param x the column to draw the texture at
+         * @param y the row to draw the texture at
+         * @param texture the texture to use
+         */
+        virtual void draw(arc::shape::Convex& polygon, float x, float y, std::shared_ptr<ITexture> texture = nullptr) = 0;
+
+        /**
          * @brief Draws a string to the display
          *
          * @param string the string to draw
