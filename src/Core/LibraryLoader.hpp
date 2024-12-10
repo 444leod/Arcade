@@ -21,7 +21,7 @@ class LibraryObject {
         template<typename T>
         std::shared_ptr<T> get()
         {
-            auto h = reinterpret_cast<T *(*)()>(dlsym(_handle, "entrypoint"));
+            auto h = reinterpret_cast<T *(*)()>(this->_entrypoint);
             return std::shared_ptr<T>(h());
         }
 
@@ -32,30 +32,25 @@ class LibraryObject {
 
     protected:
     private:
+        void *_handle = nullptr;
+        void *_entrypoint = nullptr;
         bool _loaded = false;
         std::string _path = "";
         std::string _name = "";
         arc::SharedLibraryType _type = arc::SharedLibraryType::LIBRARY;
-        void *_handle = nullptr;
 };
-
 class LibraryLoader {
     public:
         LibraryLoader(const std::string &path, bool restrict_tty);
-        ~LibraryLoader();
-        const std::vector<std::shared_ptr<LibraryObject>> &libs() const { return this->_libs; }
+        ~LibraryLoader() = default;
         bool contains(const std::string &lib, arc::SharedLibraryType type) const;
-        bool contains(const std::string &lib) const;
         bool contains(arc::SharedLibraryType type) const;
-        std::shared_ptr<LibraryObject> nextLib();
-        std::shared_ptr<LibraryObject> nextGame();
-        std::shared_ptr<LibraryObject> load(const std::string &path, arc::SharedLibraryType type = arc::SharedLibraryType::LIBRARY);
+        std::shared_ptr<LibraryObject> get(const std::string &path) const;
+        std::vector<std::shared_ptr<LibraryObject>> get(arc::SharedLibraryType type) const;
 
     protected:
     private:
-        bool path_cmp(const std::string &a, const std::string& b) const;
+        static bool _path_cmp(const std::string &a, const std::string& b);
     private:
-        int _gameIndex = -1;
-        int _libIndex = -1;
         std::vector<std::shared_ptr<LibraryObject>> _libs = {};
 };
